@@ -846,6 +846,13 @@ const actions = {
     // Check if tab already exist and always select existing tab if so.
     const { currentFile, tabs } = state
     const { pathname } = markdownDocument
+    if (pathname) {
+      commit('SET_LAYOUT', {
+        rightColumn: 'files',
+        showSideBar: true
+      })
+      dispatch('DISPATCH_LAYOUT_MENU_ITEMS')
+    }
     const existingTab = tabs.find(t => isSamePathSync(t.pathname, pathname))
     if (existingTab) {
       dispatch('UPDATE_CURRENT_FILE', existingTab)

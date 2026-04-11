@@ -71,7 +71,9 @@ export default {
   box-sizing: border-box;
   user-select: none;
   flex-shrink: 0;
-  overflow: hidden;
+  position: relative;
+  overflow: visible;
+  z-index: 3;
 }
 
 .toolbar-group {

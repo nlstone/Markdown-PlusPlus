@@ -2,31 +2,33 @@
   <div
     class="editor-container"
   >
-    <side-bar v-if="init"></side-bar>
+    <title-bar
+      :project="projectTree"
+      :pathname="pathname"
+      :filename="filename"
+      :active="windowActive"
+      :word-count="wordCount"
+      :platform="platform"
+      :is-saved="isSaved"
+    ></title-bar>
     <div class="editor-middle">
-      <title-bar
-        :project="projectTree"
-        :pathname="pathname"
-        :filename="filename"
-        :active="windowActive"
-        :word-count="wordCount"
-        :platform="platform"
-        :is-saved="isSaved"
-      ></title-bar>
       <toolbar v-if="init"></toolbar>
       <div class="editor-placeholder" v-if="!init"></div>
-      <recent
-        v-if="!hasCurrentFile && init"
-      ></recent>
-      <editor-with-tabs
-        v-if="hasCurrentFile && init"
-        :markdown="markdown"
-        :cursor="cursor"
-        :source-code="sourceCode"
-        :show-tab-bar="showTabBar"
-        :text-direction="textDirection"
-        :platform="platform"
-      ></editor-with-tabs>
+      <div v-else class="workspace-content">
+        <side-bar></side-bar>
+        <recent
+          v-if="!hasCurrentFile"
+        ></recent>
+        <editor-with-tabs
+          v-else
+          :markdown="markdown"
+          :cursor="cursor"
+          :source-code="sourceCode"
+          :show-tab-bar="showTabBar"
+          :text-direction="textDirection"
+          :platform="platform"
+        ></editor-with-tabs>
+      </div>
       <command-palette></command-palette>
       <about-dialog></about-dialog>
       <export-setting-dialog></export-setting-dialog>
@@ -208,7 +210,7 @@ export default {
   .editor-placeholder,
   .editor-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -230,10 +232,17 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 100vh;
+    min-height: 0;
     position: relative;
     & > .editor {
       flex: 1;
     }
+  }
+  .workspace-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
   }
 </style>

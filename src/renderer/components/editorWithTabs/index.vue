@@ -1,8 +1,5 @@
 <template>
-    <div
-      class="editor-with-tabs"
-      :style="{'max-width': showSideBar ? `calc(100vw - ${sideBarWidth}px` : '100vw' }"
-    >
+    <div class="editor-with-tabs">
       <tabs v-show="showTabBar"></tabs>
       <div class="container">
         <editor
@@ -23,7 +20,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import Tabs from './tabs.vue'
 import Editor from './editor.vue'
 import SourceCode from './sourceCode.vue'
@@ -63,12 +59,6 @@ export default {
     Editor,
     SourceCode,
     TabNotifications
-  },
-  computed: {
-    ...mapState({
-      showSideBar: state => state.layout.showSideBar,
-      sideBarWidth: state => state.layout.sideBarWidth
-    })
   }
 }
 </script>
@@ -80,11 +70,12 @@ export default {
     flex: 1;
     display: flex;
     flex-direction: column;
-
+    min-width: 0;
     overflow: hidden;
     background: var(--editorBgColor);
     & > .container {
       flex: 1;
+      min-width: 0;
       overflow: hidden;
     }
   }

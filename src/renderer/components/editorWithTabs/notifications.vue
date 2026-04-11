@@ -3,7 +3,6 @@
     v-if="currentNotification"
     class="editor-notifications"
     :class="currentNotification.style"
-    :style="{'max-width': showSideBar ? `calc(100vw - ${sideBarWidth}px` : '100vw' }"
   >
     <div class="msg">
       {{ currentNotification.msg }}
@@ -39,9 +38,7 @@ export default {
   },
   computed: {
     ...mapState({
-      currentFile: state => state.editor.currentFile,
-      showSideBar: state => state.layout.showSideBar,
-      sideBarWidth: state => state.layout.sideBarWidth
+      currentFile: state => state.editor.currentFile
     }),
     currentNotification () {
       const notifications = this.currentFile.notifications

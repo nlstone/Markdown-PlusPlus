@@ -144,8 +144,9 @@ export default {
     flex-shrink: 0;
     flex-grow: 0;
     width: 280px;
-    height: 100vh;
+    height: 100%;
     min-width: 220px;
+    min-height: 0;
     position: relative;
     color: var(--sideBarColor);
     user-select: none;
@@ -164,7 +165,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-top: 40px;
+    padding-top: 12px;
     box-sizing: border-box;
     & > ul {
       opacity: 1;
