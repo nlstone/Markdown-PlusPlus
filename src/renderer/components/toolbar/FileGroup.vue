@@ -1,30 +1,30 @@
 <template>
   <div class="toolbar-group">
-    <toolbar-tooltip content="New Tab (Ctrl+T)" v-show="!isNarrow">
+    <toolbar-tooltip :content="$t('toolbar.newTabShortcut')" v-show="!isNarrow">
       <button class="toolbar-btn" @click="newTab">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.newTab" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Open File (Ctrl+O)">
+    <toolbar-tooltip :content="$t('toolbar.openFileShortcut')">
       <button class="toolbar-btn" @click="openFile">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.openFile" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Open Folder" v-show="!isNarrow">
+    <toolbar-tooltip :content="$t('toolbar.openFolder')" v-show="!isNarrow">
       <button class="toolbar-btn" @click="openFolder">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.openFolder" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Save (Ctrl+S)">
+    <toolbar-tooltip :content="$t('toolbar.saveShortcut')">
       <button class="toolbar-btn" :disabled="!hasFile" @click="save">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.save" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Save As (Ctrl+Shift+S)">
+    <toolbar-tooltip :content="$t('toolbar.saveAsShortcut')">
       <button class="toolbar-btn" :disabled="!hasFile" @click="saveAs">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.saveAs" /></svg>
       </button>

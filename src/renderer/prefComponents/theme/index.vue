@@ -1,6 +1,6 @@
 <template>
   <div class="pref-theme">
-    <h4>Theme</h4>
+    <h4>{{ $t('preference.categories.theme') }}</h4>
     <section class="offcial-themes">
       <div v-for="t of themes" :key="t.name" class="theme"
         :class="[t.name, { 'active': t.name === theme }]"
@@ -11,7 +11,7 @@
     </section>
     <separator></separator>
     <cur-select
-      description="Automatically adjust application theme according to system settings"
+      :description="$t('preference.theme.autoSwitch')"
       :value="autoSwitchTheme"
       :options="autoSwitchThemeOptions"
       :onChange="value => onSelectChange('autoSwitchTheme', value)"

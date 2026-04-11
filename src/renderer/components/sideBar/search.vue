@@ -5,12 +5,12 @@
       <div class="search-wrapper">
         <input
           type="text" v-model="keyword"
-          placeholder="Search in folder..."
+          :placeholder="$t('sidebar.search.placeholder') + '...'"
           @keyup="search"
         >
         <div class="controls">
           <span
-            title="Case Sensitive"
+            :title="$t('sidebar.search.caseSensitive')"
             class="is-case-sensitive"
             :class="{'active': isCaseSensitive}"
             @click.stop="caseSensitiveClicked()"
@@ -20,7 +20,7 @@
             </svg>
           </span>
           <span
-            title="Select whole word"
+            :title="$t('sidebar.search.wholeWord')"
             class="is-whole-word"
             :class="{'active': isWholeWord}"
             @click.stop="wholeWordClicked()"
@@ -30,7 +30,7 @@
             </svg>
           </span>
           <span
-            title="Use query as RegEx"
+            :title="$t('sidebar.search.regex')"
             class="is-regex"
             :class="{'active': isRegexp}"
             @click.stop="regexpClicked()"
@@ -43,9 +43,9 @@
       </div>
 
       <div class="search-message-section" v-if="showNoFolderOpenedMessage">
-        <span>No folder open</span>
+        <span>{{ $t('sidebar.search.noFolderOpen') }}</span>
       </div>
-      <div class="search-message-section" v-if="showNoResultFoundMessage">No results found.</div>
+      <div class="search-message-section" v-if="showNoResultFoundMessage">{{ $t('sidebar.search.noResults') }}</div>
       <div class="search-message-section" v-if="searchErrorString">{{ searchErrorString }}</div>
 
       <div
@@ -57,7 +57,7 @@
           size="mini"
           @click="cancelSearcher"
         >
-          Cancel <i class="el-icon-video-pause"></i>
+          {{ $t('dialog.export.cancelButton') }} <i class="el-icon-video-pause"></i>
         </el-button>
       </div>
       <div v-if="searchResult.length" class="search-result-info">{{searchResultInfo}}</div>
@@ -78,7 +78,7 @@
             v-if="showNoFolderOpenedMessage"
             @click="openFolder"
           >
-            Open Folder
+            {{ $t('sidebar.openFolder') }}
           </button>
         </div>
       </div>

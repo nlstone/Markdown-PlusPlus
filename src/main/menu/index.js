@@ -348,7 +348,8 @@ class AppMenu {
 
   _buildSettingMenu () {
     if (isOsx) {
-      const menuTemplate = configSettingMenu(this._keybindings)
+      const lang = this._preferences.getItem('language') || 'en'
+      const menuTemplate = configSettingMenu(this._keybindings, lang)
       const menu = Menu.buildFromTemplate(menuTemplate)
       return { menu, type: MenuType.SETTINGS }
     }
@@ -414,6 +415,30 @@ class AppMenu {
       }
       if (prefs.autoSave !== undefined) {
         this.updateAutoSaveMenu(prefs.autoSave)
+      }
+    })
+
+    // Handle language change - rebuild menus
+    ipcMain.on('app-menu-language-changed', lang => {
+      this.updateAppMenuForLanguage(lang)
+    })
+  }
+
+  /**
+   * Update application menu for language change.
+   * @param {string} lang The new language code (en or zh-CN)
+   */
+  updateAppMenuForLanguage (lang) {
+    // Rebuild all window menus with new language
+    this.windowMenus.forEach((value, key) => {
+      const { type } = value
+      if (type === MenuType.EDITOR) {
+        const { menu: newMenu } = this._buildEditorMenu()
+        value.menu = newMenu
+
+        if (this.activeWindowId === key) {
+          this._setApplicationMenu(newMenu)
+        }
       }
     })
   }

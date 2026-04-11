@@ -1,0 +1,358 @@
+{
+  "preferences": "偏好设置",
+  "preference": {
+    "title": "首选项",
+    "categories": {
+      "general": "通用",
+      "editor": "编辑器",
+      "markdown": "Markdown",
+      "theme": "主题",
+      "image": "图片",
+      "spelling": "拼写检查",
+      "keybindings": "快捷键"
+    },
+    "general": {
+      "autoSave": {
+        "title": "自动保存：",
+        "autoSaveDescription": "自动保存文档更改",
+        "delayDescription": "编辑后自动保存的延迟时间"
+      },
+      "window": {
+        "title": "窗口：",
+        "titleBarStyle": "标题栏样式",
+        "titleBarStyleNote": "需要重启应用。",
+        "hideScrollbar": "隐藏滚动条",
+        "openFilesInNewWindow": "在新窗口中打开文件",
+        "openFolderInNewWindow": "在新窗口中打开文件夹",
+        "zoom": "缩放"
+      },
+      "sidebar": {
+        "title": "侧边栏：",
+        "wordWrapInToc": "在目录中自动换行",
+        "fileSortBy": "打开文件夹中文件的排序方式"
+      },
+      "startup": {
+        "title": "启动时操作：",
+        "restoreSession": "恢复上次编辑会话",
+        "openDefaultDir": "打开默认目录",
+        "selectFolder": "选择文件夹",
+        "openBlank": "打开空白页面"
+      },
+      "misc": {
+        "title": "其他：",
+        "language": "界面语言"
+      }
+    },
+    "editor": {
+      "title": "文本编辑器设置",
+      "fontFamily": "字体",
+      "fontSize": "字号",
+      "lineHeight": "行高",
+      "codeBlock": {
+        "title": "代码块设置",
+        "fontSize": "代码块字号",
+        "fontFamily": "代码块字体",
+        "lineNumbers": "显示行号",
+        "trimEmptyLines": "去除代码块中不必要的空行"
+      },
+      "editorLineWidth": "编辑器行宽",
+      "writing": {
+        "title": "写作行为",
+        "autoPairBracket": "自动配对括号",
+        "autoPairMarkdown": "自动配对 Markdown 语法",
+        "autoPairQuote": "自动配对引号",
+        "endOfLine": "默认行尾字符",
+        "defaultEncoding": "默认编码",
+        "autoGuessEncoding": "自动检测编码",
+        "trimTrailingNewline": "去除行尾换行符",
+        "textDirection": "文本方向"
+      },
+      "file": {
+        "title": "文件表示",
+        "hideQuickInsertHint": "隐藏快速插入提示",
+        "imageInsertAction": "默认图片插入操作",
+        "imageRelativeDir": "使用相对图片目录",
+        "imageDirectoryName": "相对目录名称",
+        "hideLinkPopup": "隐藏链接弹窗"
+      }
+    },
+    "markdown": {
+      "title": "Markdown",
+      "lists": {
+        "title": "列表",
+        "preferLooseListItem": "偏好松散列表项",
+        "bulletMarker": "无序列表标记",
+        "orderDelimiter": "有序列表分隔符"
+      },
+      "extensions": {
+        "title": "Markdown 扩展",
+        "frontmatterType": "Front matter 类型",
+        "superSubScript": "启用上标和下标",
+        "footnote": "启用脚注"
+      },
+      "compatibility": {
+        "title": "兼容性",
+        "isHtmlEnabled": "启用 HTML",
+        "isGitlabCompatibility": "启用 GitLab 兼容性"
+      },
+      "diagrams": {
+        "title": "图表",
+        "sequenceTheme": "序列图主题"
+      },
+      "heading": {
+        "preferStyle": "偏好的标题样式"
+      },
+      "indentation": {
+        "title": "缩进",
+        "tabSize": "Tab 宽度",
+        "listIndentation": "列表缩进"
+      }
+    },
+    "theme": {
+      "title": "主题",
+      "theme": "应用主题",
+      "autoSwitch": "自动切换主题"
+    },
+    "image": {
+      "title": "图片",
+      "insertAction": "默认图片插入操作",
+      "insertActionDescription": "从本地文件夹或剪贴板插入图片后的默认操作",
+      "clipboardNote": "剪贴板处理仅在 macOS 和 Windows 上完全支持。",
+      "globalFolder": "全局图片文件夹",
+      "relativeFolder": {
+        "title": "相对图片文件夹",
+        "preferRelative": "偏好使用相对目录",
+        "directoryName": "相对目录名称"
+      },
+      "uploader": {
+        "title": "图片上传器",
+        "current": "当前上传器",
+        "github": {
+          "token": "GitHub Token",
+          "owner": "Owner",
+          "repo": "Repo",
+          "branch": "Branch"
+        }
+      }
+    },
+    "spelling": {
+      "title": "拼写检查",
+      "enable": "启用拼写检查",
+      "noUnderline": "隐藏拼写错误下划线",
+      "language": "默认拼写检查语言",
+      "note": "输入时会自动检测使用的语言。可以在系统的「语言与地区」设置中添加更多语言。"
+    },
+    "keybindings": {
+      "title": "快捷键",
+      "customizeBefore": "自定义快捷键，点击下方保存按钮应用所有更改（需要重启）。所有可用和默认快捷键可在",
+      "customizeLink": "在线文档",
+      "customizeAfter": "找到。",
+      "tableDescription": "描述",
+      "tableKeyCombination": "按键组合",
+      "tableOptions": "选项",
+      "edit": "编辑",
+      "reset": "重置",
+      "unbind": "取消绑定",
+      "save": "保存",
+      "restoreDefaults": "恢复默认快捷键",
+      "debug": "调试选项：",
+      "dumpKeyboardInfo": "转储键盘信息",
+      "failedToSave": "保存失败",
+      "unexpectedSaveError": "保存时发生意外错误。",
+      "shortcutInUse": "快捷键已被占用",
+      "shortcutInUseMessage": "快捷键 \"{accelerator}\" 已被占用。请先取消该快捷键绑定，然后重试。"
+    }
+  },
+  "sidebar": {
+    "openedFiles": "已打开的文件",
+    "saveAll": "全部保存",
+    "closeAll": "全部关闭",
+    "emptyProject": "空项目",
+    "createFile": "新建文件",
+    "openFolder": "打开文件夹",
+    "toc": "目录",
+    "search": {
+      "placeholder": "搜索",
+      "noFolderOpen": "未打开文件夹",
+      "noResults": "未找到结果",
+      "caseSensitive": "区分大小写",
+      "wholeWord": "全字匹配",
+      "regex": "正则表达式"
+    }
+  },
+  "dialog": {
+    "export": {
+      "title": "导出选项",
+      "tabs": {
+        "info": "信息",
+        "page": "页面",
+        "style": "样式",
+        "theme": "主题",
+        "headerFooter": "页眉页脚",
+        "toc": "目录"
+      },
+      "infoText": "请自定义页面外观，然后点击导出继续。",
+      "exportButton": "导出...",
+      "cancelButton": "取消"
+    },
+    "rename": {
+      "title": "重命名",
+      "placeholder": "输入新名称"
+    },
+    "import": {
+      "title": "导入",
+      "dropHere": "拖放文件到此处导入"
+    },
+    "commandPalette": {
+      "placeholder": "输入命令"
+    },
+    "keyInputDialog": {
+      "title": "快捷键绑定",
+      "prompt": "按下按键组合进行绑定",
+      "cannotBind": "该按键组合无法绑定"
+    }
+  },
+  "contextMenu": {
+    "tabs": {
+      "close": "关闭",
+      "closeOthers": "关闭其他",
+      "closeSaved": "关闭已保存的标签页",
+      "closeAll": "关闭所有标签页",
+      "rename": "重命名",
+      "copyPath": "复制路径",
+      "showInFolder": "在文件夹中显示"
+    },
+    "sidebar": {
+      "newFile": "新建文件",
+      "newDirectory": "新建目录",
+      "copy": "复制",
+      "cut": "剪切",
+      "paste": "粘贴",
+      "rename": "重命名",
+      "moveToTrash": "移至回收站",
+      "showInFolder": "在文件夹中显示"
+    },
+    "editor": {
+      "copyAsMarkdown": "复制为 Markdown",
+      "copyAsHtml": "复制为 HTML",
+      "pasteAsPlainText": "粘贴为纯文本"
+    }
+  },
+  "notification": {
+    "uploadFailed": "上传图片失败",
+    "saveConfig": "保存配置",
+    "shortcutInUse": "快捷键已被占用",
+    "saved": "已保存",
+    "exportSuccess": "导出成功",
+    "exportFailed": "导出失败"
+  },
+  "config": {
+    "titleBarStyle": {
+      "custom": "自定义",
+      "native": "原生"
+    },
+    "fileSortBy": {
+      "created": "创建时间",
+      "modified": "修改时间",
+      "title": "标题"
+    },
+    "endOfLine": {
+      "default": "默认",
+      "crlf": "CRLF",
+      "lf": "LF"
+    },
+    "trimTrailingNewline": {
+      "trim": "去除所有行尾换行符",
+      "keepOne": "保留一个行尾换行符",
+      "keepAll": "保留所有行尾换行符"
+    },
+    "textDirection": {
+      "ltr": "从左到右 (LTR)",
+      "rtl": "从右到左 (RTL)"
+    },
+    "imageInsertAction": {
+      "upload": "上传到云端",
+      "folder": "复制到本地文件夹",
+      "path": "插入相对路径",
+      "keep": "保留原位置"
+    },
+    "frontmatterType": {
+      "yaml": "YAML (-)",
+      "toml": "TOML (+++)",
+      "json": "JSON ({})"
+    },
+    "sequenceTheme": {
+      "hand": "手绘风格",
+      "simple": "简洁风格"
+    },
+    "headingStyle": {
+      "atx": "ATX 样式 (#)",
+      "setext": "Setext 样式"
+    },
+    "listIndentation": {
+      "dfm": "DocFX 样式",
+      "tab": "Tab",
+      "1": "1 个空格",
+      "2": "2 个空格",
+      "3": "3 个空格",
+      "4": "4 个空格"
+    },
+    "autoSwitchTheme": {
+      "0": "从不",
+      "1": "日出/日落时",
+      "2": "6:00/18:00"
+    },
+    "imageUploader": {
+      "none": "无（不上传）",
+      "github": "GitHub"
+    },
+    "language": {
+      "en": "English",
+      "zh-CN": "简体中文"
+    }
+  },
+  "titleBar": {
+    "words": "字",
+    "characters": "字符",
+    "paragraphs": "段落"
+  },
+  "editor": {
+    "quickInsert": {
+      "paragraph": "段落",
+      "heading": "标题",
+      "quote": "引用块",
+      "code": "代码块",
+      "table": "表格",
+      "math": "数学块",
+      "list": "列表",
+      "image": "图片",
+      "link": "链接"
+    }
+  },
+  "toolbar": {
+    "moreActions": "更多操作",
+    "newTab": "新建标签页",
+    "newTabShortcut": "新建标签页 (Ctrl+T)",
+    "openFile": "打开文件",
+    "openFileShortcut": "打开文件 (Ctrl+O)",
+    "openFolder": "打开文件夹",
+    "save": "保存",
+    "saveShortcut": "保存 (Ctrl+S)",
+    "saveAs": "另存为",
+    "saveAsShortcut": "另存为 (Ctrl+Shift+S)",
+    "commandPalette": "命令面板",
+    "sourceCodeMode": "源代码模式",
+    "typewriterMode": "打字机模式",
+    "focusMode": "专注模式",
+    "showSidebar": "显示侧边栏",
+    "showTabBar": "显示标签栏",
+    "moveTo": "移动到",
+    "rename": "重命名",
+    "import": "导入",
+    "exportHtml": "导出 HTML",
+    "exportPdf": "导出 PDF",
+    "print": "打印",
+    "reloadImages": "重新加载图片",
+    "toggleToc": "切换目录"
+  }
+}

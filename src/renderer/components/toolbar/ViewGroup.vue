@@ -1,36 +1,36 @@
 <template>
   <div class="toolbar-group">
-    <toolbar-tooltip content="Command Palette">
+    <toolbar-tooltip :content="$t('toolbar.commandPalette')">
       <button class="toolbar-btn" @click="showCommandPalette">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.commandPalette" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Source Code Mode" v-show="!isNarrow">
+    <toolbar-tooltip :content="$t('toolbar.sourceCodeMode')" v-show="!isNarrow">
       <button class="toolbar-btn" :class="{ active: sourceCode }" @click="toggleSourceCode">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.sourceCode" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Typewriter Mode">
+    <toolbar-tooltip :content="$t('toolbar.typewriterMode')">
       <button class="toolbar-btn" :class="{ active: typewriter }" @click="toggleTypewriter">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.typewriter" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Focus Mode">
+    <toolbar-tooltip :content="$t('toolbar.focusMode')">
       <button class="toolbar-btn" :class="{ active: focus }" @click="toggleFocus">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.focusMode" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Show Sidebar">
+    <toolbar-tooltip :content="$t('toolbar.showSidebar')">
       <button class="toolbar-btn" :class="{ active: showSideBar }" @click="toggleSidebar">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.showSidebar" /></svg>
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip content="Show Tab Bar" v-show="!isNarrow">
+    <toolbar-tooltip :content="$t('toolbar.showTabBar')" v-show="!isNarrow">
       <button class="toolbar-btn" :class="{ active: showTabBar }" @click="toggleTabBar">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.showTabBar" /></svg>
       </button>

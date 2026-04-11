@@ -1,9 +1,9 @@
 import * as actions from '../actions/theme'
 
-export default function (userPreference) {
+export default function (userPreference, i18n) {
   const { theme } = userPreference.getAll()
   return {
-    label: '&Theme',
+    label: (i18n && i18n.menu && i18n.menu.theme && i18n.menu.theme.label) || '&Theme',
     id: 'themeMenu',
     submenu: [{
       label: 'Cadmium Light',

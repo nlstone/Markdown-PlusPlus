@@ -149,6 +149,13 @@ class Preference extends EventEmitter {
       this.setItem('autoSave', !!this.getItem('autoSave'))
     })
 
+    // Handle language change - notify menu to rebuild
+    ipcMain.on('mt::language-changed', (e, lang) => {
+      this.setItem('language', lang)
+      // Notify AppMenu to rebuild menus with new language
+      ipcMain.emit('app-menu-language-changed', lang)
+    })
+
     ipcMain.on('set-user-preference', settings => {
       this.setItems(settings)
     })

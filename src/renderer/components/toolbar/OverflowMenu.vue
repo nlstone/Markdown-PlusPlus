@@ -1,26 +1,26 @@
 <template>
   <div class="overflow-wrapper" v-click-outside="closeMenu">
-    <toolbar-tooltip content="More Actions">
+    <toolbar-tooltip :content="$t('toolbar.moreActions')">
       <button class="toolbar-btn toolbar-overflow-btn" @click.stop="toggleMenu">
         <svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="currentColor"/></svg>
       </button>
     </toolbar-tooltip>
     <div v-if="isOpen" class="overflow-dropdown" @click.stop>
       <template v-if="isNarrow">
-        <div class="overflow-item" @click="newTab">New Tab</div>
-        <div class="overflow-item" @click="openFolder">Open Folder</div>
-        <div class="overflow-item" @click="toggleSourceCode">Source Code Mode</div>
-        <div class="overflow-item" @click="toggleTabBar">Show Tab Bar</div>
+        <div class="overflow-item" @click="newTab">{{ $t('toolbar.newTab') }}</div>
+        <div class="overflow-item" @click="openFolder">{{ $t('toolbar.openFolder') }}</div>
+        <div class="overflow-item" @click="toggleSourceCode">{{ $t('toolbar.sourceCodeMode') }}</div>
+        <div class="overflow-item" @click="toggleTabBar">{{ $t('toolbar.showTabBar') }}</div>
         <div class="overflow-separator"></div>
       </template>
-      <div class="overflow-item" @click="moveTo">Move To</div>
-      <div class="overflow-item" @click="rename">Rename</div>
-      <div class="overflow-item" @click="importFile">Import</div>
-      <div class="overflow-item" @click="exportHtml">Export HTML</div>
-      <div class="overflow-item" @click="exportPdf">Export PDF</div>
-      <div class="overflow-item" @click="print">Print</div>
-      <div class="overflow-item" @click="reloadImages">Reload Images</div>
-      <div class="overflow-item" @click="toggleToc">Toggle Table of Contents</div>
+      <div class="overflow-item" @click="moveTo">{{ $t('toolbar.moveTo') }}</div>
+      <div class="overflow-item" @click="rename">{{ $t('toolbar.rename') }}</div>
+      <div class="overflow-item" @click="importFile">{{ $t('toolbar.import') }}</div>
+      <div class="overflow-item" @click="exportHtml">{{ $t('toolbar.exportHtml') }}</div>
+      <div class="overflow-item" @click="exportPdf">{{ $t('toolbar.exportPdf') }}</div>
+      <div class="overflow-item" @click="print">{{ $t('toolbar.print') }}</div>
+      <div class="overflow-item" @click="reloadImages">{{ $t('toolbar.reloadImages') }}</div>
+      <div class="overflow-item" @click="toggleToc">{{ $t('toolbar.toggleToc') }}</div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron'
-import bus from '@/renderer/bus'
+import bus from '@/bus'
 import {
   newTab,
   openFile,
@@ -11,8 +11,8 @@ import {
   toggleSidebar,
   toggleSourceCode,
   toggleTabBar,
-  toggleTypewriter,
-} from '@/renderer/util/toolbarActions'
+  toggleTypewriter
+} from '@/util/toolbarActions'
 
 describe('toolbarActions', () => {
   let ipcSendCalls

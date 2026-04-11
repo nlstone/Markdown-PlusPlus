@@ -3,19 +3,19 @@ import { minimizeWindow, toggleAlwaysOnTop, toggleFullScreen } from '../actions/
 import { zoomIn, zoomOut } from '../../windows/utils'
 import { isOsx } from '../../config'
 
-export default function (keybindings) {
+export default function (keybindings, i18n) {
   const menu = {
-    label: '&Window',
+    label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.label) || '&Window',
     role: 'window',
     submenu: [{
-      label: 'Minimize',
+      label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.minimize) || 'Minimize',
       accelerator: keybindings.getAccelerator('window.minimize'),
       click (menuItem, browserWindow) {
         minimizeWindow(browserWindow)
       }
     }, {
       id: 'alwaysOnTopMenuItem',
-      label: 'Always on Top',
+      label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.alwaysOnTop) || 'Always on Top',
       type: 'checkbox',
       accelerator: keybindings.getAccelerator('window.toggle-always-on-top'),
       click (menuItem, browserWindow) {
@@ -24,13 +24,13 @@ export default function (keybindings) {
     }, {
       type: 'separator'
     }, {
-      label: 'Zoom In',
+      label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.zoomIn) || 'Zoom In',
       accelerator: keybindings.getAccelerator('window.zoom-in'),
       click (menuItem, browserWindow) {
         zoomIn(browserWindow)
       }
     }, {
-      label: 'Zoom Out',
+      label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.zoomOut) || 'Zoom Out',
       accelerator: keybindings.getAccelerator('window.zoom-out'),
       click (menuItem, browserWindow) {
         zoomOut(browserWindow)
@@ -38,7 +38,7 @@ export default function (keybindings) {
     }, {
       type: 'separator'
     }, {
-      label: 'Show in Full Screen',
+      label: (i18n && i18n.menu && i18n.menu.window && i18n.menu.window.fullscreen) || 'Show in Full Screen',
       accelerator: keybindings.getAccelerator('window.toggle-full-screen'),
       click (item, browserWindow) {
         if (browserWindow) {

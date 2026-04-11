@@ -1,12 +1,12 @@
 <template>
   <div class="pref-sidebar">
-    <h3 class="title">Preferences</h3>
+    <h3 class="title">{{ $t('preferences') }}</h3>
     <section class="search-wrapper">
       <el-autocomplete
         popper-class="pref-autocomplete"
         v-model="state"
         :fetch-suggestions="querySearch"
-        placeholder="Search preferences"
+        :placeholder="$t('sidebar.search.placeholder')"
         :trigger-on-focus="false"
         @select="handleSelect">
         <i
@@ -21,7 +21,7 @@
       </el-autocomplete>
     </section>
     <section class="category">
-      <div v-for="c of category" :key="c.name" class="item"
+      <div v-for="c of translatedCategory" :key="c.nameKey" class="item"
         @click="handleCategoryItemClick(c)"
         :class="{active: c.label === currentCategory}"
       >
@@ -35,15 +35,22 @@
 </template>
 <script>
 import { ipcRenderer } from 'electron'
-import { category, searchContent } from './config'
+import { categoryBase, searchContent } from './config'
 
 export default {
   data () {
-    this.category = category
     return {
       currentCategory: 'general',
       restaurants: [],
       state: ''
+    }
+  },
+  computed: {
+    translatedCategory () {
+      return categoryBase.map(c => ({
+        ...c,
+        name: this.$t(`preference.categories.${c.nameKey}`)
+      }))
     }
   },
   watch: {
@@ -57,7 +64,6 @@ export default {
     querySearch (queryString, cb) {
       const restaurants = this.restaurants
       const results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // call callback return this results
       cb(results)
     },
     createFilter (queryString) {

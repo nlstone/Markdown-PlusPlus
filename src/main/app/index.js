@@ -177,7 +177,8 @@ class App {
     })
 
     if (isOsx) {
-      app.dock.setMenu(dockMenu)
+      const lang = this._accessor.preferences.getItem('language') || 'en'
+      app.dock.setMenu(dockMenu(lang))
     } else if (isWindows) {
       app.setJumpList([{
         type: 'recent'

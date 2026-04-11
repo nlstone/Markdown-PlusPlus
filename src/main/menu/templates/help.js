@@ -27,39 +27,39 @@ const isUpdatable = () => {
   return false
 }
 
-export default function () {
+export default function (i18n) {
   const helpMenu = {
-    label: '&Help',
+    label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.label) || '&Help',
     role: 'help',
     submenu: [{
-      label: 'Quick Start...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.quickStart) || 'Quick Start...',
       click () {
         shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/README.md')
       }
     }, {
-      label: 'Markdown Reference...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.markdownReference) || 'Markdown Reference...',
       click () {
         shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/MARKDOWN_SYNTAX.md')
       }
     }, {
-      label: 'Changelog...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.changelog) || 'Changelog...',
       click () {
         shell.openExternal('https://github.com/marktext/marktext/blob/master/.github/CHANGELOG.md')
       }
     }, {
       type: 'separator'
     }, {
-      label: 'Donate via Open Collective...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.donate) || 'Donate via Open Collective...',
       click (item, win) {
         shell.openExternal('https://opencollective.com/marktext')
       }
     }, {
-      label: 'Feedback via Twitter...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.feedback) || 'Feedback via Twitter...',
       click (item, win) {
         actions.showTweetDialog(win, 'twitter')
       }
     }, {
-      label: 'Report Issue or Request Feature...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.reportIssue) || 'Report Issue or Request Feature...',
       click () {
         shell.openExternal('https://github.com/marktext/marktext/issues')
       }
@@ -110,7 +110,7 @@ export default function () {
     helpMenu.submenu.push({
       type: 'separator'
     }, {
-      label: 'About MarkText...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.about) || 'About MarkText...',
       click (menuItem, browserWindow) {
         actions.showAboutDialog(browserWindow)
       }

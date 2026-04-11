@@ -8,42 +8,53 @@ import KeyBindingIcon from '@/assets/icons/pref_key_binding.svg'
 
 import preferences from '../../../main/preferences/schema'
 
-export const category = [{
-  name: 'General',
+// Base category configuration with icons and paths
+export const categoryBase = [{
+  nameKey: 'general',
   label: 'general',
   icon: GeneralIcon,
   path: '/preference/general'
 }, {
-  name: 'Editor',
+  nameKey: 'editor',
   label: 'editor',
   icon: EditorIcon,
   path: '/preference/editor'
 }, {
-  name: 'Markdown',
+  nameKey: 'markdown',
   label: 'markdown',
   icon: MarkdownIcon,
   path: '/preference/markdown'
 }, {
-  name: 'Spelling',
+  nameKey: 'spelling',
   label: 'spelling',
   icon: SpellIcon,
   path: '/preference/spelling'
 }, {
-  name: 'Theme',
+  nameKey: 'theme',
   label: 'theme',
   icon: ThemeIcon,
   path: '/preference/theme'
 }, {
-  name: 'Image',
+  nameKey: 'image',
   label: 'image',
   icon: ImageIcon,
   path: '/preference/image'
 }, {
-  name: 'Key Bindings',
+  nameKey: 'keybindings',
   label: 'keybindings',
   icon: KeyBindingIcon,
   path: '/preference/keybindings'
 }]
+
+// Helper to get category with translated names
+export const getCategory = (i18n) => {
+  return categoryBase.map(c => ({
+    ...c,
+    name: i18n ? i18n.t(`preference.categories.${c.nameKey}`) : c.nameKey
+  }))
+}
+
+export const category = getCategory()
 
 export const searchContent = Object.keys(preferences).map(k => {
   const { description, enum: emums } = preferences[k]
@@ -56,4 +67,4 @@ export const searchContent = Object.keys(preferences).map(k => {
     preference
   }
 })
-  .filter(({ category: ca }) => category.some(c => c.label === ca.toLowerCase()))
+  .filter(({ category: ca }) => categoryBase.some(c => c.label === ca.toLowerCase()))

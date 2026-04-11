@@ -4,11 +4,11 @@ import * as actions from '../actions/marktext'
 
 // macOS only menu.
 
-export default function (keybindings) {
+export default function (keybindings, i18n) {
   return {
-    label: 'MarkText',
+    label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.label) || 'MarkText',
     submenu: [{
-      label: 'About MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.about) || 'About MarkText',
       click (menuItem, focusedWindow) {
         showAboutDialog(focusedWindow)
       }
@@ -18,7 +18,7 @@ export default function (keybindings) {
         actions.checkUpdates(focusedWindow)
       }
     }, {
-      label: 'Preferences',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.preferences) || 'Preferences...',
       accelerator: keybindings.getAccelerator('file.preferences'),
       click () {
         actions.userSetting()
@@ -26,32 +26,32 @@ export default function (keybindings) {
     }, {
       type: 'separator'
     }, {
-      label: 'Services',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.services) || 'Services',
       role: 'services',
       submenu: []
     }, {
       type: 'separator'
     }, {
-      label: 'Hide MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.hide) || 'Hide MarkText',
       accelerator: keybindings.getAccelerator('mt.hide'),
       click () {
         actions.osxHide()
       }
     }, {
-      label: 'Hide Others',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.hideOthers) || 'Hide Others',
       accelerator: keybindings.getAccelerator('mt.hide-others'),
       click () {
         actions.osxHideAll()
       }
     }, {
-      label: 'Show All',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.showAll) || 'Show All',
       click () {
         actions.osxShowAll()
       }
     }, {
       type: 'separator'
     }, {
-      label: 'Quit MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.quit) || 'Quit MarkText',
       accelerator: keybindings.getAccelerator('file.quit'),
       click: app.quit
     }]
