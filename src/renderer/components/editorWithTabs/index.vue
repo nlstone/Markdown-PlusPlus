@@ -2,14 +2,25 @@
     <div class="editor-with-tabs">
       <tabs v-show="showTabBar"></tabs>
       <div class="container">
+        <!-- Split preview mode: source code + preview pane -->
+        <split-preview
+          v-if="splitPreview"
+          :markdown="markdown"
+          :cursor="cursor"
+          :text-direction="textDirection"
+          :platform="platform"
+        ></split-preview>
+        <!-- Normal mode: editor -->
         <editor
+          v-show="!splitPreview && !sourceCode"
           :markdown="markdown"
           :cursor="cursor"
           :text-direction="textDirection"
           :platform="platform"
         ></editor>
+        <!-- Source code mode only -->
         <source-code
-          v-if="sourceCode"
+          v-if="!splitPreview && sourceCode"
           :markdown="markdown"
           :cursor="cursor"
           :text-direction="textDirection"
@@ -23,6 +34,7 @@
 import Tabs from './tabs.vue'
 import Editor from './editor.vue'
 import SourceCode from './sourceCode.vue'
+import SplitPreview from './splitPreview.vue'
 import TabNotifications from './notifications.vue'
 
 export default {
@@ -41,6 +53,10 @@ export default {
       type: Boolean,
       required: true
     },
+    splitPreview: {
+      type: Boolean,
+      default: false
+    },
     showTabBar: {
       type: Boolean,
       required: true
@@ -58,6 +74,7 @@ export default {
     Tabs,
     Editor,
     SourceCode,
+    SplitPreview,
     TabNotifications
   }
 }
@@ -73,10 +90,12 @@ export default {
     min-width: 0;
     overflow: hidden;
     background: var(--editorBgColor);
-    & > .container {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
-    }
+  }
+  .editor-with-tabs > .container {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
   }
 </style>

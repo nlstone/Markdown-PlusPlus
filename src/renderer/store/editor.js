@@ -663,6 +663,11 @@ const actions = {
         }
       }
     })
+
+    // Request bootstrap data on page load (handles refresh scenario)
+    // This is needed because refreshing the page restarts the renderer process
+    // but the main process doesn't automatically re-send bootstrap data
+    ipcRenderer.send('mt::request-bootstrap')
   },
 
   // Open a new tab, optionally with content.

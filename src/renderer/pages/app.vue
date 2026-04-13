@@ -24,6 +24,7 @@
           :markdown="markdown"
           :cursor="cursor"
           :source-code="sourceCode"
+          :split-preview="splitPreview"
           :show-tab-bar="showTabBar"
           :text-direction="textDirection"
           :platform="platform"
@@ -82,6 +83,7 @@ export default {
     ...mapState({
       showTabBar: state => state.layout.showTabBar,
       sourceCode: state => state.preferences.sourceCode,
+      splitPreview: state => state.preferences.splitPreview,
       theme: state => state.preferences.theme,
       textDirection: state => state.preferences.textDirection
     }),

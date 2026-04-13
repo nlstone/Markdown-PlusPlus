@@ -12,6 +12,12 @@
       </button>
     </toolbar-tooltip>
 
+    <toolbar-tooltip :content="$t('toolbar.splitPreviewMode')" v-show="!isNarrow">
+      <button class="toolbar-btn" :class="{ active: splitPreview }" @click="toggleSplitPreview">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.splitPreview" /></svg>
+      </button>
+    </toolbar-tooltip>
+
     <toolbar-tooltip :content="$t('toolbar.typewriterMode')">
       <button class="toolbar-btn" :class="{ active: typewriter }" @click="toggleTypewriter">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.typewriter" /></svg>
@@ -43,6 +49,7 @@ import { mapState } from 'vuex'
 import {
   showCommandPalette,
   toggleSourceCode,
+  toggleSplitPreview,
   toggleTypewriter,
   toggleFocus,
   toggleSidebar,
@@ -70,6 +77,7 @@ export default {
   computed: {
     ...mapState({
       sourceCode: state => state.preferences.sourceCode,
+      splitPreview: state => state.preferences.splitPreview,
       typewriter: state => state.preferences.typewriter,
       focus: state => state.preferences.focus,
       showSideBar: state => state.layout.showSideBar,
@@ -82,6 +90,7 @@ export default {
   methods: {
     showCommandPalette,
     toggleSourceCode,
+    toggleSplitPreview,
     toggleTypewriter,
     toggleFocus,
     toggleSidebar,

@@ -342,6 +342,7 @@
     "saveAsShortcut": "另存为 (Ctrl+Shift+S)",
     "commandPalette": "命令面板",
     "sourceCodeMode": "源代码模式",
+    "splitPreviewMode": "分栏预览模式",
     "typewriterMode": "打字机模式",
     "focusMode": "专注模式",
     "showSidebar": "显示侧边栏",
@@ -353,6 +354,8 @@
     "exportPdf": "导出 PDF",
     "print": "打印",
     "reloadImages": "重新加载图片",
-    "toggleToc": "切换目录"
+    "toggleToc": "切换目录",
+    "sourceCodePane": "源代码",
+    "previewPane": "预览"
   }
 }

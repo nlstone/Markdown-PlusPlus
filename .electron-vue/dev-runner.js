@@ -70,6 +70,13 @@ function startRenderer () {
       hot: true,
       liveReload: true,
       compress: true,
+      client: {
+        overlay: false,
+        webSocketURL: 'auto://0.0.0.0:0/ws'
+      },
+      devMiddleware: {
+        writeToDisk: true
+      },
       static: [
         {
           directory: path.join(__dirname, '../node_modules/codemirror/mode'),

@@ -99,6 +99,11 @@ class EditorWindow extends BaseWindow {
       this.lifecycle = WindowLifecycle.READY
       this.emit('window-ready')
 
+      // Open DevTools in development mode
+      if (process.env.NODE_ENV === 'development' || env.debug) {
+        win.webContents.openDevTools({ mode: 'right' })
+      }
+
       // Restore and focus window
       this.bringToFront()
 
@@ -125,6 +130,24 @@ class EditorWindow extends BaseWindow {
           zoomOut(win)
         }
       })
+    })
+
+    // Handle renderer refresh - re-send bootstrap data
+    ipcMain.on('mt::request-bootstrap', event => {
+      if (event.sender.id === win.webContents.id) {
+        const lineEnding = preferences.getPreferredEol()
+        const { sideBarVisibility, tabBarVisibility, sourceCodeModeEnabled } = preferences.getAll()
+
+        // On refresh, create a blank tab (simpler than trying to restore state)
+        event.sender.send('mt::bootstrap-editor', {
+          addBlankTab: true,
+          markdownList: [],
+          lineEnding,
+          sideBarVisibility,
+          tabBarVisibility,
+          sourceCodeModeEnabled
+        })
+      }
     })
 
     win.webContents.once('did-fail-load', (event, errorCode, errorDescription) => {

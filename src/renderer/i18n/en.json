@@ -342,6 +342,7 @@
     "saveAsShortcut": "Save As (Ctrl+Shift+S)",
     "commandPalette": "Command Palette",
     "sourceCodeMode": "Source Code Mode",
+    "splitPreviewMode": "Split Preview Mode",
     "typewriterMode": "Typewriter Mode",
     "focusMode": "Focus Mode",
     "showSidebar": "Show Sidebar",
@@ -353,6 +354,8 @@
     "exportPdf": "Export PDF",
     "print": "Print",
     "reloadImages": "Reload Images",
-    "toggleToc": "Toggle Table of Contents"
+    "toggleToc": "Toggle Table of Contents",
+    "sourceCodePane": "Source Code",
+    "previewPane": "Preview"
   }
 }

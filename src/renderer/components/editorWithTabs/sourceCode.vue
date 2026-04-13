@@ -51,12 +51,20 @@ export default {
     }
   },
 
-  created () {
+  mounted () {
     this.$nextTick(() => {
       // TODO: Should we load markdown from the tab or mapped vue property?
-      const { id } = this.currentTab
+      const currentTab = this.currentTab
+      const id = currentTab?.id || null
       const { markdown = '', theme, cursor, textDirection } = this
       const container = this.$refs.sourceCode
+
+      // Guard against missing container or no content to display
+      if (!container) {
+        console.warn('sourceCode.vue: container not found')
+        return
+      }
+
       const codeMirrorConfig = {
         value: markdown,
         lineNumbers: true,
@@ -113,6 +121,8 @@ export default {
         setCursorAtLastLine(editor)
       }
       this.tabId = id
+      // Emit mounted event for parent components (e.g., splitPreview)
+      this.$emit('mounted', { editor: this.editor })
     })
   },
   beforeDestroy () {
@@ -198,7 +208,13 @@ export default {
               console.warn('LISTEN_FOR_CONTENT_CHANGE: Cannot commit changes because not tab id was set!')
             }
           }
-        }, 1000)
+        }, 200) // Reduced from 1000ms to 200ms for faster preview updates in split mode
+      })
+      // Also listen for changes for immediate preview updates in split mode
+      editor.on('change', (cm, changeObj) => {
+        // Emit change event immediately for split preview mode
+        const markdown = cm.getValue()
+        this.$emit('content-change', markdown)
       })
     },
     // Another tab was selected - only listen to get changes but don't set history or other things.
@@ -281,7 +297,9 @@ export default {
 
 <style>
   .source-code {
-    height: calc(100vh - var(--titleBarHeight));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     box-sizing: border-box;
     overflow: auto;
   }
