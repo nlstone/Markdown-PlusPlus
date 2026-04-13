@@ -17,6 +17,18 @@
             <use :xlink:href="c.icon.url"></use>
           </svg>
         </li>
+        <!-- Conditional icons - shown only when certain conditions are met -->
+        <li
+          v-for="(c, index) of sideBarConditionalIcons"
+          :key="'cond-' + index"
+          v-show="shouldShowConditionalIcon(c.name)"
+          @click="handleLeftIconClick(c.name)"
+          :class="{ 'active': c.name === rightColumn }"
+        >
+          <svg :viewBox="c.icon.viewBox">
+            <use :xlink:href="c.icon.url"></use>
+          </svg>
+        </li>
       </ul>
       <ul class="bottom">
         <li
@@ -43,22 +55,27 @@
       <toc
         v-else-if="rightColumn === 'toc'"
       ></toc>
+      <zread
+        v-else-if="rightColumn === 'zread'"
+      ></zread>
     </div>
     <div class="drag-bar" ref="dragBar" v-show="rightColumn"></div>
   </div>
 </template>
 
 <script>
-import { sideBarIcons, sideBarBottomIcons } from './help'
+import { sideBarIcons, sideBarBottomIcons, sideBarConditionalIcons } from './help'
 import Tree from './tree.vue'
 import SideBarSearch from './search.vue'
 import Toc from './toc.vue'
+import Zread from './zread.vue'
 import { mapState } from 'vuex'
 
 export default {
   data () {
     this.sideBarIcons = sideBarIcons
     this.sideBarBottomIcons = sideBarBottomIcons
+    this.sideBarConditionalIcons = sideBarConditionalIcons
     return {
       openedFiles: [],
       sideBarViewWidth: 280
@@ -67,7 +84,8 @@ export default {
   components: {
     Tree,
     SideBarSearch,
-    Toc
+    Toc,
+    Zread
   },
   computed: {
     ...mapState({
@@ -75,13 +93,27 @@ export default {
       showSideBar: state => state.layout.showSideBar,
       projectTree: state => state.project.projectTree,
       sideBarWidth: state => state.layout.sideBarWidth,
-      tabs: state => state.editor.tabs
+      tabs: state => state.editor.tabs,
+      hasZread: state => state.zread.hasZread
     }),
     finalSideBarWidth () {
       const { showSideBar, rightColumn, sideBarViewWidth } = this
       if (!showSideBar) return 0
       if (rightColumn === '') return 45
       return sideBarViewWidth < 220 ? 220 : sideBarViewWidth
+    }
+  },
+  watch: {
+    projectTree: {
+      handler (tree) {
+        if (tree && tree.pathname) {
+          // Check for ZRead when project changes
+          this.$store.dispatch('zread/CHECK_ZREAD', tree.pathname)
+        } else {
+          this.$store.commit('zread/CLEAR_ZREAD')
+        }
+      },
+      immediate: true
     }
   },
   created () {
@@ -133,6 +165,12 @@ export default {
       if (name === 'settings') {
         this.$store.dispatch('OPEN_SETTING_WINDOW')
       }
+    },
+    shouldShowConditionalIcon (name) {
+      if (name === 'zread') {
+        return this.hasZread
+      }
+      return false
     }
   }
 }

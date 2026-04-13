@@ -243,6 +243,13 @@ export default {
     onSourceCodeMounted (data) {
       this.sourceCodeReady = true
       this.editor = data.editor
+      // Reset scroll position to top when entering split preview mode
+      if (this.editor) {
+        const cmScroll = this.editor.getWrapperElement()?.querySelector('.CodeMirror-scroll')
+        if (cmScroll) {
+          cmScroll.scrollTop = 0
+        }
+      }
       this.tryInitScrollSync()
     },
 
@@ -251,6 +258,10 @@ export default {
      */
     onPreviewReady () {
       this.previewPaneReady = true
+      // Reset preview scroll position to top
+      if (this.$refs.previewPane) {
+        this.$refs.previewPane.getPreviewContainer().scrollTop = 0
+      }
       this.tryInitScrollSync()
     },
 
@@ -274,18 +285,32 @@ export default {
       const previewContent = previewPaneComponent.getPreviewContent()
 
       if (editor && previewContainer && previewContent) {
-        // Delay to ensure layout is stable before setting up scroll listeners
-        setTimeout(() => {
-          if (this.scrollSync) {
-            this.scrollSync.reinit()
+        // Delay to ensure CodeMirror layout is stable
+        const initScrollSync = () => {
+          // Check if CodeMirror-scroll has proper dimensions
+          const cmScroll = editor.getWrapperElement()?.querySelector('.CodeMirror-scroll')
+          if (cmScroll && cmScroll.scrollHeight > 0 && cmScroll.clientHeight > 0) {
+            // Reset scroll position to top before initializing sync
+            cmScroll.scrollTop = 0
+            previewContainer.scrollTop = 0
+
+            if (this.scrollSync) {
+              this.scrollSync.reinit()
+            } else {
+              this.scrollSync = new ScrollSyncManager(
+                editor,
+                previewContainer,
+                previewContent
+              )
+            }
           } else {
-            this.scrollSync = new ScrollSyncManager(
-              editor,
-              previewContainer,
-              previewContent
-            )
+            // Retry after another delay
+            setTimeout(initScrollSync, 100)
           }
-        }, 200)
+        }
+
+        // Initial delay before first attempt
+        setTimeout(initScrollSync, 300)
       }
     },
 

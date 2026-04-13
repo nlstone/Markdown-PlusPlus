@@ -2,12 +2,12 @@
  * Scroll Sync Manager
  *
  * Implements bidirectional scroll synchronization between CodeMirror editor
- * and HTML preview pane, similar to VS Code's markdown preview.
+ * and HTML preview pane, using VS Code's line-based mapping approach.
  *
  * Key concepts:
- * - With viewportMargin: Infinity, CodeMirror renders the whole document
- * - Scroll happens on the parent container, not inside CodeMirror
- * - Use scroll ratio (0-1) to sync between editor and preview
+ * - Map editor lines to preview elements via data-line attributes
+ * - Find visible line in editor, scroll preview to corresponding element
+ * - Find visible element in preview, scroll editor to corresponding line
  */
 
 /**
@@ -40,12 +40,12 @@ class ScrollSyncManager {
     // Scroll sync state
     this.scrollDisabledCount = 0
     this.scrollDisabledTimer = null
-    this.lastEditorScrollTop = 0
-    this.lastPreviewScrollTop = 0
+    this.lastEditorLine = -1
+    this.lastPreviewLine = -1
 
-    // Cached elements with data-line
+    // Cache for line elements
     this.lineElementsCache = null
-    this.cacheVersion = -1
+    this.cacheGeneration = -1
 
     // Bind scroll handlers with throttle
     this.handleEditorScroll = throttle(this.syncFromEditor.bind(this), 50)
@@ -56,42 +56,56 @@ class ScrollSyncManager {
   }
 
   /**
+   * Get or refresh line elements cache
+   */
+  getLineElements () {
+    const generation = this.editor.changeGeneration()
+    if (this.cacheGeneration !== generation) {
+      this.lineElementsCache = this.previewContent.querySelectorAll('[data-line]')
+      this.cacheGeneration = generation
+    }
+    return this.lineElementsCache
+  }
+
+  /**
    * Set up scroll event listeners
    */
   setupListeners () {
-    // Remove existing listeners first
     this.destroyListeners()
 
-    // Find the actual scroll container for the editor
-    // With viewportMargin: Infinity, CodeMirror renders the whole document
-    // and the scroll happens on the parent container, not inside CodeMirror
-    let editorScrollContainer = this.editor.getWrapperElement()?.parentElement
+    // CodeMirror uses .CodeMirror-scroll as the actual scroll container
+    const cmWrapper = this.editor.getWrapperElement()
+    const cmScroll = cmWrapper?.querySelector('.CodeMirror-scroll')
 
-    // Walk up the DOM tree to find a scrollable container
-    // A scrollable container has scrollHeight > clientHeight
-    while (editorScrollContainer) {
-      const hasScroll = editorScrollContainer.scrollHeight > editorScrollContainer.clientHeight + 10
-      if (hasScroll) {
-        break
+    if (cmScroll && cmScroll.scrollHeight > cmScroll.clientHeight + 10) {
+      this._editorScrollContainer = cmScroll
+      cmScroll.addEventListener('scroll', this.handleEditorScroll)
+    } else {
+      const cmHasScroll = cmWrapper?.scrollHeight > cmWrapper?.clientHeight + 10
+      if (cmHasScroll) {
+        this._editorScrollContainer = cmWrapper
+        cmWrapper.addEventListener('scroll', this.handleEditorScroll)
+      } else {
+        let editorScrollContainer = cmWrapper?.parentElement
+        while (editorScrollContainer) {
+          const hasScroll = editorScrollContainer.scrollHeight > editorScrollContainer.clientHeight + 10
+          if (hasScroll) break
+          editorScrollContainer = editorScrollContainer.parentElement
+        }
+        this._editorScrollContainer = editorScrollContainer
+        if (editorScrollContainer) {
+          editorScrollContainer.addEventListener('scroll', this.handleEditorScroll)
+        }
       }
-      editorScrollContainer = editorScrollContainer.parentElement
     }
 
-    this._editorScrollContainer = editorScrollContainer
-
-    // Editor scroll listener - listen on the actual scrollable parent container
-    if (editorScrollContainer) {
-      editorScrollContainer.addEventListener('scroll', this.handleEditorScroll)
-    }
-
-    // Preview scroll listener
     if (this.previewContainer) {
       this.previewContainer.addEventListener('scroll', this.handlePreviewScroll)
     }
   }
 
   /**
-   * Remove all listeners (but keep the manager alive for re-setup)
+   * Remove all listeners
    */
   destroyListeners () {
     if (this._editorScrollContainer) {
@@ -108,6 +122,7 @@ class ScrollSyncManager {
   destroy () {
     this.destroyListeners()
     clearTimeout(this.scrollDisabledTimer)
+    this.lineElementsCache = null
   }
 
   /**
@@ -115,6 +130,7 @@ class ScrollSyncManager {
    */
   reinit () {
     this.setupListeners()
+    this.invalidateCache()
   }
 
   /**
@@ -137,6 +153,7 @@ class ScrollSyncManager {
 
   /**
    * Sync preview scroll from editor scroll position
+   * Uses VS Code's approach: map visible line to preview element
    */
   syncFromEditor () {
     if (this.isScrollDisabled()) return
@@ -144,32 +161,60 @@ class ScrollSyncManager {
     const container = this._editorScrollContainer
     if (!container) return
 
-    const editorTop = container.scrollTop
-    const containerHeight = container.clientHeight
-    const contentHeight = container.scrollHeight
+    const scrollTop = container.scrollTop
+    const maxScroll = container.scrollHeight - container.clientHeight
 
-    // Skip if scroll hasn't changed significantly
-    if (Math.abs(editorTop - this.lastEditorScrollTop) < 5) return
-    this.lastEditorScrollTop = editorTop
+    // Handle boundary cases: at top or bottom
+    if (scrollTop <= 10) {
+      // At top: scroll preview to top
+      this.disableScrollSync()
+      this.previewContainer.scrollTop = 0
+      this.lastEditorLine = 0
+      return
+    }
 
-    // Calculate the scroll ratio (0 to 1)
-    const maxScroll = contentHeight - containerHeight
-    const scrollRatio = maxScroll > 0 ? editorTop / maxScroll : 0
+    if (scrollTop >= maxScroll - 10) {
+      // At bottom: scroll preview to bottom
+      this.disableScrollSync()
+      this.previewContainer.scrollTop = this.previewContent.offsetHeight - this.previewContainer.clientHeight
+      this.lastEditorLine = this.editor.lineCount()
+      return
+    }
 
-    // Disable preview scroll listener temporarily
-    this.disableScrollSync()
+    // Get the line at the top of the visible area
+    const lineAtTop = this.editor.lineAtHeight(scrollTop, 'local')
 
-    // Calculate scroll position in preview using same ratio
-    const previewContentHeight = this.previewContent.offsetHeight
-    const previewContainerHeight = this.previewContainer.clientHeight
-    const previewMaxScroll = previewContentHeight - previewContainerHeight
-    const previewScrollTo = scrollRatio * previewMaxScroll
+    // Skip if line hasn't changed significantly
+    if (Math.abs(lineAtTop - this.lastEditorLine) < 2) return
+    this.lastEditorLine = lineAtTop
 
-    this.previewContainer.scrollTop = Math.max(0, previewScrollTo)
+    // Find corresponding element in preview
+    const lineElements = this.getLineElements()
+    if (!lineElements || lineElements.length === 0) return
+
+    // Find element with closest data-line value
+    let targetElement = null
+    for (const el of lineElements) {
+      const elLine = parseInt(el.getAttribute('data-line'), 10)
+      if (elLine <= lineAtTop) {
+        targetElement = el
+      }
+      if (elLine >= lineAtTop) break
+    }
+
+    if (targetElement) {
+      this.disableScrollSync()
+
+      // Calculate the target scroll position
+      const elementTop = targetElement.offsetTop
+      const targetScrollTop = Math.max(0, elementTop - 10)
+      this.previewContainer.scrollTop = targetScrollTop
+    }
   }
 
   /**
    * Sync editor scroll from preview scroll position
+   * Uses VS Code's approach: map visible element to editor line
    */
   syncFromPreview () {
     if (this.isScrollDisabled()) return
@@ -177,35 +222,65 @@ class ScrollSyncManager {
     const container = this._editorScrollContainer
     if (!container) return
 
-    const previewTop = this.previewContainer.scrollTop
+    const previewScrollTop = this.previewContainer.scrollTop
+    const previewMaxScroll = this.previewContent.offsetHeight - this.previewContainer.clientHeight
 
-    // Skip if scroll hasn't changed significantly
-    if (Math.abs(previewTop - this.lastPreviewScrollTop) < 5) return
-    this.lastPreviewScrollTop = previewTop
+    // Handle boundary cases: at top or bottom
+    if (previewScrollTop <= 10) {
+      // At top: scroll editor to top
+      this.disableScrollSync()
+      container.scrollTop = 0
+      this.lastPreviewLine = 0
+      return
+    }
 
-    // Calculate scroll ratio in preview
-    const previewContentHeight = this.previewContent.offsetHeight
-    const previewContainerHeight = this.previewContainer.clientHeight
-    const previewMaxScroll = previewContentHeight - previewContainerHeight
-    const scrollRatio = previewMaxScroll > 0 ? previewTop / previewMaxScroll : 0
+    if (previewScrollTop >= previewMaxScroll - 10) {
+      // At bottom: scroll editor to bottom
+      this.disableScrollSync()
+      container.scrollTop = container.scrollHeight - container.clientHeight
+      this.lastPreviewLine = this.editor.lineCount()
+      return
+    }
 
-    // Apply same ratio to editor container
-    const editorContainerHeight = container.clientHeight
-    const editorContentHeight = container.scrollHeight
-    const editorMaxScroll = editorContentHeight - editorContainerHeight
-    const editorScrollTo = scrollRatio * editorMaxScroll
+    // Find the first visible element in preview
+    const lineElements = this.getLineElements()
+    if (!lineElements || lineElements.length === 0) return
 
-    // Disable editor scroll listener temporarily
-    this.disableScrollSync()
-    container.scrollTop = Math.max(0, editorScrollTo)
+    // Find element closest to current scroll position
+    let targetElement = null
+    let targetLine = 0
+
+    for (const el of lineElements) {
+      const elTop = el.offsetTop
+      if (elTop <= previewScrollTop + 50) {
+        targetElement = el
+        targetLine = parseInt(el.getAttribute('data-line'), 10)
+      }
+      if (elTop > previewScrollTop + 100) break
+    }
+
+    if (targetElement && targetLine >= 0) {
+      // Skip if line hasn't changed significantly
+      if (Math.abs(targetLine - this.lastPreviewLine) < 2) return
+      this.lastPreviewLine = targetLine
+
+      this.disableScrollSync()
+
+      // Get the height position for this line in editor
+      const lineTop = this.editor.heightAtLine(targetLine, 'local')
+      const targetScrollTop = Math.max(0, lineTop - 10)
+      container.scrollTop = targetScrollTop
+    }
   }
 
   /**
    * Invalidate element cache (call after re-render)
    */
   invalidateCache () {
-    this.cacheVersion = -1
+    this.cacheGeneration = -1
     this.lineElementsCache = null
+    this.lastEditorLine = -1
+    this.lastPreviewLine = -1
   }
 }
 

@@ -171,6 +171,8 @@
     "createFile": "Create File",
     "openFolder": "Open Folder",
     "toc": "Table of Contents",
+    "zread": "ZRead Docs",
+    "loading": "Loading...",
     "search": {
       "placeholder": "Search",
       "noFolderOpen": "No folder open",

@@ -2,6 +2,7 @@ import FilesIcon from '@/assets/icons/files.svg'
 import SearchIcon from '@/assets/icons/search.svg'
 import TocIcon from '@/assets/icons/toc.svg'
 import SettingIcon from '@/assets/icons/setting.svg'
+import ZreadIcon from '@/assets/icons/zread.svg'
 
 export const sideBarIcons = [
   {
@@ -13,6 +14,14 @@ export const sideBarIcons = [
   }, {
     name: 'toc',
     icon: TocIcon
+  }
+]
+
+// Conditional icons - only shown when certain conditions are met
+export const sideBarConditionalIcons = [
+  {
+    name: 'zread',
+    icon: ZreadIcon
   }
 ]
 

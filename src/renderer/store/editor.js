@@ -852,11 +852,14 @@ const actions = {
     const { currentFile, tabs } = state
     const { pathname } = markdownDocument
     if (pathname) {
-      commit('SET_LAYOUT', {
-        rightColumn: 'files',
-        showSideBar: true
-      })
-      dispatch('DISPATCH_LAYOUT_MENU_ITEMS')
+      // Don't switch sidebar if preserveSidebar option is set (e.g., opening from ZRead)
+      if (!options.preserveSidebar) {
+        commit('SET_LAYOUT', {
+          rightColumn: 'files',
+          showSideBar: true
+        })
+        dispatch('DISPATCH_LAYOUT_MENU_ITEMS')
+      }
     }
     const existingTab = tabs.find(t => isSamePathSync(t.pathname, pathname))
     if (existingTab) {

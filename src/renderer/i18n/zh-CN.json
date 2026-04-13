@@ -171,6 +171,8 @@
     "createFile": "新建文件",
     "openFolder": "打开文件夹",
     "toc": "目录",
+    "zread": "ZRead 文档",
+    "loading": "加载中...",
     "search": {
       "placeholder": "搜索",
       "noFolderOpen": "未打开文件夹",

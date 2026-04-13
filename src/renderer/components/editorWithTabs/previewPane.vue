@@ -125,10 +125,8 @@ export default {
         this.previewContent.innerHTML = html
         this.renderedContent = html
 
-        // Scroll to current cursor position if provided
-        if (this.cursor) {
-          this.scrollToCursor(this.cursor)
-        }
+        // Only scroll to cursor position when explicitly requested (not during typing)
+        // The cursor position scrolling should be controlled by scroll sync instead
       } catch (err) {
         console.error('Preview render error:', err)
         this.previewContent.innerHTML = '<p class="error">Preview render error</p>'
@@ -218,14 +216,14 @@ export default {
   min-height: 0;
   overflow: auto;
   box-sizing: border-box;
-  padding: 20px;
   background: var(--editorBgColor);
+  margin-top: 20px;
 }
 
 .preview-content {
   max-width: var(--editorAreaWidth);
   margin: 0 auto;
-  padding: 50px 0;
+  padding: 0;
   color: var(--editorColor);
 }
 

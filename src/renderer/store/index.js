@@ -12,6 +12,7 @@ import notification from './notification'
 import tweet from './tweet'
 import commandCenter from './commandCenter'
 import toolbar from './toolbar'
+import zread from './zread'
 
 Vue.use(Vuex)
 
@@ -63,8 +64,18 @@ const store = new Vuex.Store({
     editor,
     layout,
     commandCenter,
-    toolbar
+    toolbar,
+    zread
   }
+})
+
+// Listen for zread results from main process
+ipcRenderer.on('mt::zread-result', (e, result) => {
+  store.dispatch('zread/HANDLE_ZREAD_RESULT', result)
+})
+
+ipcRenderer.on('mt::zread-error', (e, error) => {
+  store.dispatch('zread/HANDLE_ZREAD_ERROR', error)
 })
 
 export default store

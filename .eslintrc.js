@@ -53,6 +53,9 @@ module.exports = {
           ['muya', './src/muya']
         ],
         extensions: ['.js', '.vue', '.json', '.css', '.node']
+      },
+      node: {
+        extensions: ['.js', '.vue', '.json']
       }
     }
   },

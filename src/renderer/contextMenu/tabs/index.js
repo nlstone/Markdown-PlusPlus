@@ -22,7 +22,12 @@ export const showContextMenu = (event, tab) => {
   })
 
   CONTEXT_ITEMS.forEach(item => {
-    const menuItem = new RemoteMenuItem(item)
+    // If label is a function, call it to get the translated string
+    const label = typeof item.label === 'function' ? item.label() : item.label
+    const menuItem = new RemoteMenuItem({
+      ...item,
+      label
+    })
     menuItem._tabId = tab.id
     menu.append(menuItem)
   })

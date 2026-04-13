@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import EventEmitter from 'events'
 import log from 'electron-log'
+import path from 'path'
+import fs from 'fs'
 import Watcher, { WATCHER_STABILITY_THRESHOLD, WATCHER_STABILITY_POLL_INTERVAL } from '../filesystem/watcher'
 import { WindowType } from '../windows/base'
 
@@ -437,6 +439,50 @@ class WindowManager extends EventEmitter {
       const flag = !win.isAlwaysOnTop()
       win.setAlwaysOnTop(flag)
       this._appMenu.updateAlwaysOnTopMenu(win.id, flag)
+    })
+
+    // ZRead documentation structure detection and loading
+    ipcMain.on('mt::check-zread', async (e, rootPath) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      try {
+        const currentPath = path.join(rootPath, '.zread', 'wiki', 'current')
+
+        // Check if .zread/wiki/current exists
+        if (!fs.existsSync(currentPath)) {
+          e.sender.send('mt::zread-result', { hasZread: false })
+          return
+        }
+
+        // Read current file to get version path
+        const versionPath = fs.readFileSync(currentPath, 'utf-8').trim()
+
+        if (!versionPath) {
+          e.sender.send('mt::zread-result', { hasZread: false })
+          return
+        }
+
+        // Read wiki.json
+        const wikiJsonPath = path.join(rootPath, '.zread', 'wiki', versionPath, 'wiki.json')
+        if (!fs.existsSync(wikiJsonPath)) {
+          e.sender.send('mt::zread-error', { message: 'wiki.json not found' })
+          return
+        }
+
+        const wikiContent = fs.readFileSync(wikiJsonPath, 'utf-8')
+        const wikiData = JSON.parse(wikiContent)
+
+        e.sender.send('mt::zread-result', {
+          hasZread: true,
+          rootPath,
+          versionPath,
+          pages: wikiData.pages || []
+        })
+      } catch (err) {
+        log.error('ZRead check error:', err)
+        e.sender.send('mt::zread-error', { message: err.message })
+      }
     })
 
     ipcMain.on('broadcast-preferences-changed', prefs => {

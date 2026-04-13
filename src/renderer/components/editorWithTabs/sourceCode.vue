@@ -118,7 +118,9 @@ export default {
         const { anchor, focus } = cursor
         editor.setSelection(anchor, focus, { scroll: true }) // Scroll the focus into view.
       } else {
-        setCursorAtLastLine(editor)
+        // Default: set cursor at first line and scroll to top
+        editor.setCursor(0, 0)
+        editor.scrollTo(0, 0)
       }
       this.tabId = id
       // Emit mounted event for parent components (e.g., splitPreview)
@@ -230,7 +232,9 @@ export default {
         const { anchor, focus } = cursor
         editor.setSelection(anchor, focus, { scroll: true }) // Scroll the focus into view.
       } else {
-        setCursorAtLastLine(editor)
+        // Default: set cursor at first line and scroll to top
+        editor.setCursor(0, 0)
+        editor.scrollTo(0, 0)
       }
       this.tabId = id
     },
@@ -305,7 +309,7 @@ export default {
   }
   .source-code .CodeMirror {
     height: auto;
-    margin: 50px auto;
+    margin: 20px auto;
     max-width: var(--editorAreaWidth);
     background: transparent;
   }
