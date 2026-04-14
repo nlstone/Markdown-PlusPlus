@@ -128,7 +128,7 @@ export const uploadImage = async (pathname, image, preferences) => {
       auth
     })
     const path = dayjs().format('YYYY/MM') + `/${dayjs().format('DD-HH-mm-ss')}-${filename}`
-    const message = `Upload by MarkText at ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
+    const message = `Upload by NextReader at ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`
     const payload = {
       owner,
       repo,

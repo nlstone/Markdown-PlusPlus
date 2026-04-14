@@ -144,7 +144,7 @@
     },
     "keybindings": {
       "title": "Key Bindings",
-      "customizeBefore": "Customize MarkText shortcuts and click on the save button below to apply all changes (requires a restart). All available and default key binding can be found ",
+      "customizeBefore": "Customize NextReader shortcuts and click on the save button below to apply all changes (requires a restart). All available and default key binding can be found ",
       "customizeLink": "online",
       "customizeAfter": ".",
       "tableDescription": "Description",
