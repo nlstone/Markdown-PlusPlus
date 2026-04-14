@@ -6,9 +6,9 @@ import * as actions from '../actions/marktext'
 
 export default function (keybindings, i18n) {
   return {
-    label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.label) || 'MarkText',
+    label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.label) || 'NextReader',
     submenu: [{
-      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.about) || 'About MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.about) || 'About NextReader',
       click (menuItem, focusedWindow) {
         showAboutDialog(focusedWindow)
       }
@@ -32,7 +32,7 @@ export default function (keybindings, i18n) {
     }, {
       type: 'separator'
     }, {
-      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.hide) || 'Hide MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.hide) || 'Hide NextReader',
       accelerator: keybindings.getAccelerator('mt.hide'),
       click () {
         actions.osxHide()
@@ -51,7 +51,7 @@ export default function (keybindings, i18n) {
     }, {
       type: 'separator'
     }, {
-      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.quit) || 'Quit MarkText',
+      label: (i18n && i18n.menu && i18n.menu.marktext && i18n.menu.marktext.quit) || 'Quit NextReader',
       accelerator: keybindings.getAccelerator('file.quit'),
       click: app.quit
     }]

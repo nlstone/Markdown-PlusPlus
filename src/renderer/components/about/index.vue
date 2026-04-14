@@ -29,14 +29,14 @@
 <script>
 import { mapState } from 'vuex'
 import bus from '../../bus'
-import MarkTextLogo from '../../assets/images/logo.png'
+import NextReaderLogo from '../../assets/images/logo.png'
 
 export default {
   data () {
-    this.name = 'MarkText'
+    this.name = 'NextReader'
     this.copyright = `Copyright © 2017-${new Date().getFullYear()} Luo Ran`
-    this.copyrightContributors = `Copyright © 2018-${new Date().getFullYear()} MarkText Contributors`
-    this.logo = MarkTextLogo
+    this.copyrightContributors = `Copyright © 2018-${new Date().getFullYear()} NextReader Contributors`
+    this.logo = NextReaderLogo
     return {
       showAboutDialog: false
     }

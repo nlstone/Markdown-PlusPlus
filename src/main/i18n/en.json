@@ -116,17 +116,17 @@
       "donate": "Donate...",
       "feedback": "Feedback...",
       "reportIssue": "Report Issue...",
-      "about": "About MarkText..."
+      "about": "About NextReader..."
     },
     "marktext": {
-      "label": "MarkText",
-      "about": "About MarkText",
+      "label": "NextReader",
+      "about": "About NextReader",
       "preferences": "Preferences...",
       "services": "Services",
-      "hide": "Hide MarkText",
+      "hide": "Hide NextReader",
       "hideOthers": "Hide Others",
       "showAll": "Show All",
-      "quit": "Quit MarkText"
+      "quit": "Quit NextReader"
     }
   }
 }

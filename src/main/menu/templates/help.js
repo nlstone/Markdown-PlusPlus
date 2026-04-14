@@ -110,7 +110,7 @@ export default function (i18n) {
     helpMenu.submenu.push({
       type: 'separator'
     }, {
-      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.about) || 'About MarkText...',
+      label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.about) || 'About NextReader...',
       click (menuItem, browserWindow) {
         actions.showAboutDialog(browserWindow)
       }
