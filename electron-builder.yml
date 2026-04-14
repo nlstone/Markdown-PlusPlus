@@ -90,6 +90,8 @@ win:
   artifactName: "nextreader-${arch}-win.${ext}"
   icon: "resources/icons/icon.ico"
   target:
+  - target: "nsis"
+    arch: [x64]
   - target: "portable"
     arch: [x64]
   - target: "zip"
