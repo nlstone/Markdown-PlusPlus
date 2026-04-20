@@ -116,17 +116,17 @@
       "donate": "Donate...",
       "feedback": "Feedback...",
       "reportIssue": "Report Issue...",
-      "about": "About NextReader..."
+      "about": "About MarkDown++..."
     },
     "marktext": {
-      "label": "NextReader",
-      "about": "About NextReader",
+      "label": "MarkDown++",
+      "about": "About MarkDown++",
       "preferences": "Preferences...",
       "services": "Services",
-      "hide": "Hide NextReader",
+      "hide": "Hide MarkDown++",
       "hideOthers": "Hide Others",
       "showAll": "Show All",
-      "quit": "Quit NextReader"
+      "quit": "Quit MarkDown++"
     }
   }
 }

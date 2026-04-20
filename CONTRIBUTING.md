@@ -1,6 +1,6 @@
-# MarkText Contributing Guide
+# MarkDown++ Contributing Guide
 
-We are really excited that you are interested in contributing to MarkText :tada:. Before submitting your contribution, please make sure to take a moment and read through the following guidelines.
+We are really excited that you are interested in contributing to MarkDown++ :tada:. Before submitting your contribution, please make sure to take a moment and read through the following guidelines.
 
 - [Code of Conduct](.github/CODE_OF_CONDUCT.md)
 - [Philosophy](#philosophy)

@@ -24,6 +24,8 @@ class EnvPaths {
     // this._globalStorage = path.join(this._userDataPath, 'globalStorage')
     // this._preferencesPath = path.join(this._userDataPath, 'preferences')
     // this._sessionsPath = path.join(this._userDataPath, 'sessions')
+
+    this._sessionFilePath = path.join(this._userDataPath, 'session.json')
   }
 
   get electronUserDataPath () {
@@ -49,6 +51,10 @@ class EnvPaths {
 
   get preferencesFilePath () {
     return this._preferencesFilePath
+  }
+
+  get sessionFilePath () {
+    return this._sessionFilePath
   }
 }
 

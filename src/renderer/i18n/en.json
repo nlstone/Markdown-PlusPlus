@@ -144,7 +144,7 @@
     },
     "keybindings": {
       "title": "Key Bindings",
-      "customizeBefore": "Customize NextReader shortcuts and click on the save button below to apply all changes (requires a restart). All available and default key binding can be found ",
+      "customizeBefore": "Customize MarkDown++ shortcuts and click on the save button below to apply all changes (requires a restart). All available and default key binding can be found ",
       "customizeLink": "online",
       "customizeAfter": ".",
       "tableDescription": "Description",
@@ -359,5 +359,27 @@
     "toggleToc": "Toggle Table of Contents",
     "sourceCodePane": "Source Code",
     "previewPane": "Preview"
+  },
+  "smartRewrite": {
+    "title": "Smart Rewrite",
+    "options": {
+      "rewrite": "Rewrite",
+      "polish": "Polish",
+      "abbreviate": "Abbreviate",
+      "expand": "Expand",
+      "simplify": "Simplify",
+      "formalize": "Formalize"
+    },
+    "originalText": "Original",
+    "resultText": "Result",
+    "processing": "AI is processing",
+    "accept": "Accept",
+    "retry": "Regenerate",
+    "cancel": "Cancel",
+    "send": "Send",
+    "additionalPlaceholder": "Enter additional instructions...",
+    "noSelection": "Please select text to rewrite first",
+    "error": "Rewrite failed, please try again",
+    "noConfig": "Please configure AI settings first"
   }
 }

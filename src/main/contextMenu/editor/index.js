@@ -8,7 +8,8 @@ import {
   PASTE_AS_PLAIN_TEXT,
   SEPARATOR,
   INSERT_BEFORE,
-  INSERT_AFTER
+  INSERT_AFTER,
+  AI_SMART_REWRITE
 } from './menuItems'
 import spellcheckMenuBuilder from './spellcheck'
 
@@ -20,7 +21,7 @@ const isInsideEditor = params => {
   return isEditable && inputFieldType === 'none' && !!editFlags.canEditRichly
 }
 
-export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled) => {
+export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled, aiSettingsEnabled = false) => {
   const { isEditable, hasImageContents, selectionText, editFlags, misspelledWord, dictionarySuggestions } = params
 
   // NOTE: We have to get the word suggestions from this event because `webFrame.getWordSuggestions` and
@@ -40,6 +41,12 @@ export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled)
         label: 'Spelling...',
         submenu: spellingSubmenu
       }))
+      menu.append(new MenuItem(SEPARATOR))
+    }
+
+    // Add AI Smart Rewrite menu item when text is selected and AI is configured
+    if (hasText && aiSettingsEnabled) {
+      menu.append(new MenuItem(AI_SMART_REWRITE))
       menu.append(new MenuItem(SEPARATOR))
     }
 

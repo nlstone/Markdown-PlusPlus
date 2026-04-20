@@ -61,3 +61,11 @@ export const INSERT_AFTER = {
 export const SEPARATOR = {
   type: 'separator'
 }
+
+export const AI_SMART_REWRITE = {
+  label: 'AI Smart Rewrite',
+  id: 'aiSmartRewriteMenuItem',
+  click (menuItem, targetWindow) {
+    targetWindow.webContents.send('mt::cm-ai-smart-rewrite')
+  }
+}

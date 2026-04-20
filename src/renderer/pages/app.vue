@@ -29,6 +29,8 @@
           :text-direction="textDirection"
           :platform="platform"
         ></editor-with-tabs>
+        <div class="ai-drag-bar" ref="aiDragBar" v-if="showAiPanel"></div>
+        <ai-assistant v-if="showAiPanel" :style="{ width: localAiPanelWidth + 'px' }"></ai-assistant>
       </div>
       <command-palette></command-palette>
       <about-dialog></about-dialog>
@@ -36,6 +38,7 @@
       <rename></rename>
       <tweet></tweet>
       <import-modal></import-modal>
+      <smart-rewrite-panel></smart-rewrite-panel>
     </div>
   </div>
 </template>
@@ -53,6 +56,8 @@ import ExportSettingDialog from '@/components/exportSettings'
 import Rename from '@/components/rename'
 import Tweet from '@/components/tweet'
 import ImportModal from '@/components/import'
+import AiAssistant from '@/components/aiAssistant'
+import SmartRewritePanel from '@/components/smartRewrite'
 import { loadingPageMixins } from '@/mixins'
 import { mapState } from 'vuex'
 import bus from '@/bus'
@@ -72,20 +77,28 @@ export default {
     Rename,
     Tweet,
     ImportModal,
+    AiAssistant,
+    SmartRewritePanel,
     CommandPalette
   },
   mixins: [loadingPageMixins],
   data () {
     return {
+      localAiPanelWidth: 320,
+      aiDragHandler: null
     }
   },
   computed: {
     ...mapState({
       showTabBar: state => state.layout.showTabBar,
+      showAiPanel: state => state.layout.showAiPanel,
       sourceCode: state => state.preferences.sourceCode,
       splitPreview: state => state.preferences.splitPreview,
       theme: state => state.preferences.theme,
       textDirection: state => state.preferences.textDirection
+    }),
+    ...mapState({
+      aiPanelWidth: state => state.layout.aiPanelWidth
     }),
     ...mapState({
       zoom: state => state.preferences.zoom
@@ -114,6 +127,16 @@ export default {
     },
     zoom: function (zoom) {
       ipcRenderer.emit('mt::window-zoom', null, zoom)
+    },
+    aiPanelWidth (newVal) {
+      this.localAiPanelWidth = newVal
+    },
+    showAiPanel (newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.initAiDragBar()
+        })
+      }
     }
   },
   created () {
@@ -204,6 +227,64 @@ export default {
       addStyles(style)
       this.hideLoadingPage()
     })
+  },
+  mounted () {
+    this.initAiDragBar()
+  },
+  beforeDestroy () {
+    this.cleanupAiDragBar()
+  },
+  methods: {
+    cleanupAiDragBar () {
+      if (this.aiDragHandler) {
+        const dragBar = this.$refs.aiDragBar
+        if (dragBar) {
+          dragBar.removeEventListener('mousedown', this.aiDragHandler.onMouseDown)
+        }
+        this.aiDragHandler = null
+      }
+    },
+    initAiDragBar () {
+      this.cleanupAiDragBar()
+
+      const dragBar = this.$refs.aiDragBar
+      if (!dragBar) return
+
+      // Initialize local width from computed (vuex store)
+      this.localAiPanelWidth = this.aiPanelWidth
+
+      let isDragging = false
+      let startX = 0
+      let startWidth = this.localAiPanelWidth
+
+      const onMouseMove = (e) => {
+        if (!isDragging) return
+        const deltaX = e.clientX - startX
+        const newWidth = Math.max(200, Math.min(600, startWidth - deltaX))
+        this.localAiPanelWidth = newWidth
+      }
+
+      const onMouseUp = () => {
+        if (!isDragging) return
+        isDragging = false
+        document.removeEventListener('mousemove', onMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+        this.$store.dispatch('SET_AI_PANEL_WIDTH', this.localAiPanelWidth)
+      }
+
+      const onMouseDown = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        isDragging = true
+        startX = e.clientX
+        startWidth = this.localAiPanelWidth
+        document.addEventListener('mousemove', onMouseMove)
+        document.addEventListener('mouseup', onMouseUp)
+      }
+
+      this.aiDragHandler = { onMouseDown }
+      dragBar.addEventListener('mousedown', onMouseDown)
+    }
   }
 }
 </script>
@@ -246,5 +327,19 @@ export default {
     min-height: 0;
     min-width: 0;
     overflow: hidden;
+  }
+  .ai-drag-bar {
+    width: 4px;
+    cursor: col-resize;
+    background: var(--borderColor);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .ai-drag-bar:hover {
+    background: var(--themeColor);
+  }
+  .ai-drag-bar:hover {
+    background: var(--themeColor);
   }
 </style>

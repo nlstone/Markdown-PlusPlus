@@ -1,5 +1,5 @@
-productName: "NextReader"
-appId: "com.github.nextreader.nextreader"
+productName: "MarkDown++"
+appId: "com.github.markdownplusplus"
 
 npmRebuild: false
 asar: true
@@ -68,7 +68,7 @@ fileAssociations:
   role: "Editor"
   icon: "../resources/icons/md.icns"
 mac:
-  artifactName: "nextreader-${arch}-mac.${ext}"
+  artifactName: "markdownpp-${arch}-mac.${ext}"
   icon: "resources/icons/icon.icns"
   darkModeSupport: true
   target:
@@ -77,7 +77,7 @@ mac:
     - target: zip
       arch: [x64, arm64]
 dmg:
-  artifactName: "nextreader-${arch}.${ext}"
+  artifactName: "markdownpp-${arch}.${ext}"
   contents:
   - x: 410
     y: 240
@@ -87,7 +87,7 @@ dmg:
     y: 240
     type: "file"
 win:
-  artifactName: "nextreader-${arch}-win.${ext}"
+  artifactName: "markdownpp-${arch}-win.${ext}"
   icon: "resources/icons/icon.ico"
   target:
   - target: "nsis"
@@ -98,25 +98,25 @@ win:
     arch: [x64]
   requestedExecutionLevel: "asInvoker"
 portable:
-  artifactName: "nextreader-portable.${ext}"
+  artifactName: "markdownpp-portable.${ext}"
 nsis:
-  artifactName: "nextreader-setup.${ext}"
+  artifactName: "markdownpp-setup.${ext}"
   perMachine: false
   oneClick: false
   allowToChangeInstallationDirectory: true
   include: "resources/windows/installer.nsh"
 linux:
-  artifactName: "nextreader-${arch}.${ext}"
-  executableName: "nextreader"
+  artifactName: "markdownpp-${arch}.${ext}"
+  executableName: "markdownpp"
   description: "A simple and elegant open-source markdown editor that focused on speed and usability."
-  maintainer: "NextReader Contributors"
+  maintainer: "MarkDown++ Contributors"
   category: "Office;TextEditor;Utility"
   mimeTypes:
   - "text/markdown"
   icon: "resources/icons"
   desktop:
-    StartupWMClass: "nextreader"
-    Keywords: "nextreader;"
+    StartupWMClass: "markdownpp"
+    Keywords: "markdownpp;"
   target:
   - target: "AppImage"
   - target: "deb"

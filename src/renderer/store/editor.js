@@ -20,13 +20,21 @@ const state = {
   currentFile: {},
   tabs: [],
   listToc: [], // Just use for deep equal check. and replace with new toc if needed.
-  toc: []
+  toc: [],
+  currentSelection: '',
+  currentSelectionInfo: null // Store full selection info for smart rewrite
 }
 
 const mutations = {
   // set search key and matches also index
   SET_SEARCH (state, value) {
     state.currentFile.searchMatches = value
+  },
+  SET_SELECTION (state, selection) {
+    state.currentSelection = selection
+  },
+  SET_SELECTION_INFO (state, info) {
+    state.currentSelectionInfo = info
   },
   SET_TOC (state, toc) {
     state.listToc = toc
@@ -501,6 +509,14 @@ const actions = {
 
   LISTEN_FOR_CLOSE ({ state }) {
     ipcRenderer.on('mt::ask-for-close', e => {
+      // Save session before closing
+      const sessionTabs = state.tabs.map(file => ({
+        pathname: file.pathname || '',
+        markdown: file.isSaved ? '' : file.markdown || '', // Only save markdown for unsaved files
+        filename: file.filename
+      }))
+      ipcRenderer.send('mt::save-session', { tabs: sessionTabs })
+
       const unsavedFiles = state.tabs
         .filter(file => !file.isSaved)
         .map(file => {
@@ -629,14 +645,22 @@ const actions = {
       }, 100)
     }, 400)
 
+    // Track bootstrap received to prevent duplicate tab creation
+    let bootstrapReceived = false
+
     ipcRenderer.on('mt::bootstrap-editor', (e, config) => {
+      // Only process bootstrap once to avoid duplicate Untitled tabs
+      if (bootstrapReceived) return
+      bootstrapReceived = true
+
       const {
         addBlankTab,
         markdownList,
         lineEnding,
         sideBarVisibility,
         tabBarVisibility,
-        sourceCodeModeEnabled
+        sourceCodeModeEnabled,
+        sessionTabs
       } = config
 
       dispatch('SEND_INITIALIZED')
@@ -653,8 +677,20 @@ const actions = {
         checked: !!sourceCodeModeEnabled
       })
 
-      if (addBlankTab) {
-        dispatch('NEW_UNTITLED_TAB', {})
+      // Restore session tabs if available (from lastState)
+      if (sessionTabs && sessionTabs.length > 0) {
+        for (const tab of sessionTabs) {
+          if (tab.pathname) {
+            // Open saved file
+            ipcRenderer.send('mt::open-file-from-session', tab.pathname)
+          } else if (tab.markdown) {
+            // Restore unsaved content
+            dispatch('NEW_UNTITLED_TAB', { markdown: tab.markdown })
+          }
+        }
+      } else if (addBlankTab) {
+        // Show welcome page (no untitled tab created)
+        // The Recent component will be shown when there's no currentFile
       } else if (markdownList.length) {
         let isFirst = true
         for (const markdown of markdownList) {
@@ -1030,14 +1066,17 @@ const actions = {
 
   SELECTION_CHANGE ({ commit }, changes) {
     const { start, end } = changes
-    // Set search keyword to store.
-    if (start.key === end.key && start.block.text) {
+    // Set search keyword to store and update current selection
+    if (start.block.text) {
       const value = start.block.text.substring(start.offset, end.offset)
       commit('SET_SEARCH', {
         matches: [],
         index: -1,
         value
       })
+      commit('SET_SELECTION', value)
+      // Store full selection info for smart rewrite
+      commit('SET_SELECTION_INFO', changes)
     }
 
     const { windowId } = global.marktext.env
@@ -1238,6 +1277,11 @@ const actions = {
     })
     ipcRenderer.on('mt::cm-insert-paragraph', (e, location) => {
       bus.$emit('insertParagraph', location)
+    })
+
+    // AI Smart Rewrite
+    ipcRenderer.on('mt::cm-ai-smart-rewrite', () => {
+      bus.$emit('show-smart-rewrite-panel')
     })
 
     // Spelling

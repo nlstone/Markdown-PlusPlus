@@ -116,17 +116,17 @@
       "donate": "捐赠...",
       "feedback": "反馈...",
       "reportIssue": "报告问题...",
-      "about": "关于 NextReader..."
+      "about": "关于 MarkDown++..."
     },
     "marktext": {
-      "label": "NextReader",
-      "about": "关于 NextReader",
+      "label": "MarkDown++",
+      "about": "关于 MarkDown++",
       "preferences": "偏好设置...",
       "services": "服务",
-      "hide": "隐藏 NextReader",
+      "hide": "隐藏 MarkDown++",
       "hideOthers": "隐藏其他",
       "showAll": "显示全部",
-      "quit": "退出 NextReader"
+      "quit": "退出 MarkDown++"
     }
   }
 }

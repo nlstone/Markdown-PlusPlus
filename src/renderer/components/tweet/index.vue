@@ -110,7 +110,7 @@ export default {
         text: value
       }
 
-      if (selectedFace === 'smile') params.hashtags = 'happyMarkText'
+      if (selectedFace === 'smile') params.hashtags = 'happyMarkDownPlusPlus'
 
       shell.openExternal(`${origin}?${Object.keys(params).map(key => `${key}=${params[key]}`).join('&')}`)
       this.showTweetDialog = false

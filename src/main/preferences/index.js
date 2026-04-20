@@ -98,7 +98,16 @@ class Preference extends EventEmitter {
 
   setItem (key, value) {
     ipcMain.emit('broadcast-preferences-changed', { [key]: value })
-    return this.store.set(key, value)
+    // Ensure nested objects are properly saved
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const currentValue = this.store.get(key)
+      // Deep merge to preserve existing properties
+      const newValue = { ...currentValue, ...value }
+      this.store.set(key, newValue)
+    } else {
+      this.store.set(key, value)
+    }
+    return true
   }
 
   getItem (key) {

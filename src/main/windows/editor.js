@@ -3,7 +3,7 @@ import { BrowserWindow, dialog, ipcMain } from 'electron'
 import { enable as remoteEnable } from '@electron/remote/main'
 import log from 'electron-log'
 import windowStateKeeper from 'electron-window-state'
-import { isChildOfDirectory, isSamePathSync } from 'common/filesystem/paths'
+import { isChildOfDirectory } from 'common/filesystem/paths'
 import BaseWindow, { WindowLifecycle, WindowType } from './base'
 import { ensureWindowPosition, zoomIn, zoomOut } from './utils'
 import { TITLE_BAR_HEIGHT, editorWinOptions, isLinux, isOsx } from '../config'
@@ -23,6 +23,7 @@ class EditorWindow extends BaseWindow {
     this._directoryToOpen = null
     this._filesToOpen = [] // {doc: IMarkdownDocumentRaw, options: any, selected: boolean}
     this._markdownToOpen = [] // List of markdown strings or an empty string will open a new untitled tab
+    this._sessionTabs = [] // Session tabs from last session
 
     // Root directory and file list that are currently opened. These lists are
     // used to find the best window to open new files in.
@@ -37,10 +38,15 @@ class EditorWindow extends BaseWindow {
    * @param {string[]} [fileList] A list of markdown files to open.
    * @param {string[]} [markdownList] Array of markdown data to open.
    * @param {*} [options] The BrowserWindow options.
+   * @param {Array} [sessionTabs] Session tabs to restore from last session.
    */
-  createWindow (rootDirectory = null, fileList = [], markdownList = [], options = {}) {
+  createWindow (rootDirectory = null, fileList = [], markdownList = [], options = {}, sessionTabs = []) {
     const { menu: appMenu, env, preferences } = this._accessor
-    const addBlankTab = !rootDirectory && fileList.length === 0 && markdownList.length === 0
+    const hasSession = sessionTabs && sessionTabs.length > 0
+    const addBlankTab = !rootDirectory && fileList.length === 0 && markdownList.length === 0 && !hasSession
+
+    // Store session tabs for bootstrap
+    this._sessionTabs = sessionTabs
 
     const mainWindowState = windowStateKeeper({
       defaultWidth: 1200,
@@ -92,7 +98,9 @@ class EditorWindow extends BaseWindow {
     appMenu.addEditorMenu(win, { sourceCodeModeEnabled })
 
     win.webContents.on('context-menu', (event, params) => {
-      showEditorContextMenu(win, event, params, preferences.getItem('spellcheckerEnabled'))
+      const aiSettings = preferences.getItem('aiSettings')
+      const aiEnabled = aiSettings && aiSettings.baseUrl && aiSettings.apiKey
+      showEditorContextMenu(win, event, params, preferences.getItem('spellcheckerEnabled'), aiEnabled)
     })
 
     win.webContents.once('did-finish-load', () => {
@@ -116,7 +124,8 @@ class EditorWindow extends BaseWindow {
         lineEnding,
         sideBarVisibility,
         tabBarVisibility,
-        sourceCodeModeEnabled
+        sourceCodeModeEnabled,
+        sessionTabs: this._sessionTabs
       })
 
       this._doOpenFilesToOpen()
@@ -169,7 +178,7 @@ class EditorWindow extends BaseWindow {
       const { response } = await dialog.showMessageBox(win, {
         type: 'warning',
         buttons: ['Close', 'Reload', 'Keep It Open'],
-        message: 'NextReader has crashed',
+        message: 'MarkDown++ has crashed',
         detail: msg
       })
 
@@ -325,8 +334,7 @@ class EditorWindow extends BaseWindow {
    */
   openFolder (pathname) {
     // TODO: Don't allow new files if quitting.
-    if (!pathname || this.lifecycle === WindowLifecycle.QUITTED ||
-      isSamePathSync(pathname, this._openedRootDirectory)) {
+    if (!pathname || this.lifecycle === WindowLifecycle.QUITTED) {
       return
     }
 

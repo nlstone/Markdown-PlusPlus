@@ -3,13 +3,17 @@ import bus from '../bus'
 
 const width = localStorage.getItem('side-bar-width')
 const sideBarWidth = typeof +width === 'number' ? Math.max(+width, 220) : 280
+const aiWidth = localStorage.getItem('ai-panel-width')
+const aiPanelWidth = typeof +aiWidth === 'number' ? Math.max(200, Math.min(600, +aiWidth)) : 320
 
 // messages from main process, and do not change the state
 const state = {
   rightColumn: 'files',
   showSideBar: false,
   showTabBar: false,
-  sideBarWidth
+  sideBarWidth,
+  showAiPanel: false,
+  aiPanelWidth
 }
 
 const getters = {}
@@ -29,6 +33,14 @@ const mutations = {
     // TODO: Add side bar to session (GH#732).
     localStorage.setItem('side-bar-width', Math.max(+width, 220))
     state.sideBarWidth = width
+  },
+  SET_AI_PANEL (state, payload) {
+    if (payload.showAiPanel !== undefined) {
+      state.showAiPanel = payload.showAiPanel
+    }
+    if (payload.aiPanelWidth !== undefined) {
+      state.aiPanelWidth = payload.aiPanelWidth
+    }
   }
 }
 
@@ -57,6 +69,14 @@ const actions = {
       const { windowId } = global.marktext.env
       ipcRenderer.send('mt::view-layout-changed', windowId, { [entryName]: state[entryName] })
     })
+
+    bus.$on('view:toggle-ai-panel', () => {
+      commit('SET_AI_PANEL', { showAiPanel: !state.showAiPanel })
+    })
+
+    ipcRenderer.on('mt::toggle-ai-panel', () => {
+      commit('SET_AI_PANEL', { showAiPanel: !state.showAiPanel })
+    })
   },
 
   DISPATCH_LAYOUT_MENU_ITEMS ({ state }) {
@@ -67,6 +87,15 @@ const actions = {
 
   CHANGE_SIDE_BAR_WIDTH ({ commit }, width) {
     commit('SET_SIDE_BAR_WIDTH', width)
+  },
+
+  TOGGLE_AI_PANEL ({ commit, state }) {
+    commit('SET_AI_PANEL', { showAiPanel: !state.showAiPanel })
+  },
+
+  SET_AI_PANEL_WIDTH ({ commit }, width) {
+    localStorage.setItem('ai-panel-width', width)
+    commit('SET_AI_PANEL', { aiPanelWidth: width })
   }
 }
 

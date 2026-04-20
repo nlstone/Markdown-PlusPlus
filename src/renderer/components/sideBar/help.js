@@ -3,6 +3,7 @@ import SearchIcon from '@/assets/icons/search.svg'
 import TocIcon from '@/assets/icons/toc.svg'
 import SettingIcon from '@/assets/icons/setting.svg'
 import ZreadIcon from '@/assets/icons/zread.svg'
+import AiIcon from '@/assets/icons/ai.svg'
 
 export const sideBarIcons = [
   {
@@ -14,6 +15,9 @@ export const sideBarIcons = [
   }, {
     name: 'toc',
     icon: TocIcon
+  }, {
+    name: 'ai',
+    icon: AiIcon
   }
 ]
 

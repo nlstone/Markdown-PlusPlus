@@ -11,7 +11,7 @@
           v-for="(c, index) of sideBarIcons"
           :key="index"
           @click="handleLeftIconClick(c.name)"
-          :class="{ 'active': c.name === rightColumn }"
+          :class="{ 'active': isIconActive(c.name) }"
         >
           <svg :viewBox="c.icon.viewBox">
             <use :xlink:href="c.icon.url"></use>
@@ -91,6 +91,7 @@ export default {
     ...mapState({
       rightColumn: state => state.layout.rightColumn,
       showSideBar: state => state.layout.showSideBar,
+      showAiPanel: state => state.layout.showAiPanel,
       projectTree: state => state.project.projectTree,
       sideBarWidth: state => state.layout.sideBarWidth,
       tabs: state => state.editor.tabs,
@@ -149,6 +150,11 @@ export default {
   },
   methods: {
     handleLeftIconClick (name) {
+      if (name === 'ai') {
+        // AI icon toggles the right-side AI panel
+        this.$store.dispatch('TOGGLE_AI_PANEL')
+        return
+      }
       if (this.rightColumn === name) {
         this.$store.commit('SET_LAYOUT', { rightColumn: '' })
         this.$store.dispatch('CHANGE_SIDE_BAR_WIDTH', this.finalSideBarWidth)
@@ -171,6 +177,12 @@ export default {
         return this.hasZread
       }
       return false
+    },
+    isIconActive (name) {
+      if (name === 'ai') {
+        return this.showAiPanel
+      }
+      return name === this.rightColumn
     }
   }
 }

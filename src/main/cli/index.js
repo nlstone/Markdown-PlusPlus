@@ -11,13 +11,13 @@ const writeLine = s => write(s + '\n')
 const cli = () => {
   let argv = process.argv.slice(1)
   if (process.env.NODE_ENV === 'development') {
-    // Don't pass electron development arguments to NextReader and change user data path.
-    argv = ['--user-data-dir', path.join(getPath('appData'), 'nextreader-dev')]
+    // Don't pass electron development arguments to MarkDown++ and change user data path.
+    argv = ['--user-data-dir', path.join(getPath('appData'), 'markdownpp-dev')]
   }
 
   const args = parseArgs(argv, true)
   if (args['--help']) {
-    write(`Usage: nextreader [commands] [path ...]
+    write(`Usage: markdownpp [commands] [path ...]
 
   Available commands:
 
@@ -35,7 +35,7 @@ const cli = () => {
   }
 
   if (args['--version']) {
-    writeLine(`NextReader: ${global.MARKTEXT_VERSION_STRING}`)
+    writeLine(`MarkDown++: ${global.MARKTEXT_VERSION_STRING}`)
     writeLine(`Node.js: ${process.versions.node}`)
     writeLine(`Electron: ${process.versions.electron}`)
     writeLine(`Chromium: ${process.versions.chrome}`)
@@ -46,7 +46,7 @@ const cli = () => {
   // Check for portable mode and ensure the user data path is absolute. We assume
   // that the path is writable if not this lead to an application crash.
   if (!args['--user-data-dir']) {
-    const portablePath = path.join(app.getAppPath(), '..', '..', 'nextreader-user-data')
+    const portablePath = path.join(app.getAppPath(), '..', '..', 'markdownpp-user-data')
     if (isDirectory(portablePath)) {
       args['--user-data-dir'] = portablePath
     }

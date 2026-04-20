@@ -1,5 +1,6 @@
 import path from 'path'
 import fsPromises from 'fs/promises'
+import fs from 'fs'
 import { exec } from 'child_process'
 import dayjs from 'dayjs'
 import log from 'electron-log'
@@ -145,6 +146,12 @@ class App {
       theme
     } = preferences.getAll()
 
+    // Load session if startUpAction is lastState
+    let sessionTabs = []
+    if (startUpAction === 'lastState') {
+      sessionTabs = this._loadSession()
+    }
+
     if (startUpAction === 'folder' && defaultDirectoryToOpen) {
       const info = normalizeMarkdownPath(defaultDirectoryToOpen)
       if (info) {
@@ -199,7 +206,7 @@ class App {
     if (_openFilesCache.length) {
       this._openFilesToOpen()
     } else {
-      this._createEditorWindow()
+      this._createEditorWindow(null, [], [], {}, sessionTabs)
     }
 
     // this.shortcutCapture = new ShortcutCapture()
@@ -253,11 +260,12 @@ class App {
    * @param {string[]} [fileList] A list of markdown files to open.
    * @param {string[]} [markdownList] Array of markdown data to open.
    * @param {*} [options] The BrowserWindow options.
+   * @param {Array} [sessionTabs] Session tabs to restore.
    * @returns {EditorWindow} The created editor window.
    */
-  _createEditorWindow (rootDirectory = null, fileList = [], markdownList = [], options = {}) {
+  _createEditorWindow (rootDirectory = null, fileList = [], markdownList = [], options = {}, sessionTabs = []) {
     const editor = new EditorWindow(this._accessor)
-    editor.createWindow(rootDirectory, fileList, markdownList, options)
+    editor.createWindow(rootDirectory, fileList, markdownList, options, sessionTabs)
     this._windowManager.add(editor)
     if (this._windowManager.windowCount === 1) {
       this._accessor.menu.setActiveWindow(editor.id)
@@ -581,6 +589,60 @@ class App {
     ipcMain.handle('mt::fs-trash-item', async (event, fullPath) => {
       return shell.trashItem(fullPath)
     })
+
+    // Session management
+    ipcMain.on('mt::save-session', (e, sessionData) => {
+      this._saveSession(sessionData)
+    })
+
+    ipcMain.on('mt::open-file-from-session', (e, filePath) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      const editor = this._windowManager.get(win.id)
+      if (editor) {
+        editor.openTab(filePath, {}, true)
+      }
+    })
+  }
+
+  /**
+   * Load session from file.
+   * @returns {Array} Session tabs array.
+   */
+  _loadSession () {
+    const { paths } = this._accessor
+    const sessionFilePath = paths.sessionFilePath
+
+    try {
+      if (fs.existsSync(sessionFilePath)) {
+        const content = fs.readFileSync(sessionFilePath, 'utf-8')
+        const session = JSON.parse(content)
+        // Filter out files that no longer exist
+        return (session.tabs || []).filter(tab => {
+          if (tab.pathname) {
+            return fs.existsSync(tab.pathname)
+          }
+          return true // Keep unsaved tabs
+        })
+      }
+    } catch (err) {
+      log.error('Failed to load session:', err)
+    }
+    return []
+  }
+
+  /**
+   * Save session to file.
+   * @param {Object} sessionData Session data from renderer.
+   */
+  _saveSession (sessionData) {
+    const { paths } = this._accessor
+    const sessionFilePath = paths.sessionFilePath
+
+    try {
+      fs.writeFileSync(sessionFilePath, JSON.stringify(sessionData, null, 2), 'utf-8')
+    } catch (err) {
+      log.error('Failed to save session:', err)
+    }
   }
 }
 

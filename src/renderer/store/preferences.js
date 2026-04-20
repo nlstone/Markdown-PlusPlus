@@ -94,7 +94,18 @@ const state = {
       branch: ''
     }
   },
-  cliScript: ''
+  cliScript: '',
+
+  // AI settings
+  aiSettings: {
+    baseUrl: '',
+    apiKey: '',
+    model: 'gpt-3.5-turbo',
+    temperature: 0.7
+  },
+
+  // AI conversation history
+  aiHistory: []
 }
 
 const getters = {}
@@ -126,6 +137,8 @@ const actions = {
   },
 
   SET_SINGLE_PREFERENCE ({ commit }, { type, value }) {
+    // Update local state immediately
+    commit('SET_USER_PREFERENCE', { [type]: value })
     // save to electron-store
     ipcRenderer.send('mt::set-user-preference', { [type]: value })
   },

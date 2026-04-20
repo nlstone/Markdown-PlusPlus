@@ -20,3 +20,4 @@ export const toggleTypewriter = () => bus.$emit('view:toggle-view-entry', 'typew
 export const toggleFocus = () => bus.$emit('view:toggle-view-entry', 'focus')
 export const toggleSidebar = () => bus.$emit('view:toggle-layout-entry', 'showSideBar')
 export const toggleTabBar = () => bus.$emit('view:toggle-layout-entry', 'showTabBar')
+export const toggleAiAssistant = () => bus.$emit('view:toggle-ai-panel')

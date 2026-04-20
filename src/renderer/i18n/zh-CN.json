@@ -359,5 +359,27 @@
     "toggleToc": "切换目录",
     "sourceCodePane": "源代码",
     "previewPane": "预览"
+  },
+  "smartRewrite": {
+    "title": "智能改写",
+    "options": {
+      "rewrite": "改写",
+      "polish": "润色",
+      "abbreviate": "缩写",
+      "expand": "扩写",
+      "simplify": "简化",
+      "formalize": "正式化"
+    },
+    "originalText": "原文",
+    "resultText": "改写结果",
+    "processing": "AI正在处理",
+    "accept": "接受",
+    "retry": "重新生成",
+    "cancel": "放弃",
+    "send": "发送",
+    "additionalPlaceholder": "输入额外指令继续调整...",
+    "noSelection": "请先选择要改写的文本",
+    "error": "改写失败，请重试",
+    "noConfig": "请先配置AI设置"
   }
 }

@@ -55,20 +55,20 @@
     "default": "modified"
   },
   "startUpAction": {
-    "description": "General--The action after MarkText startup, open the last edited content, open the specified folder or blank page",
+    "description": "General--The action after MarkDown++ startup, open the last edited content, open the specified folder or blank page",
     "enum": [
       "folder",
       "lastState",
       "blank"
     ],
-    "default": "blank"
+    "default": "lastState"
   },
   "defaultDirectoryToOpen": {
     "description": "General--The default directory that should be opened on startup when startUp=folder.",
     "type": "string"
   },
   "language": {
-    "description": "General--The language MarkText use.",
+    "description": "General--The language MarkDown++ uses.",
     "type": "string",
     "default": "zh-CN"
   },
@@ -248,7 +248,7 @@
     "default": "."
   },
   "preferHeadingStyle": {
-    "description": "Markdown--The preferred heading style in MarkText",
+    "description": "Markdown--The preferred heading style in MarkDown++",
     "enum": [
       "atx",
       "setext"
@@ -311,7 +311,7 @@
     "default": "hand"
   },
   "theme": {
-    "description": "Theme--Select the theme used in MarkText",
+    "description": "Theme--Select the theme used in MarkDown++",
     "type": "string",
     "default": "light"
   },
@@ -407,5 +407,52 @@
     "description": "Watcher--Whether to use polling. Polling may leads to high CPU utilization but is necessary to watch files over a network.",
     "type": "boolean",
     "default": false
+  },
+  "aiSettings": {
+    "description": "AI--AI assistant settings",
+    "type": "object",
+    "properties": {
+      "baseUrl": {
+        "type": "string",
+        "default": ""
+      },
+      "apiKey": {
+        "type": "string",
+        "default": ""
+      },
+      "model": {
+        "type": "string",
+        "default": "gpt-3.5-turbo"
+      },
+      "temperature": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 2,
+        "default": 0.7
+      }
+    },
+    "default": {
+      "baseUrl": "",
+      "apiKey": "",
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.7
+    }
+  },
+  "aiHistory": {
+    "description": "AI--Conversation history with AI assistant",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["user", "assistant"]
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    },
+    "default": []
   }
 }

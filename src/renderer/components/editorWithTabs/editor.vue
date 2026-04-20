@@ -592,6 +592,11 @@ export default {
       bus.$on('switch-spellchecker-language', this.switchSpellcheckLanguage)
       bus.$on('open-command-spellchecker-switch-language', this.openSpellcheckerLanguageCommand)
       bus.$on('replace-misspelling', this.replaceMisspelling)
+      bus.$on('ai-replace-selection', this.handleAiReplaceSelection)
+
+      // Smart Rewrite events
+      bus.$on('show-smart-rewrite-panel', this.handleShowSmartRewritePanel)
+      bus.$on('smart-rewrite-accept', this.handleSmartRewriteAccept)
 
       this.editor.on('change', changes => {
         // WORKAROUND: "id: 'muya'"
@@ -887,6 +892,68 @@ export default {
       this.$store.dispatch('SEARCH', searchMatches)
     },
 
+    handleAiReplaceSelection (text) {
+      if (this.editor) {
+        this.editor.insert(text)
+      }
+    },
+
+    handleShowSmartRewritePanel () {
+      const selectionInfo = this.$store.state.editor.currentSelectionInfo
+      const selectedText = this.$store.state.editor.currentSelection
+
+      if (!selectedText) {
+        notice.notify({
+          title: 'Smart Rewrite',
+          message: 'Please select text to rewrite',
+          type: 'warning',
+          time: 3000
+        })
+        return
+      }
+
+      // Get cursor coordinates for panel positioning
+      const cursorCoords = selectionInfo?.cursorCoords || { x: 100, y: 100 }
+
+      bus.$emit('smart-rewrite-open', {
+        text: selectedText,
+        selectionInfo,
+        cursorCoords
+      })
+    },
+
+    handleSmartRewriteAccept (data) {
+      if (!data || !data.selectionInfo || !data.newText) return
+
+      const { selectionInfo, newText } = data
+      const { start, end } = selectionInfo
+
+      if (!this.editor) return
+
+      // Use replaceWordInline for single-line replacement
+      if (start.key === end.key && start.block && start.block.text) {
+        const lineCursor = {
+          start: { key: start.key, offset: 0, block: start.block },
+          end: { key: end.key, offset: start.block.text.length, block: end.block }
+        }
+        const wordCursor = {
+          start: { key: start.key, offset: start.offset },
+          end: { key: end.key, offset: end.offset }
+        }
+        this.editor.replaceWordInline(lineCursor, wordCursor, newText, true)
+      } else {
+        // Multi-line replacement: fallback to clipboard method
+        // This is a simplified approach - full implementation would need more complex logic
+        // For now, just use insert for multi-line (may not work perfectly)
+        notice.notify({
+          title: 'Smart Rewrite',
+          message: 'Multi-line replacement is not fully supported yet',
+          type: 'info',
+          time: 3000
+        })
+      }
+    },
+
     handleUploadedImage (url, deletionUrl) {
       this.insertImage(url)
       this.$store.dispatch('SHOW_IMAGE_DELETION_URL', deletionUrl)
@@ -1146,6 +1213,11 @@ export default {
     bus.$off('switch-spellchecker-language', this.switchSpellcheckLanguage)
     bus.$off('open-command-spellchecker-switch-language', this.openSpellcheckerLanguageCommand)
     bus.$off('replace-misspelling', this.replaceMisspelling)
+    bus.$off('ai-replace-selection', this.handleAiReplaceSelection)
+
+    // Smart Rewrite events
+    bus.$off('show-smart-rewrite-panel', this.handleShowSmartRewritePanel)
+    bus.$off('smart-rewrite-accept', this.handleSmartRewriteAccept)
 
     document.removeEventListener('keyup', this.keyup)
 
