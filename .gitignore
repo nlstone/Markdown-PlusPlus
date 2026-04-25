@@ -16,6 +16,10 @@ thumbs.db
 .env
 .eslintcache
 .zread/
+.claude/
+.omc/
+dev-error.log
+dev-output.log
 .sisyphus/
 .omx/
 .opencode/

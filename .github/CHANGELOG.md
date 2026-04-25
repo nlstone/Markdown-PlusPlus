@@ -1,3 +1,18 @@
+# MarkDown++ Changelog
+
+> MarkDown++ is a fork of [MarkText](https://github.com/marktext/marktext). Historical changelog entries below are from the original MarkText project.
+
+## MarkDown++ [Upcoming]
+
+- **ZRead Mode**: Added dedicated reading mode optimized for ZRead-generated documents
+- **Split-Pane Preview**: Real-time side-by-side markdown source and rendered preview
+- **Multi-Language Support (i18n)**: Full internationalization with Chinese and English UI
+- **AI-Powered Editing**: Integrated AI assistant with smart rewrite and inline AI suggestions
+- **Enhanced Context Menus**: Improved editor and sidebar context menu functionality
+- **Branding**: Rebranded from MarkText to MarkDown++ with updated application identity
+
+---
+
 ## 0.17.1
 
 - Added experimental native support for Apple M1 (see #2983 if you have issues).

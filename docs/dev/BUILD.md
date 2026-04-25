@@ -1,9 +1,9 @@
-# Build Instructions
+﻿# Build Instructions
 
 Clone the repository:
 
 ```
-git clone https://github.com/marktext/marktext.git
+git clone https://github.com/nlstone/Markdown-PlusPlus.git
 ```
 
 ### Prerequisites
@@ -33,10 +33,10 @@ On Red Hat-based Linux: `sudo dnf install libX11-devel libxkbfile-devel libsecre
 
 ### Let's build
 
-1. Go to `marktext` folder
+1. Go to `MarkdownPlus` folder
 2. Install dependencies: `yarn install` or `yarn install --frozen-lockfile`
-3. Build MarkText binaries and packages: `yarn run build`
-4. MarkText binary is located under `build` folder
+3. Build MarkDown++ binaries and packages: `yarn run build`
+4. MarkDown++ binary is located under `build` folder
 
 Copy the build app to applications folder, or if on Windows run the executable installer.
 
@@ -48,9 +48,9 @@ $ yarn run <script> # or npm run <script>
 
 | Script          | Description                                      |
 | --------------- | ------------------------------------------------ |
-| `build`         | Build MarkText binaries and packages for your OS |
-| `build:bin`     | Build MarkText binary for your OS                |
-| `dev`           | Build and run MarkText in developer mode         |
+| `build`         | Build MarkDown++ binaries and packages for your OS |
+| `build:bin`     | Build MarkDown++ binary for your OS                |
+| `dev`           | Build and run MarkDown++ in developer mode         |
 | `lint`          | Lint code style                                  |
 | `test` / `unit` | Run unit tests                                   |
 
