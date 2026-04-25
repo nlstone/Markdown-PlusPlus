@@ -1,4 +1,4 @@
-// NOTE: This are mutable fields that may change at runtime.
+// NOTE: These are mutable fields that may change at runtime.
 
 export const CUT = {
   label: 'Cut',
@@ -67,5 +67,24 @@ export const AI_SMART_REWRITE = {
   id: 'aiSmartRewriteMenuItem',
   click (menuItem, targetWindow) {
     targetWindow.webContents.send('mt::cm-ai-smart-rewrite')
+  }
+}
+
+/**
+ * Apply i18n translations to menu items
+ * @param {object} i18n The i18n object containing translations
+ */
+export const applyTranslations = (i18n) => {
+  if (i18n && i18n.contextMenu && i18n.contextMenu.editor) {
+    const t = i18n.contextMenu.editor
+    CUT.label = t.cut || 'Cut'
+    COPY.label = t.copy || 'Copy'
+    PASTE.label = t.paste || 'Paste'
+    COPY_AS_MARKDOWN.label = t.copyAsMarkdown || 'Copy As Markdown'
+    COPY_AS_HTML.label = t.copyAsHtml || 'Copy As Html'
+    PASTE_AS_PLAIN_TEXT.label = t.pasteAsPlainText || 'Paste as Plain Text'
+    INSERT_BEFORE.label = t.insertParagraphBefore || 'Insert Paragraph Before'
+    INSERT_AFTER.label = t.insertParagraphAfter || 'Insert Paragraph After'
+    AI_SMART_REWRITE.label = t.aiSmartRewrite || 'AI Smart Rewrite'
   }
 }

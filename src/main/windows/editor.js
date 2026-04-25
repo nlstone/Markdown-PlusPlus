@@ -100,7 +100,8 @@ class EditorWindow extends BaseWindow {
     win.webContents.on('context-menu', (event, params) => {
       const aiSettings = preferences.getItem('aiSettings')
       const aiEnabled = aiSettings && aiSettings.baseUrl && aiSettings.apiKey
-      showEditorContextMenu(win, event, params, preferences.getItem('spellcheckerEnabled'), aiEnabled)
+      const language = preferences.getItem('language') || 'en'
+      showEditorContextMenu(win, event, params, preferences.getItem('spellcheckerEnabled'), aiEnabled, language)
     })
 
     win.webContents.once('did-finish-load', () => {

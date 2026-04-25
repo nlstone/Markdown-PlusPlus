@@ -377,8 +377,10 @@
     "retry": "Regenerate",
     "cancel": "Cancel",
     "send": "Send",
+    "instructionPlaceholder": "Enter your rewrite instructions (select a preset type or enter custom requirements)...",
     "additionalPlaceholder": "Enter additional instructions...",
     "noSelection": "Please select text to rewrite first",
+    "noInstruction": "Please enter rewrite instructions",
     "error": "Rewrite failed, please try again",
     "noConfig": "Please configure AI settings first"
   }

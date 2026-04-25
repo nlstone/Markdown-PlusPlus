@@ -302,7 +302,6 @@ export default {
   div.title > span {
     /* Workaround for GH#339 */
     display: block;
-    direction: rtl;
     overflow: hidden;
     text-overflow: clip;
     white-space: nowrap;

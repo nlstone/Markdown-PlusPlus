@@ -377,8 +377,10 @@
     "retry": "重新生成",
     "cancel": "放弃",
     "send": "发送",
+    "instructionPlaceholder": "输入您的改写要求（可选择预设类型或输入自定义要求）...",
     "additionalPlaceholder": "输入额外指令继续调整...",
     "noSelection": "请先选择要改写的文本",
+    "noInstruction": "请输入改写要求",
     "error": "改写失败，请重试",
     "noConfig": "请先配置AI设置"
   }

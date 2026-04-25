@@ -10,13 +10,15 @@ import { SEPARATOR } from './menuItems'
  * @param {boolean} isMisspelled Whether a the selected word is misspelled.
  * @param {[string]} misspelledWord The selected word.
  * @param {[string[]]} wordSuggestions Suggestions for `selectedWord`.
+ * @param {object} i18n The i18n translations object.
  * @returns {MenuItem[]}
  */
-export default (isMisspelled, misspelledWord, wordSuggestions) => {
+export default (isMisspelled, misspelledWord, wordSuggestions, i18n) => {
   const spellingSubmenu = []
+  const t = i18n?.contextMenu?.editor || {}
 
   spellingSubmenu.push(new MenuItem({
-    label: 'Change Language...',
+    label: t.changeLanguage || 'Change Language...',
     // NB: On macOS the OS spell checker is used and will detect the language automatically.
     visible: !isOsx,
     click (menuItem, targetWindow) {
@@ -27,7 +29,7 @@ export default (isMisspelled, misspelledWord, wordSuggestions) => {
   // Handle misspelled word if wordSuggestions is set, otherwise word is correct.
   if (isMisspelled && misspelledWord && wordSuggestions) {
     spellingSubmenu.push({
-      label: 'Add to Dictionary',
+      label: t.addToDictionary || 'Add to Dictionary',
       click (menuItem, targetWindow) {
         if (!addToDictionary(targetWindow, misspelledWord)) {
           log.error(`Error while adding "${misspelledWord}" to dictionary.`)
@@ -54,7 +56,7 @@ export default (isMisspelled, misspelledWord, wordSuggestions) => {
     }
   } else {
     spellingSubmenu.push({
-      label: 'Edit Dictionary...',
+      label: t.editDictionary || 'Edit Dictionary...',
       click (menuItem, targetWindow) {
         ipcMain.emit('app-create-settings-window', 'spelling')
       }

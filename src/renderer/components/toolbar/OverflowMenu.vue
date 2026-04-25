@@ -20,7 +20,6 @@
       <div class="overflow-item" @click="exportPdf">{{ $t('toolbar.exportPdf') }}</div>
       <div class="overflow-item" @click="print">{{ $t('toolbar.print') }}</div>
       <div class="overflow-item" @click="reloadImages">{{ $t('toolbar.reloadImages') }}</div>
-      <div class="overflow-item" @click="toggleToc">{{ $t('toolbar.toggleToc') }}</div>
     </div>
   </div>
 </template>
@@ -115,10 +114,6 @@ export default {
     },
     reloadImages () {
       ipcRenderer.emit('mt::invalidate-image-cache', null)
-      this.closeMenu()
-    },
-    toggleToc () {
-      ipcRenderer.emit('mt::set-view-layout', null, { rightColumn: 'toc' })
       this.closeMenu()
     }
   }

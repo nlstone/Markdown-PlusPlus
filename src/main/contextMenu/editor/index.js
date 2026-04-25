@@ -9,7 +9,8 @@ import {
   SEPARATOR,
   INSERT_BEFORE,
   INSERT_AFTER,
-  AI_SMART_REWRITE
+  AI_SMART_REWRITE,
+  applyTranslations
 } from './menuItems'
 import spellcheckMenuBuilder from './spellcheck'
 
@@ -21,8 +22,21 @@ const isInsideEditor = params => {
   return isEditable && inputFieldType === 'none' && !!editFlags.canEditRichly
 }
 
-export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled, aiSettingsEnabled = false) => {
+// Load i18n translations based on language
+const getContextMenuTranslations = (lang) => {
+  try {
+    return require(`../../i18n/${lang}.json`)
+  } catch (e) {
+    return require('../../i18n/en.json')
+  }
+}
+
+export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled, aiSettingsEnabled = false, language = 'en') => {
   const { isEditable, hasImageContents, selectionText, editFlags, misspelledWord, dictionarySuggestions } = params
+
+  // Load and apply translations
+  const i18n = getContextMenuTranslations(language)
+  applyTranslations(i18n)
 
   // NOTE: We have to get the word suggestions from this event because `webFrame.getWordSuggestions` and
   //       `webFrame.isWordMisspelled` doesn't work on Windows (Electron#28684).
@@ -36,9 +50,10 @@ export const showEditorContextMenu = (win, event, params, isSpellcheckerEnabled,
 
     const menu = new Menu()
     if (isSpellcheckerEnabled) {
-      const spellingSubmenu = spellcheckMenuBuilder(isMisspelled, misspelledWord, dictionarySuggestions)
+      const spellingSubmenu = spellcheckMenuBuilder(isMisspelled, misspelledWord, dictionarySuggestions, i18n)
+      const spellingLabel = i18n?.contextMenu?.editor?.spelling || 'Spelling...'
       menu.append(new MenuItem({
-        label: 'Spelling...',
+        label: spellingLabel,
         submenu: spellingSubmenu
       }))
       menu.append(new MenuItem(SEPARATOR))

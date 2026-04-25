@@ -128,5 +128,32 @@
       "showAll": "Show All",
       "quit": "Quit MarkDown++"
     }
+  },
+  "contextMenu": {
+    "editor": {
+      "cut": "Cut",
+      "copy": "Copy",
+      "paste": "Paste",
+      "copyAsMarkdown": "Copy as Markdown",
+      "copyAsHtml": "Copy as HTML",
+      "pasteAsPlainText": "Paste as Plain Text",
+      "insertParagraphBefore": "Insert Paragraph Before",
+      "insertParagraphAfter": "Insert Paragraph After",
+      "spelling": "Spelling...",
+      "changeLanguage": "Change Language...",
+      "addToDictionary": "Add to Dictionary",
+      "editDictionary": "Edit Dictionary...",
+      "aiSmartRewrite": "AI Smart Rewrite"
+    },
+    "sidebar": {
+      "newFile": "New File",
+      "newDirectory": "New Directory",
+      "copy": "Copy",
+      "cut": "Cut",
+      "paste": "Paste",
+      "rename": "Rename",
+      "moveToTrash": "Move To Trash",
+      "showInFolder": "Show In Folder"
+    }
   }
 }

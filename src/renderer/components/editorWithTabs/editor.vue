@@ -593,6 +593,7 @@ export default {
       bus.$on('open-command-spellchecker-switch-language', this.openSpellcheckerLanguageCommand)
       bus.$on('replace-misspelling', this.replaceMisspelling)
       bus.$on('ai-replace-selection', this.handleAiReplaceSelection)
+      bus.$on('ai-replace-document', this.handleAiReplaceDocument)
 
       // Smart Rewrite events
       bus.$on('show-smart-rewrite-panel', this.handleShowSmartRewritePanel)
@@ -896,6 +897,24 @@ export default {
       if (this.editor) {
         this.editor.insert(text)
       }
+    },
+
+    handleAiReplaceDocument (text) {
+      if (!this.editor || !text) return
+
+      // Replace entire document content
+      const { id } = this.currentFile
+      this.editor.setMarkdown(text)
+
+      // Update store with new content
+      this.$store.dispatch('LISTEN_FOR_CONTENT_CHANGE', {
+        id: id || 'muya',
+        markdown: text,
+        wordCount: text.length,
+        cursor: null,
+        history: null,
+        toc: null
+      })
     },
 
     handleShowSmartRewritePanel () {
@@ -1214,6 +1233,7 @@ export default {
     bus.$off('open-command-spellchecker-switch-language', this.openSpellcheckerLanguageCommand)
     bus.$off('replace-misspelling', this.replaceMisspelling)
     bus.$off('ai-replace-selection', this.handleAiReplaceSelection)
+    bus.$off('ai-replace-document', this.handleAiReplaceDocument)
 
     // Smart Rewrite events
     bus.$off('show-smart-rewrite-panel', this.handleShowSmartRewritePanel)

@@ -57,6 +57,25 @@
                     <span class="dot"></span>
                   </span>
                 </div>
+                <!-- AI response action buttons -->
+                <div v-if="msg.role === 'assistant' && msg.content && !loading" class="message-actions">
+                  <button class="action-btn" @click="applyToDocument('insert', msg.content)" title="插入到光标位置">
+                    <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    插入
+                  </button>
+                  <button v-if="hasSelection" class="action-btn" @click="applyToDocument('replace', msg.content)" title="替换选中内容">
+                    <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    替换选中
+                  </button>
+                  <button class="action-btn" @click="applyToDocument('replaceAll', msg.content)" title="替换整个文档">
+                    <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    全文替换
+                  </button>
+                  <button class="action-btn" @click="copyToClipboard(msg.content)" title="复制到剪贴板">
+                    <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    复制
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -133,6 +152,9 @@
 </template>
 
 <script>
+import bus from '@/bus'
+import notice from '@/services/notification'
+
 export default {
   name: 'AiAssistant',
   data () {
@@ -153,10 +175,12 @@ export default {
       testResult: '',
       testSuccess: false,
       aiActions: [
+        { key: 'qa', label: '问答' },
         { key: 'rewrite', label: '改写' },
         { key: 'polish', label: '润色' },
         { key: 'continue', label: '续写' },
-        { key: 'qa', label: '问答' }
+        { key: 'insert', label: '插入' },
+        { key: 'replace', label: '替换' }
       ]
     }
   },
@@ -167,6 +191,24 @@ export default {
     hasConfig () {
       const settings = this.aiSettings
       return settings && settings.baseUrl && settings.apiKey
+    },
+    currentDocument () {
+      return this.$store.state.editor.currentFile || {}
+    },
+    currentMarkdown () {
+      return this.currentDocument.markdown || ''
+    },
+    currentFilename () {
+      return this.currentDocument.filename || '未命名文档'
+    },
+    currentSelection () {
+      return this.$store.state.editor.currentSelection || ''
+    },
+    hasDocument () {
+      return !!this.currentMarkdown
+    },
+    hasSelection () {
+      return !!this.currentSelection
     }
   },
   watch: {
@@ -218,19 +260,77 @@ export default {
       this.inputText = ''
       this.$nextTick(() => this.scrollToBottom())
 
-      const prompts = {
-        rewrite: `请将以下文本进行改写，保持原意但换一种表达方式：\n\n${userMessage}`,
-        polish: `请将以下文本进行润色，优化表达方式：\n\n${userMessage}`,
-        continue: `请续写以下文本：\n\n${userMessage}`,
-        qa: userMessage
+      // Build action-specific prompt with document context
+      let promptText = userMessage
+      const hasDoc = this.hasDocument
+      const hasSel = this.hasSelection
+      const docName = this.currentFilename
+      const docContent = this.currentMarkdown
+      const selection = this.currentSelection
+
+      switch (this.currentAction) {
+        case 'rewrite': {
+          if (hasSel) {
+            promptText = `请改写以下选中的文本（来自文档"${docName}"），保持原意但换一种表达方式。只输出改写后的文本，不要添加任何解释：\n\n${selection}`
+          } else {
+            promptText = `请改写以下文本，保持原意但换一种表达方式：\n\n${userMessage}`
+          }
+          break
+        }
+        case 'polish': {
+          if (hasSel) {
+            promptText = `请润色以下选中的文本（来自文档"${docName}"），优化表达方式，使其更加流畅优美。只输出润色后的文本，不要添加任何解释：\n\n${selection}`
+          } else {
+            promptText = `请润色以下文本，优化表达方式：\n\n${userMessage}`
+          }
+          break
+        }
+        case 'continue': {
+          if (hasDoc) {
+            promptText = `请根据以下文档内容续写（文档名："${docName}"）。在续写前，请先简要理解文档主题，然后自然地继续内容。只输出续写部分，不要重复原文：\n\n${docContent}\n\n用户要求：${userMessage}`
+          } else {
+            promptText = `请续写以下文本：\n\n${userMessage}`
+          }
+          break
+        }
+        case 'insert': {
+          promptText = `请根据以下要求生成内容，用于插入到文档"${docName}"中。只输出要插入的内容，不要添加任何解释：\n\n用户要求：${userMessage}`
+          if (hasDoc) {
+            promptText += `\n\n当前文档内容（供参考）：\n${docContent.substring(0, 2000)}${docContent.length > 2000 ? '...' : ''}`
+          }
+          break
+        }
+        case 'replace': {
+          if (hasSel) {
+            promptText = `请根据以下要求，重新生成选中的文本内容（来自文档"${docName}"）。只输出替换后的文本，不要添加任何解释：\n\n当前选中内容：\n${selection}\n\n用户要求：${userMessage}`
+          } else if (hasDoc) {
+            promptText = `请根据以下要求，修改文档"${docName}"的内容。只输出修改后的完整文档内容，不要添加任何解释：\n\n当前文档内容：\n${docContent}\n\n用户要求：${userMessage}`
+          } else {
+            promptText = `请根据以下要求生成内容：\n\n${userMessage}`
+          }
+          break
+        }
+        case 'qa': {
+          if (hasDoc) {
+            promptText = `你是文档"${docName}"的AI助手。请基于以下文档内容回答用户问题。如果问题与文档无关，请直接回答。\n\n文档内容：\n${docContent.substring(0, 3000)}${docContent.length > 3000 ? '...' : ''}\n\n用户问题：${userMessage}`
+          } else {
+            promptText = userMessage
+          }
+          break
+        }
+        default: {
+          promptText = userMessage
+        }
       }
 
-      const systemPrompt = '你是一个专业的Markdown写作助手，帮助用户进行文本编辑、改写、润色和问答。请用中文回答，保持回答简洁专业。'
+      const systemPrompt = hasDoc
+        ? `你是一个专业的Markdown写作助手。当前用户正在编辑文档"${docName}"。你可以查看文档内容、选中文本，并根据用户要求修改文档。请用中文回答，保持专业简洁。当用户要求你修改文档时，只输出修改后的内容，不要添加解释。`
+        : '你是一个专业的Markdown写作助手，帮助用户进行文本编辑、改写、润色和问答。请用中文回答，保持回答简洁专业。'
 
       const apiMessages = [
         { role: 'system', content: systemPrompt },
         ...this.messages.slice(0, -1).map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: prompts[this.currentAction] }
+        { role: 'user', content: promptText }
       ]
 
       this.messages.push({ role: 'assistant', content: '' })
@@ -365,6 +465,81 @@ export default {
         value: { ...this.localSettings }
       })
       this.showSettings = false
+    },
+
+    applyToDocument (type, content) {
+      if (!content) return
+
+      switch (type) {
+        case 'insert': {
+          // Insert at cursor position
+          bus.$emit('ai-replace-selection', content)
+          notice.notify({
+            title: 'AI 助手',
+            message: '内容已插入到光标位置',
+            type: 'success',
+            time: 2000
+          })
+          break
+        }
+        case 'replace': {
+          // Replace selected text
+          if (!this.hasSelection) {
+            notice.notify({
+              title: 'AI 助手',
+              message: '请先选中文本再使用替换功能',
+              type: 'warning',
+              time: 3000
+            })
+            return
+          }
+          bus.$emit('smart-rewrite-accept', {
+            selectionInfo: this.$store.state.editor.currentSelectionInfo,
+            newText: content
+          })
+          notice.notify({
+            title: 'AI 助手',
+            message: '已替换选中内容',
+            type: 'success',
+            time: 2000
+          })
+          break
+        }
+        case 'replaceAll': {
+          // Replace entire document
+          bus.$emit('ai-replace-document', content)
+          notice.notify({
+            title: 'AI 助手',
+            message: '已替换整个文档内容',
+            type: 'success',
+            time: 2000
+          })
+          break
+        }
+        default:
+          break
+      }
+    },
+
+    async copyToClipboard (content) {
+      if (!content) return
+      try {
+        await navigator.clipboard.writeText(content)
+        notice.notify({
+          title: 'AI 助手',
+          message: '内容已复制到剪贴板',
+          type: 'success',
+          time: 2000
+        })
+      } catch (err) {
+        console.error('Failed to copy:', err)
+        notice.notify({
+          title: 'AI 助手',
+          message: '复制失败，请手动复制',
+          type: 'error',
+          time: 3000
+        })
+      }
     }
   }
 }
@@ -842,5 +1017,45 @@ export default {
 .test-result.error {
   background: rgba(231, 76, 60, 0.2);
   color: #e74c3c;
+}
+
+/* Message action buttons */
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--borderColor);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message.assistant:hover .message-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  background: var(--sideBarBgColor);
+  color: var(--iconColor);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--themeColor);
+  color: white;
+  border-color: var(--themeColor);
+}
+
+.action-btn svg {
+  flex-shrink: 0;
 }
 </style>

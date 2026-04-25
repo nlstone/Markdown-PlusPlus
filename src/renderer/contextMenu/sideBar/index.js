@@ -31,7 +31,13 @@ export const showContextMenu = (event, hasPathCache) => {
   PASTE.enabled = hasPathCache
 
   CONTEXT_ITEMS.forEach(item => {
-    menu.append(new RemoteMenuItem(item))
+    // If label is a function, call it to get the translated string
+    const label = typeof item.label === 'function' ? item.label() : item.label
+    const menuItem = new RemoteMenuItem({
+      ...item,
+      label
+    })
+    menu.append(menuItem)
   })
   menu.popup([{ window: win, x: event.clientX, y: event.clientY }])
 }
