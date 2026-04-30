@@ -49,7 +49,7 @@ export default {
   },
   created () {
     this.$nextTick(() => {
-      const state = global.marktext.initialState || DEFAULT_STYLE
+      const state = global.markdownpp.initialState || DEFAULT_STYLE
       addThemeStyle(state.theme)
 
       this.$store.dispatch('ASK_FOR_USER_PREFERENCE')

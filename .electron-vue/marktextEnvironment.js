@@ -12,23 +12,23 @@ const getEnvironmentDefinitions = function () {
     // Ignore error if we build without git.
   }
 
-  const isStableRelease = !!process.env.MARKTEXT_IS_STABLE
+  const isStableRelease = !!process.env.MARKDOWNPP_IS_STABLE
   const versionSuffix = isStableRelease ? '' : ` (${shortHash})`
   return {
-    'global.MARKTEXT_GIT_SHORT_HASH': JSON.stringify(shortHash),
-    'global.MARKTEXT_GIT_HASH': JSON.stringify(fullHash),
+    'global.MARKDOWNPP_GIT_SHORT_HASH': JSON.stringify(shortHash),
+    'global.MARKDOWNPP_GIT_HASH': JSON.stringify(fullHash),
 
-    'global.MARKTEXT_VERSION': JSON.stringify(version),
-    'global.MARKTEXT_VERSION_STRING': JSON.stringify(`v${version}${versionSuffix}`),
-    'global.MARKTEXT_IS_STABLE': JSON.stringify(isStableRelease)
+    'global.MARKDOWNPP_VERSION': JSON.stringify(version),
+    'global.MARKDOWNPP_VERSION_STRING': JSON.stringify(`v${version}${versionSuffix}`),
+    'global.MARKDOWNPP_IS_STABLE': JSON.stringify(isStableRelease)
   }
 }
 
 const getRendererEnvironmentDefinitions = function () {
   const env = getEnvironmentDefinitions()
   return {
-    'process.versions.MARKTEXT_VERSION': env['global.MARKTEXT_VERSION'],
-    'process.versions.MARKTEXT_VERSION_STRING': env['global.MARKTEXT_VERSION_STRING'],
+    'process.versions.MARKDOWNPP_VERSION': env['global.MARKDOWNPP_VERSION'],
+    'process.versions.MARKDOWNPP_VERSION_STRING': env['global.MARKDOWNPP_VERSION_STRING'],
   }
 }
 

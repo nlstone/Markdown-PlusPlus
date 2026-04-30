@@ -100,10 +100,9 @@ Integrated AI assistant for intelligent writing assistance:
 
 ## Screenshot
 
-<!-- TODO: Replace with actual screenshots -->
-![](docs/marktext.png?raw=true)
+![MarkDown++ Screenshot](docs/markdownpp-main.png?raw=true)
 
-*ZRead Mode and Split-Pane Preview screenshots coming soon.*
+*MarkDown++ features ZRead Mode for immersive reading and split-pane preview for real-time markdown rendering.*
 
 ## Download and Installation
 

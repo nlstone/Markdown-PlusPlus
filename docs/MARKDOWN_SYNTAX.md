@@ -235,18 +235,15 @@ Note that placement of achors is arbitrary, you can put them anywhere you want, 
 Images have a similar syntax to links but include a preceding exclamation point.
 
 ```markdown
-![MarkDown++](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png)
+![MarkDown++](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/markdownpp.png)
 ```
 
-![MarkDown++](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png)
+![MarkDown++](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/markdownpp.png)
 
 or
 
 ```markdown
-![Alt text](hhttps://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png "MarkDown++ logo")
-```
-
-![Alt text](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png "MarkDown++ logo")
+![Alt text](https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/markdownpp.png "MarkDown++ logo")
 
 Like links, Images also have a footnote style syntax
 
@@ -258,10 +255,10 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]: https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png  "MarkDown++ logo"
+[id]: https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/markdownpp.png  "MarkDown++ logo"
 
 ```markdown
-[id]: https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/marktext.png  "MarkDown++ logo"
+[id]: https://raw.githubusercontent.com/nlstone/Markdown-PlusPlus/develop/resources/icons/256x256/markdownpp.png  "MarkDown++ logo"
 ```
 
 <br>
@@ -639,7 +636,7 @@ Which renders to:
 
 :heart: :zap: :cow: :dollar: :star: :tada:
 
-**NOTE:** MarkText provides an emoji picker with search functionality.
+**NOTE:** MarkDown++ provides an emoji picker with search functionality.
 
 <br>
 

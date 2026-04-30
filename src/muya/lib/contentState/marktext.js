@@ -1,4 +1,4 @@
-// __MARKTEXT_ONLY__
+// __MARKDOWNPP_ONLY__
 
 import { extractWord, offsetToWordCursor, validateLineCursor } from '../marktext/spellchecker'
 import selection from '../selection'
@@ -8,7 +8,7 @@ const marktextApi = ContentState => {
    * Replace the current selected word with the given replacement.
    *
    * NOTE: Unsafe method because exacly one word have to be selected. This
-   * is currently used to replace a misspelled word in MarkText that was selected
+   * is currently used to replace a misspelled word in MarkDown++ that was selected
    * by Chromium.
    *
    * @param {string} word The old word that should be replaced. The whole word must be selected.

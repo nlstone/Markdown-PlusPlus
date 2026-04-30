@@ -10,7 +10,7 @@ const getDateAsFilename = () => {
 }
 
 const getTempPath = () => {
-  const name = 'marktext-e2etest-' + getDateAsFilename()
+  const name = 'markdownpp-e2etest-' + getDateAsFilename()
   return path.join(os.tmpdir(), name)
 }
 

@@ -50,7 +50,7 @@ test.describe('Toolbar', async () => {
 
   // ---------------------------------------------------------------------------
   // Scenario 3: Save and Save As buttons — enabled when tab exists on launch
-  // MarkText always opens with an untitled tab, so hasFile is true at launch
+  // MarkDown++ always opens with an untitled tab, so hasFile is true at launch
   // (tabs.length > 0). Save/SaveAs are enabled, not disabled.
   // Buttons are only disabled when ALL tabs are closed (tabs.length === 0).
   // ---------------------------------------------------------------------------

@@ -62,7 +62,7 @@ export const getCssForOptions = options => {
       output += liberTheme
     } else {
       // Read theme from disk
-      const { userDataPath } = global.marktext.paths
+      const { userDataPath } = global.markdownpp.paths
       const themePath = path.join(userDataPath, 'themes/export', theme)
       if (isFile(themePath)) {
         try {

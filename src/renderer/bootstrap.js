@@ -6,7 +6,7 @@ import RendererPaths from './node/paths'
 let exceptionLogger = s => console.error(s)
 
 const configureLogger = () => {
-  const { debug, paths, windowId } = global.marktext.env
+  const { debug, paths, windowId } = global.markdownpp.env
   log.transports.console.level = process.env.NODE_ENV === 'development' ? 'info' : false // mirror to window console
   log.transports.mainConsole = null
   log.transports.file.resolvePath = () => path.join(paths.logPath, `editor-${windowId}.log`)
@@ -74,7 +74,7 @@ const bootstrapRenderer = () => {
     type
   } = parseUrlArgs()
   const paths = new RendererPaths(userDataPath)
-  const marktext = {
+  const markdownpp = {
     initialState,
     env: {
       debug,
@@ -84,7 +84,7 @@ const bootstrapRenderer = () => {
     },
     paths
   }
-  global.marktext = marktext
+  global.markdownpp = markdownpp
 
   configureLogger()
 }

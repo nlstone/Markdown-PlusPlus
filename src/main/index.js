@@ -58,8 +58,8 @@ try {
     : ''
   log.error(`Loading MarkDown++ failed during initialization! ${msgHint}`, err)
 
-  const EXIT_ON_ERROR = !!process.env.MARKTEXT_EXIT_ON_ERROR
-  const SHOW_ERROR_DIALOG = !process.env.MARKTEXT_ERROR_INTERACTION
+  const EXIT_ON_ERROR = !!process.env.MARKDOWNPP_EXIT_ON_ERROR
+  const SHOW_ERROR_DIALOG = !process.env.MARKDOWNPP_ERROR_INTERACTION
   if (!EXIT_ON_ERROR && SHOW_ERROR_DIALOG) {
     dialog.showErrorBox(
       'There was an error during loading',
@@ -80,5 +80,5 @@ log.transports.file.sync = false
 // Enable remote module
 remoteInitializeServer()
 
-const marktext = new App(accessor, args)
-marktext.init()
+const markdownpp = new App(accessor, args)
+markdownpp.init()

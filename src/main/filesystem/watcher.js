@@ -196,10 +196,6 @@ class Watcher {
       .on('addDir', pathname => addDir(win, pathname, type))
       .on('unlinkDir', pathname => unlinkDir(win, pathname, type))
       .on('raw', (event, subpath, details) => {
-        if (global.MARKTEXT_DEBUG_VERBOSE >= 3) {
-          console.log('watcher: ', event, subpath, details)
-        }
-
         // Fix atomic rename on Linux (chokidar#591).
         // TODO: This should also apply to macOS.
         // TODO: Do we need to rewatch when the watched directory was renamed?
@@ -318,7 +314,7 @@ class Watcher {
   }
 
   /**
-   * Check whether we should ignore the current event because the file may be changed from MarkText itself.
+   * Check whether we should ignore the current event because the file may be changed from MarkDown++ itself.
    *
    * @param {number} winId
    * @param {string} pathname
@@ -345,9 +341,6 @@ class Watcher {
             try {
               const fileInfo = await fsPromises.stat(pathname)
               if (fileInfo.mtime - start < duration) {
-                if (global.MARKTEXT_DEBUG_VERBOSE >= 3) {
-                  console.log(`Ignoring file event after "stat": current="${currentTime}", start="${start}", file="${fileInfo.mtime}".`)
-                }
                 return true
               }
             } catch (error) {

@@ -1,11 +1,11 @@
 ## Compare with `marked.js`
 
 Marked.js failed examples count: 1
-MarkText failed examples count: 0
+MarkDown++ failed examples count: 0
 
 **Example653**
 
-MarkText success and marked.js fail
+MarkDown++ success and marked.js fail
 
 ```markdown
 Markdown content

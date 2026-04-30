@@ -81,7 +81,7 @@ const mainConfig = {
 }
 
 // Fix debugger breakpoints
-if (!isProduction && process.env.MARKTEXT_BUILD_VSCODE_DEBUG) {
+if (!isProduction && process.env.MARKDOWNPP_BUILD_VSCODE_DEBUG) {
   mainConfig.devtool = 'inline-source-map'
 }
 

@@ -1,6 +1,6 @@
 import { isValidAttribute } from '../utils/dompurify'
-import { isWin } from '../config' // __MARKTEXT_PATCH__
-import { hasMarkdownExtension } from './markdownFile' // __MARKTEXT_PATCH__
+import { isWin } from '../config' // __MARKDOWNPP_PATCH__
+import { hasMarkdownExtension } from './markdownFile' // __MARKDOWNPP_PATCH__
 
 export const sanitizeHyperlink = rawLink => {
   if (rawLink && typeof rawLink === 'string') {
@@ -8,7 +8,7 @@ export const sanitizeHyperlink = rawLink => {
       return rawLink
     }
 
-    // __MARKTEXT_PATCH__
+    // __MARKDOWNPP_PATCH__
     if (isWin && /^[a-zA-Z]:[/\\].+/.test(rawLink) && hasMarkdownExtension(rawLink)) {
       // Create and try UNC path on Windows because "C:\file.md" isn't allowed.
       const uncPath = `\\\\?\\${rawLink}`
@@ -16,7 +16,7 @@ export const sanitizeHyperlink = rawLink => {
         return uncPath
       }
     }
-    // END __MARKTEXT_PATCH__
+    // END __MARKDOWNPP_PATCH__
   }
   return ''
 }

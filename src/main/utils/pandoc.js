@@ -7,7 +7,7 @@ const pandocCommand = 'pandoc'
 
 const getCommand = () => {
   if (envPathExists()) {
-    return process.env.MARKTEXT_PANDOC
+    return process.env.MARKDOWNPP_PANDOC
   }
   return pandocCommand
 }
@@ -45,7 +45,7 @@ pandoc.exists = () => {
 }
 
 const envPathExists = () => {
-  return !!process.env.MARKTEXT_PANDOC && isFile2(process.env.MARKTEXT_PANDOC)
+  return !!process.env.MARKDOWNPP_PANDOC && isFile2(process.env.MARKDOWNPP_PANDOC)
 }
 
 export default pandoc

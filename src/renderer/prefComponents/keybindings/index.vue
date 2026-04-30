@@ -87,7 +87,7 @@ export default {
 
     // Show keyboard debugging tools which has been moved from CLI because we
     // need an active window on Windows.
-    this.showDebugTools = global.marktext.env.debug
+    this.showDebugTools = global.markdownpp.env.debug
   },
 
   unmounted () {

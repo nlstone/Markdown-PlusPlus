@@ -235,14 +235,14 @@ if (!isProduction) {
 }
 
 if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test' &&
-  !process.env.MARKTEXT_DEV_HIDE_BROWSER_ANALYZER) {
+  !process.env.MARKDOWNPP_DEV_HIDE_BROWSER_ANALYZER) {
   rendererConfig.plugins.push(
     new BundleAnalyzerPlugin()
   )
 }
 
 // Fix debugger breakpoints
-if (!isProduction && process.env.MARKTEXT_BUILD_VSCODE_DEBUG) {
+if (!isProduction && process.env.MARKDOWNPP_BUILD_VSCODE_DEBUG) {
   rendererConfig.devtool = 'inline-source-map'
 }
 

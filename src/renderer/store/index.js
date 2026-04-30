@@ -19,9 +19,9 @@ Vue.use(Vuex)
 // global states
 const state = {
   platform: process.platform, // platform of system `darwin` | `win32` | `linux`
-  appVersion: process.versions.MARKTEXT_VERSION_STRING, // MarkText version string
+  appVersion: process.versions.MARKDOWNPP_VERSION_STRING, // MarkDown++ version string
   windowActive: true, // whether current window is active or focused
-  init: false // whether MarkText is initialized
+  init: false // whether MarkDown++ is initialized
 }
 
 const getters = {}

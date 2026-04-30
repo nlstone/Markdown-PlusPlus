@@ -49,7 +49,7 @@ sourceMapSupport.install({
   hookRequire: false
 })
 
-global.marktext = {}
+global.markdownpp = {}
 bootstrapRenderer()
 
 addElementStyle()
@@ -96,7 +96,7 @@ services.forEach(s => {
 })
 
 const router = new VueRouter({
-  routes: routes(global.marktext.env.type)
+  routes: routes(global.markdownpp.env.type)
 })
 
 /* eslint-disable no-new */

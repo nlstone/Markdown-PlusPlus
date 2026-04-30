@@ -22,7 +22,7 @@ const actions = {
       if (entryName === 'showToolbar') {
         const newValue = !state.showToolbar
         commit('SET_TOOLBAR_VISIBILITY', newValue)
-        const { windowId } = global.marktext.env
+        const { windowId } = global.markdownpp.env
         ipcRenderer.send('mt::view-layout-changed', windowId, { showToolbar: newValue })
       }
     })

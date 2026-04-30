@@ -46,12 +46,12 @@ export const hasSameKeys = (a, b) => {
 }
 
 export const getLogLevel = () => {
-  if (!global.MARKTEXT_DEBUG_VERBOSE || typeof global.MARKTEXT_DEBUG_VERBOSE !== 'number' ||
-    global.MARKTEXT_DEBUG_VERBOSE <= 0) {
+  if (!global.MARKDOWNPP_DEBUG_VERBOSE || typeof global.MARKDOWNPP_DEBUG_VERBOSE !== 'number' ||
+    global.MARKDOWNPP_DEBUG_VERBOSE <= 0) {
     return process.env.NODE_ENV === 'development' ? 'debug' : 'info'
-  } else if (global.MARKTEXT_DEBUG_VERBOSE === 1) {
+  } else if (global.MARKDOWNPP_DEBUG_VERBOSE === 1) {
     return 'verbose'
-  } else if (global.MARKTEXT_DEBUG_VERBOSE === 2) {
+  } else if (global.MARKDOWNPP_DEBUG_VERBOSE === 2) {
     return 'debug'
   }
   return 'silly' // >= 3

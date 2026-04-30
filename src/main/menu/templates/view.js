@@ -82,7 +82,7 @@ export default function (keybindings, i18n) {
     }]
   }
 
-  if (global.MARKTEXT_DEBUG) {
+  if (global.MARKDOWNPP_DEBUG) {
     viewMenu.submenu.push({
       type: 'separator'
     })

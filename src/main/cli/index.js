@@ -35,7 +35,7 @@ const cli = () => {
   }
 
   if (args['--version']) {
-    writeLine(`MarkDown++: ${global.MARKTEXT_VERSION_STRING}`)
+    writeLine(`MarkDown++: ${global.MARKDOWNPP_VERSION_STRING}`)
     writeLine(`Node.js: ${process.versions.node}`)
     writeLine(`Electron: ${process.versions.electron}`)
     writeLine(`Chromium: ${process.versions.chrome}`)

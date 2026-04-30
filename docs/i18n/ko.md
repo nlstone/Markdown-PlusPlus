@@ -3,8 +3,8 @@
 <h1 align="center">마크 텍스트</h1>
 
 <div align="center">
-  <a href="https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/marktext/marktext/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText">
-    <img src="https://img.shields.io/twitter/url/https/github.com/marktext/marktext.svg?style=for-the-badge" alt="twitter">
+  <a href="https://twitter.com/intent/tweet?via=markdownppme&url=https://github.com/markdownpp/markdownpp/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkdownPP">
+    <img src="https://img.shields.io/twitter/url/https/github.com/markdownpp/markdownpp.svg?style=for-the-badge" alt="twitter">
   </a>
 </div>
 <div align="center">
@@ -17,53 +17,53 @@
 
 <div align="center">
   <!-- Version -->
-  <a href="https://marktext.github.io/website">
-    <img src="https://badge.fury.io/gh/jocs%2Fmarktext.svg" alt="website">
+  <a href="https://markdownpp.github.io/website">
+    <img src="https://badge.fury.io/gh/jocs%2Fmarkdownpp.svg" alt="website">
   </a>
   <!-- License -->
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/marktext/marktext.svg" alt="LICENSE">
+    <img src="https://img.shields.io/github/license/markdownpp/markdownpp.svg" alt="LICENSE">
   </a>
   <!-- Build Status -->
-  <a href="https://travis-ci.org/marktext/marktext/">
-    <img src="https://travis-ci.org/marktext/marktext.svg?branch=master" alt="build">
+  <a href="https://travis-ci.org/markdownpp/markdownpp/">
+    <img src="https://travis-ci.org/markdownpp/markdownpp.svg?branch=master" alt="build">
   </a>
-  <a href="https://ci.appveyor.com/project/marktext/marktext/branch/master">
+  <a href="https://ci.appveyor.com/project/markdownpp/markdownpp/branch/master">
     <img src="https://ci.appveyor.com/api/projects/status/l4gxgydj0i95hmxg/branch/master?svg=true" alt="build">
   </a>
   <!-- Downloads total -->
-  <a href="https://github.com/marktext/marktext/releases">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/total.svg" alt="total download">
+  <a href="https://github.com/markdownpp/markdownpp/releases">
+    <img src="https://img.shields.io/github/downloads/markdownpp/markdownpp/total.svg" alt="total download">
   </a>
   <!-- Downloads latest release -->
-  <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+  <a href="https://github.com/markdownpp/markdownpp/releases/latest">
+    <img src="https://img.shields.io/github/downloads/markdownpp/markdownpp/v0.17.1/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
-  <a href="https://opencollective.com/marktext">
-    <img src="https://opencollective.com/marktext/tiers/silver-sponsors/badge.svg?label=SilverSponsors&color=brightgreen" alt="sponsors">
+  <a href="https://opencollective.com/markdownpp">
+    <img src="https://opencollective.com/markdownpp/tiers/silver-sponsors/badge.svg?label=SilverSponsors&color=brightgreen" alt="sponsors">
   </a>
 </div>
 
 <div align="center">
   <h3>
-    <a href="https://github.com/marktext/marktext">
+    <a href="https://github.com/markdownpp/markdownpp">
       웹사이트
     </a>
     <span> | </span>
-    <a href="https://github.com/marktext/marktext#features">
+    <a href="https://github.com/markdownpp/markdownpp#features">
       기능
     </a>
     <span> | </span>
-    <a href="https://github.com/marktext/marktext#download-and-installation">
+    <a href="https://github.com/markdownpp/markdownpp#download-and-installation">
       다운로드
     </a>
     <span> | </span>
-    <a href="https://github.com/marktext/marktext#development">
+    <a href="https://github.com/markdownpp/markdownpp#development">
       개발
     </a>
     <span> | </span>
-    <a href="https://github.com/marktext/marktext#contribution">
+    <a href="https://github.com/markdownpp/markdownpp#contribution">
       기여
     </a>
   </h3>
@@ -103,7 +103,7 @@
 <div align="center">
   <sub>이 마크다운 에디터는
     <a href="https://github.com/Jocs">Jocs</a>와
-    <a href="https://github.com/marktext/marktext/graphs/contributors">
+    <a href="https://github.com/markdownpp/markdownpp/graphs/contributors">
       기여자분들의 ❤︎로 만들어집니다.
     </a>
   </sub>
@@ -116,7 +116,7 @@
 마크 텍스트는 MIT 라이센스 오픈 소스 프로젝트이며, 최신 버전은 언제나 GitHub 릴리즈 페이지에서 무료로 다운로드할 수 있습니다. 마크 텍스트는 아직 개발 중이며, 개발은 후원자들의 후원으로 이루어집니다. 당신이 동참해주시길 바라고 있습니다:
 
 - [Patreon에서 후원하기](https://www.patreon.com/ranluo) 혹은 [1회성 후원](https://github.com/Jocs/sponsor.me)
-- [Open Collective에서 후원하기](https://opencollective.com/marktext)
+- [Open Collective에서 후원하기](https://opencollective.com/markdownpp)
 
 ##### Patreon과 Open Collective의 차이는 무엇입니까?
 
@@ -131,37 +131,37 @@ Open Collective: 모든 지출은 투명합니다. 후원금은 마크 텍스트
 
 **플래티넘 후원자**
 
-<a href="https://opencollective.com/marktext#platinum-sponsors">
- <img src="https://opencollective.com/marktext/tiers/platinum-sponsors.svg?avatarHeight=36&width=600">
+<a href="https://opencollective.com/markdownpp#platinum-sponsors">
+ <img src="https://opencollective.com/markdownpp/tiers/platinum-sponsors.svg?avatarHeight=36&width=600">
 </a>
 
 **골드 후원자**
 
-<a href="https://opencollective.com/marktext#platinum-sponsors">
-  <img src="https://opencollective.com/marktext/tiers/gold-sponsors.svg?avatarHeight=36&width=600">
+<a href="https://opencollective.com/markdownpp#platinum-sponsors">
+  <img src="https://opencollective.com/markdownpp/tiers/gold-sponsors.svg?avatarHeight=36&width=600">
 </a>
 
 **실버 후원자**
 
-<a href="https://opencollective.com/marktext#platinum-sponsors">
-  <img src="https://opencollective.com/marktext/tiers/silver-sponsors.svg?avatarHeight=36&width=600">
+<a href="https://opencollective.com/markdownpp#platinum-sponsors">
+  <img src="https://opencollective.com/markdownpp/tiers/silver-sponsors.svg?avatarHeight=36&width=600">
 </a>
 
 **브론즈 후원자**
 
-<a href="https://opencollective.com/marktext#platinum-sponsors">
-  <img src="https://opencollective.com/marktext/tiers/bronze-sponsors.svg?avatarHeight=36&width=600">
+<a href="https://opencollective.com/markdownpp#platinum-sponsors">
+  <img src="https://opencollective.com/markdownpp/tiers/bronze-sponsors.svg?avatarHeight=36&width=600">
 </a>
 
 **후원자**
 
-<a href="https://opencollective.com/marktext#backers">
-  <img src="https://opencollective.com/marktext/tiers/backer.svg?avatarHeight=36&width=600">
+<a href="https://opencollective.com/markdownpp#backers">
+  <img src="https://opencollective.com/markdownpp/tiers/backer.svg?avatarHeight=36&width=600">
 </a>
 
 ## 스크린샷
 
-![](docs/marktext.png?raw=true)
+![](docs/markdownpp.png?raw=true)
 
 ## 기능
 
@@ -201,13 +201,13 @@ Open Collective: 모든 지출은 투명합니다. 후원금은 마크 텍스트
 
 | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
 |:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![최신 버전](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![최신 버전](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![최신 버전](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+| [![최신 버전](https://img.shields.io/github/downloads/markdownpp/markdownpp/latest/markdownpp-x64.dmg.svg)](https://github.com/markdownpp/markdownpp/releases/download/v0.17.1/markdownpp-x64.dmg) | [![최신 버전](https://img.shields.io/github/downloads/markdownpp/markdownpp/latest/markdownpp-setup.exe.svg)](https://github.com/markdownpp/markdownpp/releases/download/v0.17.1/markdownpp-setup.exe) | [![최신 버전](https://img.shields.io/github/downloads/markdownpp/markdownpp/latest/markdownpp-x86_64.AppImage.svg)](https://github.com/markdownpp/markdownpp/releases/download/v0.17.1/markdownpp-x86_64.AppImage) |
 
 최신 버전의 새로운 기능을 보고 싶나요? [변경사항](.github/CHANGELOG.md)을 참조하세요.
 
 #### 맥OS
 
-최신 `marktext-%version%.dmg`를 [릴리즈 페이지](https://github.com/marktext/marktext/releases/latest)에서 다운로드하거나 [**homebrew cask**](https://github.com/caskroom/homebrew-cask)를 이용하여 설치할 수 있습니다. Homebrew-Cask를 이용하려면 [Homebrew](https://brew.sh/)가 설치되어 있어야 합니다.
+최신 `markdownpp-%version%.dmg`를 [릴리즈 페이지](https://github.com/markdownpp/markdownpp/releases/latest)에서 다운로드하거나 [**homebrew cask**](https://github.com/caskroom/homebrew-cask)를 이용하여 설치할 수 있습니다. Homebrew-Cask를 이용하려면 [Homebrew](https://brew.sh/)가 설치되어 있어야 합니다.
 
 ```bash
 brew install --cask mark-text
@@ -215,12 +215,12 @@ brew install --cask mark-text
 
 #### 윈도우
 
-마크 텍스트를 다운로드하여 설치 마법사(`marktext-setup-%version%.exe`)를 통해 설치하고 사용자별로 설치할 것인지 공용으로 설치할 것인지 선택하십시오.
+마크 텍스트를 다운로드하여 설치 마법사(`markdownpp-setup-%version%.exe`)를 통해 설치하고 사용자별로 설치할 것인지 공용으로 설치할 것인지 선택하십시오.
 
 다른 방법으로, [Chocolatey](https://chocolatey.org/)를 이용해서 마크 텍스트를 설치하십시오. Chocolatey를 이용하기 위해서는 [Chocolatey](https://chocolatey.org/install)가 설치되어 있어야 합니다.
 
 ```bash
-choco install marktext
+choco install markdownpp
 ```
 
 #### 리눅스
@@ -229,7 +229,7 @@ choco install marktext
 
 #### 기타
 
-모든 리눅스, 맥OS 그리고 윈도우 용 파일은 [릴리즈 페이지](https://github.com/marktext/marktext/releases/latest)에서 다운로드할 수 있습니다. 시스템에서 버전을 이용할 수 없을 시, [이슈](https://github.com/marktext/marktext/issues)를 열어주세요.
+모든 리눅스, 맥OS 그리고 윈도우 용 파일은 [릴리즈 페이지](https://github.com/markdownpp/markdownpp/releases/latest)에서 다운로드할 수 있습니다. 시스템에서 버전을 이용할 수 없을 시, [이슈](https://github.com/markdownpp/markdownpp/issues)를 열어주세요.
 
 ## 개발
 
@@ -247,18 +247,18 @@ choco install marktext
 ## 기여
 
 마크 텍스트는 전체 개발 중입니다. PR 하기 전에 [컨트리뷰트 가이드](CONTRIBUTING.md)를 필히 읽어주십시오.
-마크 텍스트에 새로운 기능을 추가하고 싶은가요? [로드맵](https://github.com/marktext/marktext/projects)을 참조하시어 이슈를 열어주세요.
+마크 텍스트에 새로운 기능을 추가하고 싶은가요? [로드맵](https://github.com/markdownpp/markdownpp/projects)을 참조하시어 이슈를 열어주세요.
 
 ## 기여자
 
-마크 텍스트에 기여해주신 모든 분들께 감사합니다. [[기여자](https://github.com/marktext/marktext/graphs/contributors)]
+마크 텍스트에 기여해주신 모든 분들께 감사합니다. [[기여자](https://github.com/markdownpp/markdownpp/graphs/contributors)]
 
 마크 텍스트 로고를 디자인해주신 @[Yasujizr](https://github.com/Yasujizr)에게 특별한 감사를 전합니다.
 
-<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" /></a>
+<a href="https://github.com/markdownpp/markdownpp/graphs/contributors"><img src="https://opencollective.com/markdownpp/contributors.svg?width=890" /></a>
 
 ## 라이센스
 
 [**MIT**](LICENSE).
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarktext%2Fmarktext.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarktext%2Fmarktext?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmarkdownpp%2Fmarkdownpp.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmarkdownpp%2Fmarkdownpp?ref=badge_large)

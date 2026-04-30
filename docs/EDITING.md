@@ -14,7 +14,7 @@ You can select text with your mouse cursor, double click on a word or use the ke
 
 The format overlay is a pop up that automatically appears when you're selecting text. You can easily transform text and inline markdown but also remove formatting.
 
-![](assets/marktext-format-popup.png)
+![](assets/markdownpp-format-popup.png)
 
 - Bold
 - Italics
@@ -40,7 +40,7 @@ You can configure MarkDown++ to autocomplete markdown syntax, brackets and quote
 
 Links are shown by default as normal text but if you click on a link the link is shown as markdown link with title and URL like below:
 
-![](assets/marktext-link-preview.png)
+![](assets/markdownpp-link-preview.png)
 
 ## Formatting
 
@@ -52,13 +52,13 @@ MarkDown++ will automatically format your markdown document according CommonMark
 
 When you start a new line, just type `@` to show a pop up with all available markdown features. Now you can select an entry and the line is transformed into the selected one.
 
-![](assets/marktext-quick-insert.png)
+![](assets/markdownpp-quick-insert.png)
 
 #### Line transformer
 
 You can transform a line into another type by clicking on the highlighted icon in the image below and select `Turn Into`. Furthermore, you can duplicate the selected line, create a paragraph above the selected line or delete the line.
 
-![](assets/marktext-line-transformer.png)
+![](assets/markdownpp-line-transformer.png)
 
 #### Table tools
 
@@ -68,31 +68,31 @@ It's sometimes hard to write and manage tables in markdown. In MarkDown++ you ca
 
 You can insert or delete a new row or column by clicking on an existing cell and click on the menu on the right side for rows or bottom for columns.
 
-![](assets/marktext-table_drag_drop.png)
+![](assets/markdownpp-table_drag_drop.png)
 
 **Move table cells:**
 
 You can simply move a row or column by clicking on the cell menu (like above) and dragging it by holding your mouse left-button like this:
 
-![](assets/marktext-table-gif.gif)
+![](assets/markdownpp-table-gif.gif)
 
 #### Image tools
 
-![](assets/marktext-image-viewer.png)
+![](assets/markdownpp-image-viewer.png)
 
 MarkDown++ provides an image viewer and a pop up to select and label images. You can resize any image by your mouse cursor and changes are applied in realtime. By clicking on an image or writing `![]()` a pop up is automatically shown that allows you to select an image from disk or paste a path or URL. Images can be automatically uploaded to cloud, moved to a relative or absolute path on disk. Even pasting images that are not located on disk is supported and these images are stored in the background. In addition, you can control the image alignment whether inline, left, centered or right.
 
-![](assets/marktext-image-popup.png)
+![](assets/markdownpp-image-popup.png)
 
 #### Emoji picker
 
 Instantly add emojis to your markdown document without long searches. During typing, we automatically refresh the list of available emojis.
 
-![](assets/marktext-emoji-picker.png)
+![](assets/markdownpp-emoji-picker.png)
 
 #### Focus mode
 
-![](assets/marktext-focus-mode.png)
+![](assets/markdownpp-focus-mode.png)
 
 The focus mode will help you to focus on the currently line only by fading out other lines. To activate the focus mode, simply press <kbd>CmdOrCtrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>.
 

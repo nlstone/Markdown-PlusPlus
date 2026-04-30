@@ -1,4 +1,4 @@
-// __MARKTEXT_ONLY__
+// __MARKDOWNPP_ONLY__
 
 const MARKDOWN_EXTENSIONS = Object.freeze([
   'markdown',
@@ -15,7 +15,7 @@ const MARKDOWN_EXTENSIONS = Object.freeze([
 ])
 
 /**
- * Returns true if the filename matches one of the markdown extensions allowed in MarkText.
+ * Returns true if the filename matches one of the markdown extensions allowed in MarkDown++.
  *
  * @param {string} filename Path or filename
  */

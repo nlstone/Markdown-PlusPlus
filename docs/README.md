@@ -2,7 +2,7 @@
 
 Welcome to the end-user documentation of MarkDown++.
 
-![](assets/marktext-interface-2.png)
+![](assets/markdownpp-interface-2.png)
 
 **Quick start:**
 

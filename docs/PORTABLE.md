@@ -4,12 +4,12 @@ MarkDown++ stores all user configuration inside the [application data directory]
 
 ## Linux and Windows
 
-On Linux and Windows you can also create a directory called `marktext-user-data` to save all user data inside the directory. Like:
+On Linux and Windows you can also create a directory called `markdownpp-user-data` to save all user data inside the directory. Like:
 
 ```
-marktext-portable/
- ├── marktext (Linux) or MarkDown++.exe (Windows)
- ├── marktext-user-data/
+markdownpp-portable/
+ ├── markdownpp (Linux) or MarkDown++.exe (Windows)
+ ├── markdownpp-user-data/
  ├── resources/
  ├── THIRD-PARTY-LICENSES.txt
  └── ...

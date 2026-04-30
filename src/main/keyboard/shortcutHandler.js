@@ -122,9 +122,6 @@ class Keybindings {
 
     // Notify key mapper when the keyboard layout was changed.
     keyboardLayoutMonitor.addListener(({ layout, keymap }) => {
-      if (global.MARKTEXT_DEBUG && process.env.MARKTEXT_DEBUG_KEYBOARD) {
-        console.log('[DEBUG] Keyboard layout changed:\n', layout)
-      }
       electronLocalshortcut.setKeyboardLayout(layout, keymap)
     })
   }
@@ -141,7 +138,7 @@ class Keybindings {
   }
 
   _loadLocalKeybindings () {
-    if (global.MARKTEXT_SAFE_MODE || !isFile2(this.configPath)) {
+    if (global.MARKDOWNPP_SAFE_MODE || !isFile2(this.configPath)) {
       return
     }
 
@@ -179,7 +176,6 @@ class Keybindings {
       for (const [keyB, valueB] of userAccelerators) {
         if (valueA !== '' && keyA !== keyB && isEqualAccelerator(valueA, valueB)) {
           const err = `Invalid keybindings.json configuration: Duplicate value for "${keyA}" and "${keyB}"!`
-          console.log(err)
           log.error(err)
           return
         }

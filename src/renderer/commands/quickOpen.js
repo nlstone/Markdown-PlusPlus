@@ -72,7 +72,7 @@ class QuickOpenCommand {
   }
 
   executeSubcommand = async id => {
-    const { windowId } = global.marktext.env
+    const { windowId } = global.markdownpp.env
     ipcRenderer.send('mt::open-file-by-window-id', windowId, id)
   }
 

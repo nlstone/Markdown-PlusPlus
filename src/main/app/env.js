@@ -82,7 +82,7 @@ const setupEnvironment = args => {
   patchEnvPath()
 
   const isDevMode = process.env.NODE_ENV !== 'production'
-  const debug = args['--debug'] || !!process.env.MARKTEXT_DEBUG || process.env.NODE_ENV !== 'production'
+  const debug = args['--debug'] || !!process.env.MARKDOWNPP_DEBUG || process.env.NODE_ENV !== 'production'
   const verbose = args['--verbose'] || 0
   const safeMode = args['--safe']
   const userDataPath = args['--user-data-dir'] // or null (= default user data path)
@@ -100,9 +100,9 @@ const setupEnvironment = args => {
   ensureAppDirectoriesSync(appEnvironment.paths)
 
   // Keep this for easier access.
-  global.MARKTEXT_DEBUG = debug
-  global.MARKTEXT_DEBUG_VERBOSE = verbose
-  global.MARKTEXT_SAFE_MODE = safeMode
+  global.MARKDOWNPP_DEBUG = debug
+  global.MARKDOWNPP_DEBUG_VERBOSE = verbose
+  global.MARKDOWNPP_SAFE_MODE = safeMode
 
   return appEnvironment
 }
