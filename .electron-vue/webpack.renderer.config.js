@@ -235,7 +235,7 @@ if (!isProduction) {
 }
 
 if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test' &&
-  !process.env.MARKDOWNPP_DEV_HIDE_BROWSER_ANALYZER) {
+  process.env.MARKDOWNPP_DEV_SHOW_BROWSER_ANALYZER) {
   rendererConfig.plugins.push(
     new BundleAnalyzerPlugin()
   )

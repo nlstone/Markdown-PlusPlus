@@ -15,14 +15,15 @@ import {
 } from '../commands'
 
 const autoSaveTimers = new Map()
+const initializingTabs = new Set()
 
 const state = {
   currentFile: {},
   tabs: [],
-  listToc: [], // Just use for deep equal check. and replace with new toc if needed.
+  listToc: [],
   toc: [],
   currentSelection: '',
-  currentSelectionInfo: null // Store full selection info for smart rewrite
+  currentSelectionInfo: null
 }
 
 const mutations = {
@@ -260,10 +261,10 @@ const mutations = {
 
     let tabIndex = 0
     tabIdList.forEach(id => {
+      initializingTabs.delete(id)
       const index = state.tabs.findIndex(f => f.id === id)
       const { pathname } = state.tabs[index]
 
-      // Notify main process to remove the file from the window and free resources.
       if (pathname) {
         ipcRenderer.send('mt::window-tab-closed', pathname)
       }
@@ -389,10 +390,10 @@ const actions = {
   },
 
   FORCE_CLOSE_TAB ({ commit, dispatch }, file) {
+    initializingTabs.delete(file.id)
     commit('REMOVE_FILE_WITHIN_TABS', file)
     const { pathname } = file
 
-    // Notify main process to remove the file from the window and free resources.
     if (pathname) {
       ipcRenderer.send('mt::window-tab-closed', pathname)
     }
@@ -857,6 +858,8 @@ const actions = {
     const { tabs } = state
     const fileState = getBlankFileState(tabs, defaultEncoding, endOfLine, markdownString)
 
+    initializingTabs.add(fileState.id)
+
     if (selected) {
       const { id, markdown } = fileState
       dispatch('UPDATE_CURRENT_FILE', fileState)
@@ -920,6 +923,8 @@ const actions = {
     const { markdown, isMixedLineEndings } = markdownDocument
     const docState = createDocumentState(Object.assign(markdownDocument, options))
     const { id, cursor } = docState
+
+    initializingTabs.add(id)
 
     if (selected) {
       dispatch('UPDATE_CURRENT_FILE', docState)
@@ -985,6 +990,12 @@ const actions = {
 
     markdown = adjustTrailingNewlines(markdown, trimTrailingNewline)
     commit('SET_MARKDOWN', markdown)
+
+    if (initializingTabs.has(currentId)) {
+      initializingTabs.delete(currentId)
+      commit('SET_SAVE_STATUS', true)
+      return
+    }
 
     // Ignore new line which is added if the editor text is empty (#422)
     if (oldMarkdown.length === 0 && markdown.length === 1 && markdown[0] === '\n') {

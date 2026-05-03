@@ -7,14 +7,16 @@
 /* eslint-disable */
 require('dotenv').config()
 
-// Install `vue-devtools`
+// Install `vue-devtools` (optional, can fail on newer Electron versions)
 require('electron').app.on('ready', () => {
-  const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer')
-  installExtension(VUEJS_DEVTOOLS)
-    .then(() => {})
-    .catch(err => {
-      console.log('Unable to install `vue-devtools`: \n', err)
-    })
+  try {
+    const { default: installExtension, VUEJS_DEVTOOLS } = require('electron-devtools-installer')
+    installExtension(VUEJS_DEVTOOLS)
+      .then(() => {})
+      .catch(() => {}) // Silently ignore - vue-devtools is optional for development
+  } catch (_) {
+    // electron-devtools-installer may not be available
+  }
 })
 
 /* eslint-enable */
