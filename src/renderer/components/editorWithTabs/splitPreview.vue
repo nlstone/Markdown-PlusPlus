@@ -12,7 +12,7 @@
           class="pane-toggle-btn"
           :disabled="!previewPaneVisible"
           @click="toggleSourcePane"
-          title="Toggle source code pane"
+          :title="$t('toolbar.toggleSourcePane')"
         >
           <svg viewBox="0 0 24 24" width="16" height="16">
             <path v-if="sourcePaneVisible && previewPaneVisible" fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -53,7 +53,7 @@
           class="pane-toggle-btn"
           :disabled="!sourcePaneVisible"
           @click="togglePreviewPane"
-          title="Toggle preview pane"
+          :title="$t('toolbar.togglePreviewPane')"
         >
           <svg viewBox="0 0 24 24" width="16" height="16">
             <path v-if="previewPaneVisible && sourcePaneVisible" fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -75,7 +75,7 @@
       v-show="!sourcePaneVisible"
       class="hidden-pane-toggle left"
       @click="toggleSourcePane"
-      title="Show source code pane"
+      :title="$t('toolbar.showSourcePane')"
     >
       <svg viewBox="0 0 24 24" width="20" height="20">
         <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -85,7 +85,7 @@
       v-show="!previewPaneVisible"
       class="hidden-pane-toggle right"
       @click="togglePreviewPane"
-      title="Show preview pane"
+      :title="$t('toolbar.showPreviewPane')"
     >
       <svg viewBox="0 0 24 24" width="20" height="20">
         <path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>

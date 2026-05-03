@@ -7,12 +7,12 @@
       custom-class="ag-dialog-table"
       width="500px"
     >
-      <h3>Export Options</h3>
+      <h3>{{ $t('dialog.export.title') }}</h3>
       <el-tabs v-model="activeName">
-        <el-tab-pane label="Info" name="info">
+        <el-tab-pane :label="$t('dialog.export.tabs.info')" name="info">
           <span class="text">Please customize the page appearance and click on "export" to continue.</span>
         </el-tab-pane>
-        <el-tab-pane label="Page" name="page">
+        <el-tab-pane :label="$t('dialog.export.tabs.page')" name="page">
           <!-- HTML -->
           <div v-if="!isPrintable">
             <text-box
@@ -61,7 +61,7 @@
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="Style" name="style">
+        <el-tab-pane :label="$t('dialog.export.tabs.style')" name="style">
           <bool
             description="Overwrite theme font settings:"
             :bool="fontSettingsOverwrite"
@@ -102,7 +102,7 @@
             :onChange="value => onSelectChange('showFrontMatter', value)"
           ></bool>
         </el-tab-pane>
-        <el-tab-pane label="Theme" name="theme">
+        <el-tab-pane :label="$t('dialog.export.tabs.theme')" name="theme">
           <div class="text">You can change the document appearance by choosing a theme or create a handcrafted one.</div>
           <cur-select
             description="Theme:"
@@ -112,7 +112,7 @@
             :onChange="value => onSelectChange('theme', value)"
           ></cur-select>
         </el-tab-pane>
-        <el-tab-pane v-if="isPrintable" label="Header & Footer" name="header">
+        <el-tab-pane v-if="isPrintable" :label="$t('dialog.export.tabs.headerFooter')" name="header">
           <div class="text">The text appear on all pages if header and/or footer is defined.</div>
           <cur-select
             description="Header type:"
@@ -194,7 +194,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="Table of Contents" name="toc">
+        <el-tab-pane :label="$t('dialog.export.tabs.toc')" name="toc">
           <bool
             description="Include top heading:"
             detailedDescription="Includes the first heading level too."

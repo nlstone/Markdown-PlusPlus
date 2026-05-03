@@ -182,6 +182,15 @@
       "regex": "RegEx"
     }
   },
+  "searchDialog": {
+    "placeholder": "Search",
+    "replacementPlaceholder": "Replacement",
+    "caseSensitive": "Case Sensitive",
+    "wholeWord": "Select whole word",
+    "regexp": "Use query as RegEx",
+    "replaceAll": "Replace All",
+    "replaceSingle": "Replace Single"
+  },
   "dialog": {
     "export": {
       "title": "Export Options",
@@ -200,6 +209,13 @@
     "rename": {
       "title": "Rename",
       "placeholder": "Enter new name"
+    },
+    "tableDialog": {
+      "title": "Insert Table",
+      "rows": "Rows",
+      "columns": "Columns",
+      "cancel": "Cancel",
+      "ok": "OK"
     },
     "import": {
       "title": "Import",
@@ -357,6 +373,10 @@
     "exportPdf": "Export PDF",
     "print": "Print",
     "reloadImages": "Reload Images",
+    "toggleSourcePane": "Toggle source code pane",
+    "togglePreviewPane": "Toggle preview pane",
+    "showSourcePane": "Show source code pane",
+    "showPreviewPane": "Show preview pane",
     "toggleToc": "Toggle Table of Contents",
     "sourceCodePane": "Source Code",
     "previewPane": "Preview"

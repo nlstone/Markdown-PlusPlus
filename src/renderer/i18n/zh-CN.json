@@ -182,6 +182,15 @@
       "regex": "正则表达式"
     }
   },
+  "searchDialog": {
+    "placeholder": "搜索",
+    "replacementPlaceholder": "替换",
+    "caseSensitive": "区分大小写",
+    "wholeWord": "全字匹配",
+    "regexp": "使用正则表达式",
+    "replaceAll": "全部替换",
+    "replaceSingle": "替换单个"
+  },
   "dialog": {
     "export": {
       "title": "导出选项",
@@ -200,6 +209,13 @@
     "rename": {
       "title": "重命名",
       "placeholder": "输入新名称"
+    },
+    "tableDialog": {
+      "title": "插入表格",
+      "rows": "行数",
+      "columns": "列数",
+      "cancel": "取消",
+      "ok": "确定"
     },
     "import": {
       "title": "导入",
@@ -357,6 +373,10 @@
     "exportPdf": "导出 PDF",
     "print": "打印",
     "reloadImages": "重新加载图片",
+    "toggleSourcePane": "切换源码面板",
+    "togglePreviewPane": "切换预览面板",
+    "showSourcePane": "显示源码面板",
+    "showPreviewPane": "显示预览面板",
     "toggleToc": "切换目录",
     "sourceCodePane": "源代码",
     "previewPane": "预览"
