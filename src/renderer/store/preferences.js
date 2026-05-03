@@ -79,7 +79,7 @@ const state = {
   typewriter: false, // typewriter mode
   focus: false, // focus mode
   sourceCode: false, // source code mode
-  splitPreview: false, // split preview mode (source code + preview pane)
+  splitPreview: true, // split preview mode - default ON, show preview pane only
 
   // user configration
   imageFolderPath: '',
@@ -168,8 +168,19 @@ const actions = {
   // Toggle a view option and notify main process to toggle menu item.
   LISTEN_TOGGLE_VIEW ({ commit, dispatch, state }) {
     bus.$on('view:toggle-view-entry', entryName => {
+      // Mutual exclusion: splitPreview and WYSIWYG are exclusive
+      if (entryName === 'splitPreview' && !state.splitPreview) {
+        // Switching to split preview: turn off sourceCode mode
+        commit('SET_MODE', { type: 'sourceCode', checked: false })
+      }
       commit('TOGGLE_VIEW_MODE', entryName)
       dispatch('DISPATCH_EDITOR_VIEW_STATE', { [entryName]: state[entryName] })
+    })
+
+    // Switch to WYSIWYG mode (turn off split preview)
+    bus.$on('view:switch-to-wysiwyg', () => {
+      commit('SET_MODE', { type: 'splitPreview', checked: false })
+      dispatch('DISPATCH_EDITOR_VIEW_STATE', { splitPreview: false })
     })
   },
 

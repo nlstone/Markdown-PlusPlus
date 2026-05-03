@@ -13,8 +13,14 @@
     </toolbar-tooltip>
 
     <toolbar-tooltip :content="$t('toolbar.splitPreviewMode')" v-show="!isNarrow">
-      <button class="toolbar-btn" :class="{ active: splitPreview }" @click="toggleSplitPreview">
+      <button class="toolbar-btn" :class="{ active: splitPreview }" :disabled="splitPreview" @click="toggleSplitPreview">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.splitPreview" /></svg>
+      </button>
+    </toolbar-tooltip>
+
+    <toolbar-tooltip :content="$t('toolbar.wysiwygMode')" v-show="!isNarrow">
+      <button class="toolbar-btn" :class="{ active: !splitPreview }" :disabled="!splitPreview" @click="switchToWysiwygMode">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.wysiwygMode" /></svg>
       </button>
     </toolbar-tooltip>
 
@@ -50,6 +56,7 @@ import {
   showCommandPalette,
   toggleSourceCode,
   toggleSplitPreview,
+  switchToWysiwygMode,
   toggleTypewriter,
   toggleFocus,
   toggleSidebar,
@@ -91,6 +98,7 @@ export default {
     showCommandPalette,
     toggleSourceCode,
     toggleSplitPreview,
+    switchToWysiwygMode,
     toggleTypewriter,
     toggleFocus,
     toggleSidebar,

@@ -16,6 +16,7 @@ export const showCommandPalette = () => ipcRenderer.emit('mt::show-command-palet
 // View operations (bus events)
 export const toggleSourceCode = () => bus.$emit('view:toggle-view-entry', 'sourceCode')
 export const toggleSplitPreview = () => bus.$emit('view:toggle-view-entry', 'splitPreview')
+export const switchToWysiwygMode = () => bus.$emit('view:switch-to-wysiwyg')
 export const toggleTypewriter = () => bus.$emit('view:toggle-view-entry', 'typewriter')
 export const toggleFocus = () => bus.$emit('view:toggle-view-entry', 'focus')
 export const toggleSidebar = () => bus.$emit('view:toggle-layout-entry', 'showSideBar')

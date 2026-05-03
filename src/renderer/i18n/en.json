@@ -344,6 +344,7 @@
     "saveAsShortcut": "Save As (Ctrl+Shift+S)",
     "commandPalette": "Command Palette",
     "sourceCodeMode": "Source Code Mode",
+    "wysiwygMode": "WYSIWYG Mode",
     "splitPreviewMode": "Split Preview Mode",
     "typewriterMode": "Typewriter Mode",
     "focusMode": "Focus Mode",

@@ -141,8 +141,8 @@ export default {
       previewPaneReady: false,
       currentMarkdown: this.markdown, // Initialize from prop immediately
       editor: null, // CodeMirror editor instance
-      sourcePaneVisible: true, // Source code pane visibility
-      previewPaneVisible: true // Preview pane visibility
+      sourcePaneVisible: false, // Source code pane visibility - default hidden, show only preview
+      previewPaneVisible: true // Preview pane visibility - default visible
     }
   },
 
