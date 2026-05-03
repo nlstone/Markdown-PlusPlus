@@ -17,6 +17,7 @@ export default function (keybindings, i18n) {
       accelerator: keybindings.getAccelerator('view.source-code-mode'),
       type: 'checkbox',
       checked: false,
+      visible: false,
       click (item, focusedWindow) {
         actions.toggleSourceCodeMode(focusedWindow)
       }

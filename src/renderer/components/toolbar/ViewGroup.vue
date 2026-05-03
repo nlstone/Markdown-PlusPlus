@@ -6,7 +6,7 @@
       </button>
     </toolbar-tooltip>
 
-    <toolbar-tooltip :content="$t('toolbar.sourceCodeMode')" v-show="!isNarrow">
+    <toolbar-tooltip :content="$t('toolbar.sourceCodeMode')" v-show="false">
       <button class="toolbar-btn" :class="{ active: sourceCode }" @click="toggleSourceCode">
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.sourceCode" /></svg>
       </button>

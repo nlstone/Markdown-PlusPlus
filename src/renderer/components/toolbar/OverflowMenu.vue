@@ -9,7 +9,7 @@
       <template v-if="isNarrow">
         <div class="overflow-item" @click="newTab">{{ $t('toolbar.newTab') }}</div>
         <div class="overflow-item" @click="openFolder">{{ $t('toolbar.openFolder') }}</div>
-        <div class="overflow-item" @click="toggleSourceCode">{{ $t('toolbar.sourceCodeMode') }}</div>
+        <div class="overflow-item" v-show="false" @click="toggleSourceCode">{{ $t('toolbar.sourceCodeMode') }}</div>
         <div class="overflow-item" @click="toggleTabBar">{{ $t('toolbar.showTabBar') }}</div>
         <div class="overflow-separator"></div>
       </template>

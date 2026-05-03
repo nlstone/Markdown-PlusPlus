@@ -344,7 +344,7 @@
     "saveAsShortcut": "另存为 (Ctrl+Shift+S)",
     "commandPalette": "命令面板",
     "sourceCodeMode": "源代码模式",
-    "splitPreviewMode": "分栏预览模式",
+    "splitPreviewMode": "源码预览模式",
     "typewriterMode": "打字机模式",
     "focusMode": "专注模式",
     "showSidebar": "显示侧边栏",
