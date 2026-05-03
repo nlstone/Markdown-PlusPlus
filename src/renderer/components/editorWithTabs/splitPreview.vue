@@ -25,6 +25,8 @@
         :markdown="markdown"
         :cursor="cursor"
         :text-direction="textDirection"
+        :focus="focus"
+        :typewriter="typewriter"
         @mounted="onSourceCodeMounted"
         @content-change="handleContentChange"
       />
@@ -98,6 +100,7 @@ import PreviewPane from './previewPane.vue'
 import { ScrollSyncManager } from '@/utils/scrollSync'
 import bus from '@/bus'
 import i18n from '@/i18n'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SplitPreview',
@@ -144,6 +147,10 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      focus: state => state.preferences.focus,
+      typewriter: state => state.preferences.typewriter
+    }),
     sourceCodeTitle () {
       return i18n.t('toolbar.sourceCodePane')
     },

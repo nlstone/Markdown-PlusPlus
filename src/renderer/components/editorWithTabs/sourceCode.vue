@@ -1,6 +1,7 @@
 <template>
   <div
     class="source-code"
+    :class="{ 'cm-focus-mode': focus, 'cm-typewriter': typewriter }"
     ref="sourceCode"
   >
   </div>
@@ -21,7 +22,9 @@ export default {
     textDirection: {
       type: String,
       required: true
-    }
+    },
+    focus: Boolean,
+    typewriter: Boolean
   },
 
   computed: {
@@ -47,6 +50,17 @@ export default {
       const { editor } = this
       if (value !== oldValue && editor) {
         setTextDirection(editor, value)
+      }
+    },
+    typewriter: function (value) {
+      const { editor } = this
+      if (editor) {
+        if (value) {
+          editor.on('cursorActivity', this.handleTypewriterScroll)
+          this.handleTypewriterScroll(editor)
+        } else {
+          editor.off('cursorActivity', this.handleTypewriterScroll)
+        }
       }
     }
   },
@@ -123,6 +137,12 @@ export default {
         editor.scrollTo(0, 0)
       }
       this.tabId = id
+
+      // Initialize typewriter mode if enabled
+      if (this.typewriter) {
+        editor.on('cursorActivity', this.handleTypewriterScroll)
+      }
+
       // Emit mounted event for parent components (e.g., splitPreview)
       this.$emit('mounted', { editor: this.editor })
     })
@@ -144,6 +164,18 @@ export default {
     bus.$emit('file-changed', { id: this.tabId, markdown, cursor, renderCursor: true })
   },
   methods: {
+    handleTypewriterScroll (cm) {
+      if (!this.typewriter) return
+      const cursor = cm.getCursor()
+      const scrollInfo = cm.getScrollInfo()
+      const cursorY = cm.heightAtLine(cursor.line, 'local')
+      const lineHeight = cm.defaultTextHeight()
+      const targetY = cursorY - (scrollInfo.clientHeight / 2) + (lineHeight / 2)
+
+      if (Math.abs(scrollInfo.top - targetY) > 2) {
+        cm.scrollTo(null, targetY)
+      }
+    },
     handleImageAction ({ id, result, alt }) {
       const { editor } = this
       const value = editor.getValue()

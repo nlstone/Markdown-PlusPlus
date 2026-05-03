@@ -108,3 +108,21 @@ SOFTWARE.
 .cm-s-one-dark .cm-m-css.cm-builtin {color: #56b6c2;}
 /* lua syntax corrections */
 .cm-s-one-dark .cm-m-lua.cm-variable {color: #56b6c2;}
+
+/* focus mode for source code editor */
+.source-code.cm-focus-mode .CodeMirror-line {
+  opacity: 0.25;
+  transition: opacity 0.15s ease;
+}
+.source-code.cm-focus-mode .CodeMirror-activeline .CodeMirror-line {
+  opacity: 1;
+}
+.source-code.cm-focus-mode .CodeMirror-activeline-background {
+  background-color: rgba(153, 187, 255, 0.08);
+}
+
+/* typewriter mode padding for source code editor */
+.source-code.cm-typewriter .CodeMirror-lines {
+  padding-top: calc(50vh - 50px);
+  padding-bottom: calc(50vh - 50px);
+}
