@@ -16,6 +16,31 @@ import { renderMarkdownWithLines } from '@/utils/previewRenderer'
 import { mapState } from 'vuex'
 import bus from '@/bus'
 
+// Mermaid diagram rendering support
+let mermaidInstance = null
+let mermaidInitialized = false
+
+const loadMermaid = async () => {
+  if (!mermaidInstance) {
+    const mermaid = await import('mermaid/dist/mermaid.core.mjs')
+    mermaidInstance = mermaid.default
+  }
+  return mermaidInstance
+}
+
+const initMermaid = async (theme = 'default') => {
+  const mermaid = await loadMermaid()
+  if (!mermaidInitialized) {
+    mermaid.initialize({
+      securityLevel: 'strict',
+      theme: theme,
+      startOnLoad: false
+    })
+    mermaidInitialized = true
+  }
+  return mermaid
+}
+
 export default {
   name: 'PreviewPane',
 
@@ -37,7 +62,8 @@ export default {
       renderedContent: '',
       renderTimer: null,
       previewContent: null,
-      previewPane: null
+      previewPane: null,
+      mermaidRenderTimer: null
     }
   },
 
@@ -46,7 +72,8 @@ export default {
       theme: state => state.preferences.theme,
       fontSize: state => state.preferences.fontSize,
       lineHeight: state => state.preferences.lineHeight,
-      editorFontFamily: state => state.preferences.editorFontFamily
+      editorFontFamily: state => state.preferences.editorFontFamily,
+      mermaidTheme: state => state.preferences.mermaidTheme || 'default'
     })
   },
 
@@ -59,6 +86,13 @@ export default {
     },
     theme () {
       this.applyTheme()
+    },
+    mermaidTheme (newTheme) {
+      // Reinitialize mermaid with new theme and re-render
+      mermaidInitialized = false
+      if (this.markdown) {
+        this.renderPreview(this.markdown)
+      }
     }
   },
 
@@ -88,6 +122,7 @@ export default {
 
   beforeDestroy () {
     if (this.renderTimer) clearTimeout(this.renderTimer)
+    if (this.mermaidRenderTimer) clearTimeout(this.mermaidRenderTimer)
     this.previewPane.removeEventListener('scroll', this.handleScroll)
     bus.$off('invalidate-image-cache', this.invalidateImageCache)
   },
@@ -116,7 +151,7 @@ export default {
     /**
      * Render markdown content to preview pane
      */
-    renderPreview (markdown) {
+    async renderPreview (markdown) {
       try {
         const html = renderMarkdownWithLines(markdown, {
           superSubScript: true,
@@ -125,11 +160,59 @@ export default {
         this.previewContent.innerHTML = html
         this.renderedContent = html
 
+        // Render mermaid diagrams after HTML is set
+        await this.renderMermaidDiagrams()
+
         // Only scroll to cursor position when explicitly requested (not during typing)
         // The cursor position scrolling should be controlled by scroll sync instead
       } catch (err) {
         console.error('Preview render error:', err)
         this.previewContent.innerHTML = '<p class="error">Preview render error</p>'
+      }
+    },
+
+    /**
+     * Find and render all mermaid diagram code blocks
+     */
+    async renderMermaidDiagrams () {
+      const mermaidBlocks = this.previewContent.querySelectorAll('pre code.language-mermaid')
+
+      if (mermaidBlocks.length === 0) {
+        return
+      }
+
+      try {
+        const mermaid = await initMermaid(this.mermaidTheme)
+
+        // Convert code blocks to mermaid-compatible divs
+        mermaidBlocks.forEach((codeBlock, index) => {
+          const pre = codeBlock.parentElement
+          const code = codeBlock.textContent
+
+          // Create a div for mermaid rendering
+          const mermaidDiv = document.createElement('div')
+          mermaidDiv.className = 'mermaid'
+          mermaidDiv.setAttribute('data-mermaid-id', `preview-${index}`)
+
+          try {
+            // Validate and render mermaid code
+            mermaid.parse(code)
+            mermaidDiv.textContent = code
+
+            // Replace the pre/code block with mermaid div
+            pre.replaceWith(mermaidDiv)
+          } catch (err) {
+            // Show error for invalid mermaid syntax
+            mermaidDiv.innerHTML = '< Invalid Mermaid Diagram >'
+            mermaidDiv.className = 'mermaid-error'
+            pre.replaceWith(mermaidDiv)
+          }
+        })
+
+        // Run mermaid.init to render all diagrams
+        mermaid.init(undefined, this.previewContent.querySelectorAll('.mermaid'))
+      } catch (err) {
+        console.error('Mermaid render error:', err)
       }
     },
 
@@ -353,5 +436,28 @@ export default {
   color: #f56c6c;
   text-align: center;
   padding: 20px;
+}
+
+/* Mermaid diagram styles */
+.preview-content .mermaid {
+  background: var(--editorBgColor);
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  text-align: center;
+  overflow: auto;
+}
+
+.preview-content .mermaid svg {
+  max-width: 100%;
+}
+
+.preview-content .mermaid-error {
+  color: #f56c6c;
+  text-align: center;
+  padding: 20px;
+  background: var(--editorBgColorSecondary);
+  border-radius: 6px;
+  margin-bottom: 16px;
 }
 </style>
