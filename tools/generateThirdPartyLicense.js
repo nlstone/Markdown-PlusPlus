@@ -27,7 +27,7 @@ thirdPartyChecker.getLicenses(rootDir, (err, packages, checker) => {
   const addedKeys = {}
   Object.keys(packages).forEach(key => {
     if (/^babel-helper-vue-jsx-merge-props/.test(key) ||
-      /^marktext/.test(key)) {
+      /^marktext|^markdownpp/.test(key)) {
       // babel-helper-vue-jsx-merge-props: MIT licensed used by element-ui
       return
     }

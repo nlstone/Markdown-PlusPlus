@@ -26,4 +26,7 @@ dev-output.log
 .run/
 node_modules/
 .tools/
+test/e2e/videos/
+test/e2e/screenshots/
+*.tgz
 

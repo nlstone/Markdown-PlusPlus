@@ -97,7 +97,7 @@ export default {
 
   methods: {
     openKeybindingWiki () {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/KEYBINDINGS.md')
+      shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/docs/KEYBINDINGS.md')
     },
     saveKeybindings () {
       if (this.keybindingConfigurator && this.keybindingList.length > 0) {

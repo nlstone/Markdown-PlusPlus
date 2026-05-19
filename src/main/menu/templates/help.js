@@ -2,7 +2,7 @@ import path from 'path'
 import { shell } from 'electron'
 import { isFile } from 'common/filesystem'
 import * as actions from '../actions/help'
-import { checkUpdates } from '../actions/marktext'
+import { checkUpdates } from '../actions/app'
 
 /// Check whether the package is updatable at runtime.
 const isUpdatable = () => {
@@ -34,24 +34,24 @@ export default function (i18n) {
     submenu: [{
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.quickStart) || 'Quick Start...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/README.md')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/docs/README.md')
       }
     }, {
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.markdownReference) || 'Markdown Reference...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/MARKDOWN_SYNTAX.md')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/docs/MARKDOWN_SYNTAX.md')
       }
     }, {
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.changelog) || 'Changelog...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext/blob/master/.github/CHANGELOG.md')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/.github/CHANGELOG.md')
       }
     }, {
       type: 'separator'
     }, {
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.donate) || 'Donate via Open Collective...',
       click (item, win) {
-        shell.openExternal('https://opencollective.com/marktext')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus')
       }
     }, {
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.feedback) || 'Feedback via Twitter...',
@@ -61,36 +61,31 @@ export default function (i18n) {
     }, {
       label: (i18n && i18n.menu && i18n.menu.help && i18n.menu.help.reportIssue) || 'Report Issue or Request Feature...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext/issues')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/issues')
       }
     }, {
       type: 'separator'
     }, {
       label: 'Website...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus')
       }
     }, {
       label: 'Watch on GitHub...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus')
       }
     }, {
-      label: 'Follow us on Github...',
+      label: 'Follow us on GitHub...',
       click () {
-        shell.openExternal('https://github.com/Jocs')
-      }
-    }, {
-      label: 'Follow us on Twitter...',
-      click () {
-        shell.openExternal('https://twitter.com/marktextapp')
+        shell.openExternal('https://github.com/nlstone')
       }
     }, {
       type: 'separator'
     }, {
       label: 'License...',
       click () {
-        shell.openExternal('https://github.com/marktext/marktext/blob/master/LICENSE')
+        shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/LICENSE')
       }
     }]
   }

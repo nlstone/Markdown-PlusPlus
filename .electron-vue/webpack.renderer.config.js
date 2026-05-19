@@ -13,7 +13,7 @@ const postcssPresetEnv = require('postcss-preset-env')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const ESLintPlugin = require('eslint-webpack-plugin')
 
-const { getRendererEnvironmentDefinitions } = require('./marktextEnvironment')
+const { getRendererEnvironmentDefinitions } = require('./markdownppEnvironment')
 const { dependencies } = require('../package.json')
 
 const isProduction = process.env.NODE_ENV === 'production'

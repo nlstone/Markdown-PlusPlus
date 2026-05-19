@@ -97,7 +97,7 @@ export default {
       this.selectedFace = name
     },
     reportViaGithub () {
-      shell.openExternal('https://github.com/marktext/marktext/issues/new')
+      shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/issues/new')
     },
     reportViaTwitter () {
       const { value, selectedFace } = this
@@ -105,8 +105,8 @@ export default {
       const origin = 'https://twitter.com/intent/tweet'
 
       const params = {
-        via: 'marktextme',
-        url: encodeURI('https://github.com/marktext/marktext/'),
+        via: 'markdownpp',
+        url: encodeURI('https://github.com/nlstone/Markdown-PlusPlus/'),
         text: value
       }
 

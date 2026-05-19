@@ -106,7 +106,7 @@
           <div class="text">You can change the document appearance by choosing a theme or create a handcrafted one.</div>
           <cur-select
             description="Theme:"
-            more="https://github.com/marktext/marktext/blob/develop/docs/EXPORT_THEMES.md"
+            more="https://github.com/nlstone/Markdown-PlusPlus/blob/develop/docs/EXPORT_THEMES.md"
             :value="theme"
             :options="themeList"
             :onChange="value => onSelectChange('theme', value)"

@@ -3,7 +3,7 @@
 import { extractWord, offsetToWordCursor, validateLineCursor } from '../marktext/spellchecker'
 import selection from '../selection'
 
-const marktextApi = ContentState => {
+const markdownppApi = ContentState => {
   /**
    * Replace the current selected word with the given replacement.
    *
@@ -46,4 +46,4 @@ const marktextApi = ContentState => {
   }
 }
 
-export default marktextApi
+export default markdownppApi

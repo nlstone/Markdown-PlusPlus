@@ -2,7 +2,7 @@ import edit from './edit'
 import prefEdit from './prefEdit'
 import file from './file'
 import help from './help'
-import marktext from './marktext'
+import appMenu from './appMenu'
 import view from './view'
 import window from './window'
 import paragraph from './paragraph'
@@ -30,7 +30,7 @@ const getMenuTranslations = (lang) => {
 export const configSettingMenu = (keybindings, lang = 'en') => {
   const i18n = getMenuTranslations(lang)
   return [
-    ...(process.platform === 'darwin' ? [marktext(keybindings, i18n)] : []),
+    ...(process.platform === 'darwin' ? [appMenu(keybindings, i18n)] : []),
     prefEdit(keybindings, i18n),
     help(i18n)
   ]
@@ -49,7 +49,7 @@ export default function (keybindings, preferences, recentlyUsedFiles) {
   const i18n = getMenuTranslations(lang)
 
   return [
-    ...(process.platform === 'darwin' ? [marktext(keybindings, i18n)] : []),
+    ...(process.platform === 'darwin' ? [appMenu(keybindings, i18n)] : []),
     file(keybindings, preferences, recentlyUsedFiles, i18n),
     edit(keybindings, i18n),
     paragraph(keybindings, i18n),

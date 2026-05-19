@@ -623,12 +623,12 @@ const commands = [
   }, {
     id: 'docs.user-guide',
     execute: async () => {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/README.md')
+      shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/docs/README.md')
     }
   }, {
     id: 'docs.markdown-syntax',
     execute: async () => {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/MARKDOWN_SYNTAX.md')
+      shell.openExternal('https://github.com/nlstone/Markdown-PlusPlus/blob/master/docs/MARKDOWN_SYNTAX.md')
     }
   },
 

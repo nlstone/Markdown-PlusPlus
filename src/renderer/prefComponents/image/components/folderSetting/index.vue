@@ -11,7 +11,7 @@
     <compound>
       <template #head>
         <bool description="Prefer relative assets folder"
-          more="https://github.com/marktext/marktext/blob/develop/docs/IMAGES.md"
+          more="https://github.com/nlstone/Markdown-PlusPlus/blob/develop/docs/IMAGES.md"
           :bool="imagePreferRelativeDirectory"
           :onChange="value => onSelectChange('imagePreferRelativeDirectory', value)"></bool>
       </template>
