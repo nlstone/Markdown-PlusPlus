@@ -10,7 +10,12 @@ MarkDown++ is a desktop application and available for:
 
 ### Is MarkDown++ open-source and free?
 
-Yes, MarkDown++ is licensed under the [MIT](https://github.com/nlstone/Markdown-PlusPlus/blob/develop/LICENSE) license and completely free for everyone. The source-code is available on [GitHub](https://github.com/nlstone/Markdown-PlusPlus).
+MarkDown++ is dual-licensed:
+
+- **MIT License** — Free for personal use, open-source projects, education, and non-commercial purposes. The source code is available on [GitHub](https://github.com/nlstone/Markdown-PlusPlus).
+- **Commercial License** — Required for commercial SaaS deployment, proprietary redistribution, or OEM embedding. See [COMMERCIAL_LICENSE.md](https://github.com/nlstone/Markdown-PlusPlus/blob/master/COMMERCIAL_LICENSE.md) for details.
+
+If you are unsure whether your use case requires a commercial license, please contact us at license@markdownpp.dev.
 
 ### Can I use MarkDown++ as note management/taking app?
 

@@ -189,6 +189,9 @@ Please read the [Contributing Guide](CONTRIBUTING.md) before making a pull reque
 
 ## License
 
-[**MIT**](LICENSE)
+MarkDown++ is dual-licensed:
 
-MarkDown++ is based on [MarkText](https://github.com/marktext/marktext), Copyright (c) 2017-present Luo Ran. See [LICENSE](LICENSE) for details.
+- **MIT License** — for personal use, open-source projects, education, and non-commercial purposes. See [LICENSE](LICENSE).
+- **Commercial License** — required for commercial SaaS, proprietary redistribution, OEM embedding, and similar commercial use. See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md).
+
+MarkDown++ is based on [MarkText](https://github.com/marktext/marktext), Copyright (c) 2017-present Luo Ran, licensed under the MIT License.

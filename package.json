@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "homepage": "https://github.com/nlstone/Markdown-PlusPlus/",
   "description": "Next generation markdown editor with ZRead mode, split-pane preview, and AI editing",
-  "license": "MIT",
+  "license": "MIT AND Commercial",
   "main": "./dist/electron/main.js",
   "scripts": {
     "release": "echo 'Please run \"build\" or \"release:{linux,mac,win}\"' && exit 1",

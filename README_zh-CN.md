@@ -189,6 +189,9 @@ MarkDown++ 正在积极开发中，欢迎社区贡献！
 
 ## 许可证
 
-[**MIT**](LICENSE)
+MarkDown++ 采用双重许可协议：
 
-MarkDown++ 基于 [MarkText](https://github.com/marktext/marktext) 开发，MarkText 版权所有 (c) 2017-present Luo Ran。详见 [LICENSE](LICENSE)。
+- **MIT 许可证** — 适用于个人使用、开源项目、教育和非商业用途。详见 [LICENSE](LICENSE)。
+- **商用许可证** — 用于商业 SaaS、闭源再分发、OEM 嵌入等商业用途时需另行授权。详见 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)。
+
+MarkDown++ 基于 [MarkText](https://github.com/marktext/marktext) 开发，MarkText 版权所有 (c) 2017-present Luo Ran，遵循 MIT 许可证。
