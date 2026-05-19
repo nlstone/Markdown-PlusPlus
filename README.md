@@ -107,23 +107,28 @@ Integrated AI assistant for intelligent writing assistance:
 
 ## Download and Installation
 
-![platform](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-64&style=for-the-badge)
+### Windows (Recommended)
 
-All binaries for Linux, macOS, and Windows can be downloaded from the [release page](https://github.com/nlstone/Markdown-PlusPlus/releases/latest).
+Download the installer from the [release page](https://github.com/nlstone/Markdown-PlusPlus/releases/latest):
 
-### macOS
+- **Installer** (`markdownpp-setup.exe`) — Recommended. Includes "Open with MarkDown++" context menu and OpenWith registration for `.md` files.
+- **Portable** (`markdownpp-portable.exe`) — No installation required.
 
-Download the latest `markdownpp-%arch%-mac.dmg` from the [release page](https://github.com/nlstone/Markdown-PlusPlus/releases/latest).
+> Windows is the primary tested platform. Installation packages for other operating systems are not yet provided, but you can build from source (see [Development](#development)).
 
-### Windows
+### macOS & Linux
 
-Download and install via setup wizard (`markdownpp-setup.exe`) or portable version (`markdownpp-portable.exe`) from the [release page](https://github.com/nlstone/Markdown-PlusPlus/releases/latest).
+Pre-built packages are currently not available. To use MarkDown++ on macOS or Linux, please build from source:
 
-During installation, you can choose to set MarkDown++ as the default editor for `.md` files.
+```bash
+git clone https://github.com/nlstone/Markdown-PlusPlus.git
+cd Markdown-PlusPlus
+yarn install
+yarn dev        # Run in development mode
+yarn build      # Build for production
+```
 
-### Linux
-
-Download the AppImage, deb, or rpm package from the [release page](https://github.com/nlstone/Markdown-PlusPlus/releases/latest).
+See [Build Instructions](docs/dev/BUILD.md) for detailed requirements.
 
 ## Development
 
