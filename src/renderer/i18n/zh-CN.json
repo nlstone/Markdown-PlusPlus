@@ -335,7 +335,111 @@
     "paragraphs": "段落"
   },
   "editor": {
+    "frontMenu": {
+      "duplicate": "复制",
+      "turnInto": "转换为",
+      "newParagraph": "新建段落",
+      "delete": "删除"
+    },
     "quickInsert": {
+      "categories": {
+        "basicBlock": "基本块",
+        "header": "标题",
+        "advancedBlock": "高级块",
+        "listBlock": "列表块",
+        "diagram": "图表"
+      },
+      "items": {
+        "paragraph": {
+          "title": "段落",
+          "subTitle": "在此输入段落文本..."
+        },
+        "horizontalLine": {
+          "title": "水平分隔线",
+          "subTitle": "---"
+        },
+        "frontMatter": {
+          "title": "Front Matter",
+          "subTitle": "--- 文档元数据 ---"
+        },
+        "heading1": {
+          "title": "标题 1",
+          "subTitle": "# 一级标题..."
+        },
+        "heading2": {
+          "title": "标题 2",
+          "subTitle": "## 二级标题..."
+        },
+        "heading3": {
+          "title": "标题 3",
+          "subTitle": "### 三级标题..."
+        },
+        "heading4": {
+          "title": "标题 4",
+          "subTitle": "#### 四级标题..."
+        },
+        "heading5": {
+          "title": "标题 5",
+          "subTitle": "##### 五级标题..."
+        },
+        "heading6": {
+          "title": "标题 6",
+          "subTitle": "###### 六级标题..."
+        },
+        "table": {
+          "title": "表格",
+          "subTitle": "| 表头 | 内容 |"
+        },
+        "mathblock": {
+          "title": "数学公式块",
+          "subTitle": "$$ 数学公式 $$"
+        },
+        "html": {
+          "title": "HTML 块",
+          "subTitle": "<div> HTML 内容 </div>"
+        },
+        "code": {
+          "title": "代码块",
+          "subTitle": "```语言 代码内容 ```"
+        },
+        "quote": {
+          "title": "引用块",
+          "subTitle": "> 引用内容..."
+        },
+        "orderList": {
+          "title": "有序列表",
+          "subTitle": "1. 列表项..."
+        },
+        "bulletList": {
+          "title": "无序列表",
+          "subTitle": "- 列表项..."
+        },
+        "todoList": {
+          "title": "待办列表",
+          "subTitle": "- [x] 待办事项..."
+        },
+        "vegaLite": {
+          "title": "Vega 图表",
+          "subTitle": "使用 vega-lite.js 渲染图表"
+        },
+        "flowchart": {
+          "title": "流程图",
+          "subTitle": "使用 flowchart.js 渲染流程图"
+        },
+        "sequence": {
+          "title": "序列图",
+          "subTitle": "使用 js-sequence 渲染序列图"
+        },
+        "plantuml": {
+          "title": "PlantUML 图表",
+          "subTitle": "渲染 PlantUML 图表"
+        },
+        "mermaid": {
+          "title": "Mermaid 图表",
+          "subTitle": "使用 mermaid 渲染图表"
+        }
+      },
+      "noResult": "无结果",
       "paragraph": "段落",
       "heading": "标题",
       "quote": "引用块",
@@ -345,6 +449,34 @@
       "list": "列表",
       "image": "图片",
       "link": "链接"
+    },
+    "formatPicker": {
+      "bold": "粗体",
+      "italic": "斜体",
+      "underline": "下划线",
+      "strikethrough": "删除线",
+      "highlight": "高亮",
+      "inlineCode": "行内代码",
+      "inlineMath": "行内数学公式",
+      "link": "链接",
+      "image": "图片",
+      "clearFormat": "清除格式"
+    },
+    "imageToolbar": {
+      "edit": "编辑图片",
+      "inline": "行内图片",
+      "alignLeft": "左对齐",
+      "alignCenter": "居中对齐",
+      "alignRight": "右对齐",
+      "remove": "删除图片"
+    },
+    "tableTools": {
+      "insertRowAbove": "在上方插入行",
+      "insertRowBelow": "在下方插入行",
+      "removeRow": "删除行",
+      "insertColumnLeft": "在左侧插入列",
+      "insertColumnRight": "在右侧插入列",
+      "removeColumn": "删除列"
     }
   },
   "toolbar": {

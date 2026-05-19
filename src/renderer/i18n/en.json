@@ -335,7 +335,111 @@
     "paragraphs": "Paragraphs"
   },
   "editor": {
+    "frontMenu": {
+      "duplicate": "Duplicate",
+      "turnInto": "Turn Into",
+      "newParagraph": "New Paragraph",
+      "delete": "Delete"
+    },
     "quickInsert": {
+      "categories": {
+        "basicBlock": "Basic Block",
+        "header": "Header",
+        "advancedBlock": "Advanced Block",
+        "listBlock": "List Block",
+        "diagram": "Diagram"
+      },
+      "items": {
+        "paragraph": {
+          "title": "Paragraph",
+          "subTitle": "Lorem Ipsum is simply dummy text"
+        },
+        "horizontalLine": {
+          "title": "Horizontal Line",
+          "subTitle": "---"
+        },
+        "frontMatter": {
+          "title": "Front Matter",
+          "subTitle": "--- Lorem Ipsum ---"
+        },
+        "heading1": {
+          "title": "Heading 1",
+          "subTitle": "# Lorem Ipsum is simply ..."
+        },
+        "heading2": {
+          "title": "Heading 2",
+          "subTitle": "## Lorem Ipsum is simply ..."
+        },
+        "heading3": {
+          "title": "Heading 3",
+          "subTitle": "### Lorem Ipsum is simply ..."
+        },
+        "heading4": {
+          "title": "Heading 4",
+          "subTitle": "#### Lorem Ipsum is simply ..."
+        },
+        "heading5": {
+          "title": "Heading 5",
+          "subTitle": "##### Lorem Ipsum is simply ..."
+        },
+        "heading6": {
+          "title": "Heading 6",
+          "subTitle": "###### Lorem Ipsum is simply ..."
+        },
+        "table": {
+          "title": "Table Block",
+          "subTitle": "|Lorem | Ipsum is simply |"
+        },
+        "mathblock": {
+          "title": "Display Math",
+          "subTitle": "$$ Lorem Ipsum is simply $$"
+        },
+        "html": {
+          "title": "HTML Block",
+          "subTitle": "<div> Lorem Ipsum is simply </div>"
+        },
+        "code": {
+          "title": "Code Block",
+          "subTitle": "```java Lorem Ipsum is simply ```"
+        },
+        "quote": {
+          "title": "Quote Block",
+          "subTitle": ">Lorem Ipsum is simply ..."
+        },
+        "orderList": {
+          "title": "Order List",
+          "subTitle": "1. Lorem Ipsum is simply ..."
+        },
+        "bulletList": {
+          "title": "Bullet List",
+          "subTitle": "- Lorem Ipsum is simply ..."
+        },
+        "todoList": {
+          "title": "To-do List",
+          "subTitle": "- [x] Lorem Ipsum is simply ..."
+        },
+        "vegaLite": {
+          "title": "Vega Chart",
+          "subTitle": "Render flow chart by vega-lite.js."
+        },
+        "flowchart": {
+          "title": "Flow Chart",
+          "subTitle": "Render flow chart by flowchart.js."
+        },
+        "sequence": {
+          "title": "Sequence Diagram",
+          "subTitle": "Render sequence diagram by js-sequence."
+        },
+        "plantuml": {
+          "title": "PlantUML Diagram",
+          "subTitle": "Render PlantUML diagrams"
+        },
+        "mermaid": {
+          "title": "Mermaid",
+          "subTitle": "Render Diagram by mermaid."
+        }
+      },
+      "noResult": "No result",
       "paragraph": "Paragraph",
       "heading": "Heading",
       "quote": "Quote Block",
@@ -345,6 +449,34 @@
       "list": "List",
       "image": "Image",
       "link": "Link"
+    },
+    "formatPicker": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strikethrough": "Strikethrough",
+      "highlight": "Highlight",
+      "inlineCode": "Inline Code",
+      "inlineMath": "Inline Math",
+      "link": "Link",
+      "image": "Image",
+      "clearFormat": "Clear Formatting"
+    },
+    "imageToolbar": {
+      "edit": "Edit Image",
+      "inline": "Inline Image",
+      "alignLeft": "Align Left",
+      "alignCenter": "Align Middle",
+      "alignRight": "Align Right",
+      "remove": "Remove Image"
+    },
+    "tableTools": {
+      "insertRowAbove": "Insert Row Above",
+      "insertRowBelow": "Insert Row Below",
+      "removeRow": "Remove Row",
+      "insertColumnLeft": "Insert Column Left",
+      "insertColumnRight": "Insert Column Right",
+      "removeColumn": "Remove Column"
     }
   },
   "toolbar": {

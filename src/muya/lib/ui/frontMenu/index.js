@@ -18,6 +18,50 @@ const defaultOptions = {
   showArrow: false
 }
 
+// Helper to get i18n text with nested key support
+function getI18nText (muya, key, defaultText) {
+  const i18n = muya?.options?.i18n
+  if (!i18n) return defaultText
+
+  // Support nested keys like 'frontMenu.duplicate'
+  const keys = key.split('.')
+  let value = i18n
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k]
+    } else {
+      return defaultText
+    }
+  }
+  return typeof value === 'string' ? value : defaultText
+}
+
+// Label to i18n key mapping for submenu items (quick insert)
+const labelToI18nKey = {
+  paragraph: 'paragraph',
+  hr: 'horizontalLine',
+  'front-matter': 'frontMatter',
+  'heading 1': 'heading1',
+  'heading 2': 'heading2',
+  'heading 3': 'heading3',
+  'heading 4': 'heading4',
+  'heading 5': 'heading5',
+  'heading 6': 'heading6',
+  table: 'table',
+  mathblock: 'mathblock',
+  html: 'html',
+  pre: 'code',
+  blockquote: 'quote',
+  'ol-order': 'orderList',
+  'ul-bullet': 'bulletList',
+  'ul-task': 'todoList',
+  'vega-lite': 'vegaLite',
+  flowchart: 'flowchart',
+  sequence: 'sequence',
+  plantuml: 'plantuml',
+  mermaid: 'mermaid'
+}
+
 class FrontMenu extends BaseFloat {
   static pluginName = 'frontMenu'
 
@@ -60,7 +104,7 @@ class FrontMenu extends BaseFloat {
   }
 
   renderSubMenu (subMenu) {
-    const { reference } = this
+    const { muya, reference } = this
     const rect = reference.getBoundingClientRect()
     const windowHeight = document.documentElement.clientHeight
     const children = subMenu.map(menuItem => {
@@ -73,7 +117,12 @@ class FrontMenu extends BaseFloat {
         }
       }, '')))
 
-      const textWrapper = h('span', title)
+      // Get i18n title for quick insert items using label mapping
+      const i18nItemKey = labelToI18nKey[label] || label.replace(/-/g, '').replace(/\s/g, '')
+      const i18nKey = `quickInsert.items.${i18nItemKey}.title`
+      const displayTitle = getI18nText(muya, i18nKey, title)
+
+      const textWrapper = h('span', displayTitle)
       const shortCutWrapper = h('div.short-cut', [
         h('span', shortCut)
       ])
@@ -97,7 +146,7 @@ class FrontMenu extends BaseFloat {
   }
 
   render () {
-    const { oldVnode, frontMenuContainer, outmostBlock, startBlock, endBlock } = this
+    const { muya, oldVnode, frontMenuContainer, outmostBlock, startBlock, endBlock } = this
     const { type, functionType } = outmostBlock
     const children = menu.map(({ icon, label, text, shortCut }) => {
       const subMenu = getSubMenu(outmostBlock, startBlock, endBlock)
@@ -108,7 +157,12 @@ class FrontMenu extends BaseFloat {
           'background-size': '100%'
         }
       }, '')))
-      const textWrapper = h('span', text)
+
+      // Get i18n text for menu items
+      const i18nKey = `frontMenu.${label}`
+      const displayText = getI18nText(muya, i18nKey, text)
+
+      const textWrapper = h('span', displayText)
       const shortCutWrapper = h('div.short-cut', [
         h('span', shortCut)
       ])

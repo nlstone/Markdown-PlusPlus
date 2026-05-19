@@ -4,6 +4,38 @@ import icons from './config'
 
 import './index.css'
 
+// Helper to get i18n text with nested key support
+function getI18nText (muya, key, defaultText) {
+  const i18n = muya?.options?.i18n
+  if (!i18n) return defaultText
+
+  // Support nested keys like 'formatPicker.bold'
+  const keys = key.split('.')
+  let value = i18n
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k]
+    } else {
+      return defaultText
+    }
+  }
+  return typeof value === 'string' ? value : defaultText
+}
+
+// Type to i18n key mapping
+const typeKeyMap = {
+  strong: 'formatPicker.bold',
+  em: 'formatPicker.italic',
+  u: 'formatPicker.underline',
+  del: 'formatPicker.strikethrough',
+  mark: 'formatPicker.highlight',
+  inline_code: 'formatPicker.inlineCode',
+  inline_math: 'formatPicker.inlineMath',
+  link: 'formatPicker.link',
+  image: 'formatPicker.image',
+  clear: 'formatPicker.clearFormat'
+}
+
 const defaultOptions = {
   placement: 'top',
   modifiers: {
@@ -48,7 +80,7 @@ class FormatPicker extends BaseFloat {
   }
 
   render () {
-    const { icons, oldVnode, formatContainer, formats } = this
+    const { muya, icons, oldVnode, formatContainer, formats } = this
     const children = icons.map(i => {
       let icon
       let iconWrapperSelector
@@ -64,13 +96,17 @@ class FormatPicker extends BaseFloat {
       }
       const iconWrapper = h(iconWrapperSelector, icon)
 
+      // Get i18n tooltip
+      const i18nKey = typeKeyMap[i.type] || `formatPicker.${i.type}`
+      const tooltip = getI18nText(muya, i18nKey, i.tooltip)
+
       let itemSelector = `li.item.${i.type}`
       if (formats.some(f => f.type === i.type || f.type === 'html_tag' && f.tag === i.type)) {
         itemSelector += '.active'
       }
       return h(itemSelector, {
         attrs: {
-          title: `${i.tooltip} ${i.shortcut}`
+          title: `${tooltip} ${i.shortcut}`
         },
         on: {
           click: event => {

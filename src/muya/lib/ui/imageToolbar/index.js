@@ -4,6 +4,34 @@ import icons from './config'
 
 import './index.css'
 
+// Helper to get i18n text with nested key support
+function getI18nText (muya, key, defaultText) {
+  const i18n = muya?.options?.i18n
+  if (!i18n) return defaultText
+
+  // Support nested keys like 'imageToolbar.edit'
+  const keys = key.split('.')
+  let value = i18n
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k]
+    } else {
+      return defaultText
+    }
+  }
+  return typeof value === 'string' ? value : defaultText
+}
+
+// Type to i18n key mapping
+const typeKeyMap = {
+  edit: 'imageToolbar.edit',
+  inline: 'imageToolbar.inline',
+  left: 'imageToolbar.alignLeft',
+  center: 'imageToolbar.alignCenter',
+  right: 'imageToolbar.alignRight',
+  delete: 'imageToolbar.remove'
+}
+
 const defaultOptions = {
   placement: 'top',
   modifiers: {
@@ -50,7 +78,7 @@ class ImageToolbar extends BaseFloat {
   }
 
   render () {
-    const { icons, oldVnode, toolbarContainer, imageInfo } = this
+    const { muya, icons, oldVnode, toolbarContainer, imageInfo } = this
     const { attrs } = imageInfo.token
     const dataAlign = attrs['data-align']
     const children = icons.map(i => {
@@ -72,16 +100,21 @@ class ImageToolbar extends BaseFloat {
       if (i.type === dataAlign || !dataAlign && i.type === 'inline') {
         itemSelector += '.active'
       }
+
+      // Get i18n tooltip
+      const i18nKey = typeKeyMap[i.type] || `imageToolbar.${i.type}`
+      const tooltip = getI18nText(muya, i18nKey, i.tooltip)
+
       return h(itemSelector, {
         dataset: {
-          tip: i.tooltip
+          tip: tooltip
         },
         on: {
           click: event => {
             this.selectItem(event, i)
           }
         }
-      }, [h('div.tooltip', i.tooltip), iconWrapper])
+      }, [h('div.tooltip', tooltip), iconWrapper])
     })
 
     const vnode = h('ul', children)

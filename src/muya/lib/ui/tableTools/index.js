@@ -4,6 +4,40 @@ import { toolList } from './config'
 
 import './index.css'
 
+// Helper to get i18n text with nested key support
+function getI18nText (muya, key, defaultText) {
+  const i18n = muya?.options?.i18n
+  if (!i18n) return defaultText
+
+  // Support nested keys like 'tableTools.insertRowAbove'
+  const keys = key.split('.')
+  let value = i18n
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k]
+    } else {
+      return defaultText
+    }
+  }
+  return typeof value === 'string' ? value : defaultText
+}
+
+// Build i18n key from tool item
+function buildI18nKey (item) {
+  const { action, location, target } = item
+  // Map to i18n keys like: tableTools.insertRowAbove, tableTools.removeRow, etc.
+  const keyMap = {
+    insert_previous_row: 'tableTools.insertRowAbove',
+    insert_next_row: 'tableTools.insertRowBelow',
+    remove_current_row: 'tableTools.removeRow',
+    insert_left_column: 'tableTools.insertColumnLeft',
+    insert_right_column: 'tableTools.insertColumnRight',
+    remove_current_column: 'tableTools.removeColumn'
+  }
+  const key = `${action}_${location}_${target}`
+  return keyMap[key] || `tableTools.${action}${location}${target}`
+}
+
 const defaultOptions = {
   placement: 'right-start',
   modifiers: {
@@ -45,10 +79,14 @@ class TableBarTools extends BaseFloat {
   }
 
   render () {
-    const { tableInfo, oldVnode, tableBarContainer } = this
+    const { muya, tableInfo, oldVnode, tableBarContainer } = this
     const renderArray = toolList[tableInfo.barType]
     const children = renderArray.map((item) => {
       const { label } = item
+
+      // Get i18n label
+      const i18nKey = buildI18nKey(item)
+      const displayLabel = getI18nText(muya, i18nKey, label)
 
       const selector = 'li.item'
       return h(selector, {
@@ -60,7 +98,7 @@ class TableBarTools extends BaseFloat {
             this.selectItem(event, item)
           }
         }
-      }, label)
+      }, displayLabel)
     })
 
     const vnode = h('ul', children)

@@ -110,6 +110,7 @@ import 'muya/themes/default.css'
 import '@/assets/themes/codemirror/one-dark.css'
 // import 'view-image/lib/imgViewer.css'
 import CloseIcon from '@/assets/icons/close.svg'
+import i18n from '@/i18n'
 
 const STANDAR_Y = 320
 
@@ -165,6 +166,7 @@ export default {
       spellcheckerEnabled: state => state.preferences.spellcheckerEnabled,
       spellcheckerNoUnderline: state => state.preferences.spellcheckerNoUnderline,
       spellcheckerLanguage: state => state.preferences.spellcheckerLanguage,
+      language: state => state.preferences.language,
 
       currentFile: state => state.editor.currentFile,
       projectTree: state => state.project.projectTree,
@@ -436,6 +438,15 @@ export default {
       }
     },
 
+    language: function (value, oldValue) {
+      if (value !== oldValue && this.editor) {
+        // Update muya's i18n when language changes
+        this.editor.setOptions({
+          i18n: i18n.messages[value]?.editor || {}
+        })
+      }
+    },
+
     currentFile: function (value, oldValue) {
       if (value && value !== oldValue) {
         this.scrollToCursor(0)
@@ -534,7 +545,9 @@ export default {
         imageAction: this.imageAction.bind(this),
         imagePathPicker: this.imagePathPicker.bind(this),
         clipboardFilePath: guessClipboardFilePath,
-        imagePathAutoComplete: this.imagePathAutoComplete.bind(this)
+        imagePathAutoComplete: this.imagePathAutoComplete.bind(this),
+        // Pass i18n translations for muya UI elements
+        i18n: i18n.messages[i18n.locale]?.editor || {}
       }
 
       if (/dark/i.test(theme)) {
