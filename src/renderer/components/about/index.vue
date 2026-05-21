@@ -34,8 +34,8 @@ import Logo from '../../assets/images/logo.png'
 export default {
   data () {
     this.name = 'MarkDown++'
-    this.copyright = `Copyright©2026 Stone`
-    this.copyrightContributors = `Copyright©2026 Stone`
+    this.copyright = 'Copyright©2026 Stone'
+    this.copyrightContributors = 'Copyright©2026 Stone'
     this.logo = Logo
     return {
       showAboutDialog: false
