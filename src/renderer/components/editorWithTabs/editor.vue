@@ -992,9 +992,17 @@ export default {
     },
 
     scrollToCursor (duration = 300) {
+      // Guard against calling after component is destroyed
+      if (!this.editor || !this.editor.container) {
+        return
+      }
       this.$nextTick(() => {
         const { container } = this.editor
-        const { y } = this.editor.getSelection().cursorCoords
+        const selection = this.editor.getSelection()
+        if (!selection || !selection.cursorCoords) {
+          return
+        }
+        const { y } = selection.cursorCoords
         animatedScrollTo(container, container.scrollTop + y - STANDAR_Y, duration)
       })
     },

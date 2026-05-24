@@ -46,6 +46,20 @@ export default {
   },
 
   watch: {
+    markdown: function (value, oldValue) {
+      const { editor } = this
+      // Handle markdown prop changes (e.g., when switching to source code mode after file is loaded)
+      if (editor && value !== oldValue && typeof value === 'string') {
+        const currentValue = editor.getValue()
+        if (currentValue !== value) {
+          editor.setValue(value)
+          // Refresh layout after content change
+          this.$nextTick(() => {
+            editor.refresh()
+          })
+        }
+      }
+    },
     textDirection: function (value, oldValue) {
       const { editor } = this
       if (value !== oldValue && editor) {
@@ -110,6 +124,11 @@ export default {
 
       // Init CodeMirror
       const editor = this.editor = codeMirror(container, codeMirrorConfig)
+
+      // Force layout refresh after initialization
+      this.$nextTick(() => {
+        editor.refresh()
+      })
 
       bus.$on('file-loaded', this.handleFileChange)
       bus.$on('invalidate-image-cache', this.handleInvalidateImageCache)
@@ -335,6 +354,7 @@ export default {
   .source-code {
     display: flex;
     flex-direction: column;
+    height: 100%;
     min-height: 0;
     box-sizing: border-box;
     overflow: auto;

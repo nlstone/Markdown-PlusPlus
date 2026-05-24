@@ -195,6 +195,16 @@ export default {
       }
       this.sourcePaneVisible = !this.sourcePaneVisible
 
+      // Refresh CodeMirror when source pane becomes visible
+      if (this.sourcePaneVisible) {
+        this.$nextTick(() => {
+          const sourceCodeRef = this.$refs.sourceCode
+          if (sourceCodeRef && sourceCodeRef.editor) {
+            sourceCodeRef.editor.refresh()
+          }
+        })
+      }
+
       // Reinitialize scroll sync when both panes become visible
       if (this.sourcePaneVisible && this.previewPaneVisible) {
         this.$nextTick(() => {
