@@ -4,7 +4,7 @@
 
 <div align="center">
   <strong>Next-generation Markdown editor</strong><br>
-  A powerful fork of <a href="https://github.com/marktext/marktext">MarkText</a> with ZRead mode, split-pane preview, i18n, and AI-powered editing.<br>
+  ZRead mode, split-pane preview, i18n, and AI-powered editing.<br>
   <sub>Available for Linux, macOS, and Windows.</sub>
 </div>
 
@@ -43,11 +43,11 @@
 
 ## About
 
-**MarkDown++** is a fork of [MarkText](https://github.com/marktext/marktext), an MIT-licensed open-source Markdown editor. It builds upon MarkText with significant enhancements for reading, writing, and AI-assisted editing.
+**MarkDown++** is a modern Markdown editor inspired by MarkText, featuring ZRead mode, split-pane preview, i18n support, and AI-powered editing capabilities. It is available under a dual license model.
 
 ## Features
 
-### Inherited from MarkText
+### Core Features
 
 - **Realtime preview (WYSIWYG)** — Clean and simple interface for distraction-free writing.
 - **CommonMark & GFM support** — Full [CommonMark Spec](https://spec.commonmark.org/0.29/) and [GitHub Flavored Markdown](https://github.github.com/gfm/) support, with selective [Pandoc markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) support.
@@ -82,22 +82,6 @@ Integrated AI assistant for intelligent writing assistance:
 - **Smart Rewrite** — AI-powered content rewriting and restructuring
 - **AI Assistant** — Context-aware suggestions, summarization, and expansion
 - **Inline AI** — Quick AI actions directly in the editor
-
-<h4 align="center">:crescent_moon: Themes :high_brightness:</h4>
-
-| Cadmium Light                                     | Dark                                            |
-|:-------------------------------------------------:|:-----------------------------------------------:|
-| ![](docs/themeImages/cadmium-light.png?raw=true)  | ![](docs/themeImages/dark.png?raw=true)         |
-| Graphite Light                                    | Material Dark                                   |
-| ![](docs/themeImages/graphite-light.png?raw=true) | ![](docs/themeImages/materal-dark.png?raw=true) |
-| Ulysses Light                                     | One Dark                                        |
-| ![](docs/themeImages/ulysses-light.png?raw=true)  | ![](docs/themeImages/one-dark.png?raw=true)     |
-
-<h4 align="center">:smile_cat: Editing Modes :dog:</h4>
-
-| Source Code          | Typewriter               | Focus               |
-|:--------------------:|:------------------------:|:-------------------:|
-| ![](docs/source.gif) | ![](docs/typewriter.gif) | ![](docs/focus.gif) |
 
 ## Screenshot
 
@@ -193,5 +177,3 @@ MarkDown++ is dual-licensed:
 
 - **MIT License** — for personal use, open-source projects, education, and non-commercial purposes. See [LICENSE](LICENSE).
 - **Commercial License** — required for commercial SaaS, proprietary redistribution, OEM embedding, and similar commercial use. See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md).
-
-MarkDown++ is based on [MarkText](https://github.com/marktext/marktext), Copyright (c) 2017-present Luo Ran, licensed under the MIT License.
