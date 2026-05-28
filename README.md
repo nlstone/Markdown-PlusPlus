@@ -92,7 +92,7 @@ Everything you'd expect from a world-class Markdown editor:
 
 #### :book: ZRead Mode
 
-A dedicated reading mode optimized for long-form content. Perfect for reading documentation, articles, and converted web pages. Immersive typography with zero distractions.
+A dedicated reading mode for codebase documentation. After [ZRead](https://github.com/ZreadAI/zread_cli) generates documentation for your codebase, open the project folder in MarkDown++ — a "Z" button will appear in the left sidebar, allowing you to browse technical documentation just like ZRead's browse feature. Perfect for exploring and reading generated codebase documentation with zero distractions.
 
 #### :robot: AI-Powered Editing
 
