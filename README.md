@@ -120,7 +120,7 @@ If you wish to build MarkDown++ yourself, please check out our [build instructio
 
 ### Prerequisites
 
-- **Node.js**: >= v16 and < v17 (strict version constraint)
+- **Node.js**: >= v16 (native modules will be automatically rebuilt for Electron's Node version via electron-rebuild)
 - **Yarn**: v1.x (classic)
 - **Python**: for native module compilation (`node-gyp`)
 - **C++ compiler**: platform-specific (Visual Studio Build Tools on Windows, Xcode CLI on macOS, gcc/g++ on Linux)
