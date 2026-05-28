@@ -120,7 +120,7 @@ yarn build      # 生产构建
 
 ### 环境要求
 
-- **Node.js**: >= v16 且 < v17（严格的版本要求）
+- **Node.js**: >= v16（原生模块会通过 electron-rebuild 自动针对 Electron 的 Node 版本重新编译）
 - **Yarn**: v1.x (classic)
 - **Python**: 用于原生模块编译 (`node-gyp`)
 - **C++ 编译器**：各平台要求不同（Windows: Visual Studio Build Tools, macOS: Xcode CLI, Linux: gcc/g++）

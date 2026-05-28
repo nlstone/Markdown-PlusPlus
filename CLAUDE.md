@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Repository**: https://github.com/nlstone/Markdown-PlusPlus
 - **Default branch**: `dev` (submit PRs here, not `master`)
-- **Node.js requirement**: `>=v16` but `<v17` (strict version constraint)
+- **Node.js requirement**: `>=v16` (native modules are automatically rebuilt for Electron's Node version via electron-rebuild)
 
 ## Development Commands
 
