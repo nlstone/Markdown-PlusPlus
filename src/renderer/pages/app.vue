@@ -39,6 +39,7 @@
       <tweet></tweet>
       <import-modal></import-modal>
       <smart-rewrite-panel></smart-rewrite-panel>
+      <wiki-generator></wiki-generator>
     </div>
   </div>
 </template>
@@ -58,6 +59,7 @@ import Tweet from '@/components/tweet'
 import ImportModal from '@/components/import'
 import AiAssistant from '@/components/aiAssistant'
 import SmartRewritePanel from '@/components/smartRewrite'
+import WikiGenerator from '@/components/wikiGenerator'
 import { loadingPageMixins } from '@/mixins'
 import { mapState } from 'vuex'
 import bus from '@/bus'
@@ -79,7 +81,8 @@ export default {
     ImportModal,
     AiAssistant,
     SmartRewritePanel,
-    CommandPalette
+    CommandPalette,
+    WikiGenerator
   },
   mixins: [loadingPageMixins],
   data () {

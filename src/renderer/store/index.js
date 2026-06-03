@@ -13,6 +13,7 @@ import tweet from './tweet'
 import commandCenter from './commandCenter'
 import toolbar from './toolbar'
 import zread from './zread'
+import wiki from './wiki'
 
 Vue.use(Vuex)
 
@@ -65,7 +66,8 @@ const store = new Vuex.Store({
     layout,
     commandCenter,
     toolbar,
-    zread
+    zread,
+    wiki
   }
 })
 
@@ -76,6 +78,15 @@ ipcRenderer.on('mt::zread-result', (e, result) => {
 
 ipcRenderer.on('mt::zread-error', (e, error) => {
   store.dispatch('zread/HANDLE_ZREAD_ERROR', error)
+})
+
+// Listen for wiki results from main process
+ipcRenderer.on('mt::wiki-result', (e, result) => {
+  store.dispatch('wiki/HANDLE_WIKI_RESULT', result)
+})
+
+ipcRenderer.on('mt::wiki-error', (e, error) => {
+  store.dispatch('wiki/HANDLE_WIKI_ERROR', error)
 })
 
 export default store

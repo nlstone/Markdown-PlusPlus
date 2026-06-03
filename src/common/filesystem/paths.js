@@ -30,7 +30,8 @@ export const IMAGE_EXTENSIONS = Object.freeze([
 ])
 
 const WATCHER_ALLOWED_HIDDEN_SEGMENTS = new Set([
-  '.zread'
+  '.zread',
+  '.md++'
 ])
 
 const splitPathSegments = pathname => pathname
