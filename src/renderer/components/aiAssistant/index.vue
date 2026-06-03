@@ -127,6 +127,13 @@
       <div class="settings-content">
         <h3>AI 设置</h3>
         <div class="form-item">
+          <label>协议</label>
+          <select v-model="localSettings.protocol" class="protocol-select">
+            <option value="openai">OpenAI 兼容</option>
+            <option value="anthropic">Anthropic</option>
+          </select>
+        </div>
+        <div class="form-item">
           <label>Base URL</label>
           <input v-model="localSettings.baseUrl" placeholder="https://api.openai.com/v1" />
         </div>
@@ -170,7 +177,8 @@ export default {
         baseUrl: '',
         apiKey: '',
         model: 'gpt-3.5-turbo',
-        temperature: 0.7
+        temperature: 0.7,
+        protocol: 'openai'
       },
       testResult: '',
       testSuccess: false,
@@ -972,6 +980,18 @@ export default {
   color: var(--floatFontColor, #333333);
   font-size: 13px;
   box-sizing: border-box;
+}
+
+.form-item .protocol-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--floatBorderColor, #e0e0e0);
+  border-radius: 4px;
+  background: var(--floatBgColor, #f5f5f5);
+  color: var(--floatFontColor, #333333);
+  font-size: 13px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .form-actions {

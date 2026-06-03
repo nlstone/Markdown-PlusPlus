@@ -26,6 +26,9 @@ export const sideBarConditionalIcons = [
   {
     name: 'zread',
     icon: ZreadIcon
+  }, {
+    name: 'wiki',
+    icon: ZreadIcon // Reuse zread icon for wiki
   }
 ]
 

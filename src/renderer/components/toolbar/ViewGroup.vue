@@ -47,11 +47,20 @@
         <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.showTabBar" /></svg>
       </button>
     </toolbar-tooltip>
+
+    <div class="toolbar-separator" v-show="!isNarrow"></div>
+
+    <toolbar-tooltip :content="$t('toolbar.generateWiki')" v-show="!isNarrow">
+      <button class="toolbar-btn" @click="showWikiGenerator">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path :d="icons.generateWiki" /></svg>
+      </button>
+    </toolbar-tooltip>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import bus from '../../bus'
 import {
   showCommandPalette,
   toggleSourceCode,
@@ -102,7 +111,10 @@ export default {
     toggleTypewriter,
     toggleFocus,
     toggleSidebar,
-    toggleTabBar
+    toggleTabBar,
+    showWikiGenerator () {
+      bus.$emit('show-wiki-generator')
+    }
   }
 }
 </script>
@@ -113,6 +125,13 @@ export default {
   flex-direction: row;
   align-items: center;
   gap: 2px;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--floatBorderColor, #e0e0e0);
+  margin: 0 4px;
 }
 
 .toolbar-btn {

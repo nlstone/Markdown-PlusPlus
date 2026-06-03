@@ -58,6 +58,9 @@
       <zread
         v-else-if="rightColumn === 'zread'"
       ></zread>
+      <wiki
+        v-else-if="rightColumn === 'wiki'"
+      ></wiki>
     </div>
     <div class="drag-bar" ref="dragBar" v-show="rightColumn"></div>
   </div>
@@ -69,6 +72,7 @@ import Tree from './tree.vue'
 import SideBarSearch from './search.vue'
 import Toc from './toc.vue'
 import Zread from './zread.vue'
+import Wiki from './wiki.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -85,7 +89,8 @@ export default {
     Tree,
     SideBarSearch,
     Toc,
-    Zread
+    Zread,
+    Wiki
   },
   computed: {
     ...mapState({
@@ -95,7 +100,8 @@ export default {
       projectTree: state => state.project.projectTree,
       sideBarWidth: state => state.layout.sideBarWidth,
       tabs: state => state.editor.tabs,
-      hasZread: state => state.zread.hasZread
+      hasZread: state => state.zread.hasZread,
+      hasWiki: state => state.wiki.hasWiki
     }),
     finalSideBarWidth () {
       const { showSideBar, rightColumn, sideBarViewWidth } = this
@@ -110,8 +116,11 @@ export default {
         if (tree && tree.pathname) {
           // Check for ZRead when project changes
           this.$store.dispatch('zread/CHECK_ZREAD', tree.pathname)
+          // Check for .md++ wiki when project changes
+          this.$store.dispatch('wiki/CHECK_WIKI', tree.pathname)
         } else {
           this.$store.commit('zread/CLEAR_ZREAD')
+          this.$store.commit('wiki/CLEAR_WIKI')
         }
       },
       immediate: true
@@ -175,6 +184,9 @@ export default {
     shouldShowConditionalIcon (name) {
       if (name === 'zread') {
         return this.hasZread
+      }
+      if (name === 'wiki') {
+        return this.hasWiki
       }
       return false
     },

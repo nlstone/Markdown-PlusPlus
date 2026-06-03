@@ -124,6 +124,21 @@ const commands = [
         bus.$emit('showExportDialog', 'pdf')
       }
     }]
+  }, {
+    id: 'file.export-wiki',
+    subcommands: [{
+      id: 'file.export-wiki-html',
+      description: 'HTML',
+      execute: async () => {
+        bus.$emit('export-wiki', 'html')
+      }
+    }, {
+      id: 'file.export-wiki-pdf',
+      description: 'PDF',
+      execute: async () => {
+        bus.$emit('export-wiki', 'pdf')
+      }
+    }]
   },
 
   // --------------------------------------------------------------------------
@@ -644,6 +659,16 @@ const commands = [
     id: 'tabs.cycle-backward',
     execute: async () => {
       ipcRenderer.emit('mt::tabs-cycle-left', null)
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // Wiki
+
+  {
+    id: 'tools.generate-wiki',
+    execute: async () => {
+      bus.$emit('show-wiki-generator')
     }
   }
 ]
