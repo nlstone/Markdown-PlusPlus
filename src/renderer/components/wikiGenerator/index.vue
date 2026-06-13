@@ -329,6 +329,7 @@ import { ipcRenderer } from 'electron'
 import { mapState } from 'vuex'
 import bus from '@/bus'
 import { generateOutline, generateContent } from '@/services/wikiGenerator'
+import { detectProtocol } from '@/services/llmClient'
 
 export default {
   name: 'WikiGenerator',
@@ -399,12 +400,6 @@ export default {
     }
   },
   methods: {
-    detectProtocol (baseUrl) {
-      if (!baseUrl) return 'openai'
-      const lower = baseUrl.toLowerCase()
-      if (lower.includes('anthropic')) return 'anthropic'
-      return 'openai'
-    },
     openFolder () {
       ipcRenderer.send('mt::cmd-open-folder')
     },
@@ -418,7 +413,7 @@ export default {
       this.outlineStructure = null
       this.outlineContext = null
       // Auto-detect protocol from baseUrl, or use saved preference
-      this.selectedProtocol = this.aiSettings?.protocol || this.detectProtocol(this.aiSettings?.baseUrl)
+      this.selectedProtocol = this.aiSettings?.protocol || detectProtocol(this.aiSettings?.baseUrl)
     },
     handleClose () {
       if (this.isBusy) return

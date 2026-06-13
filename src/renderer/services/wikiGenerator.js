@@ -10,6 +10,7 @@
  */
 
 import { ipcRenderer } from 'electron'
+import { callLLM, collectLLMResponse } from './llmClient'
 
 // Token estimation constants
 const CHARS_PER_TOKEN = 4 // Average for code
@@ -119,164 +120,10 @@ function saveWiki (rootPath, wikiJson, pages) {
 // ============================================================================
 
 /**
- * Detect protocol based on baseUrl
- */
-function detectProtocol (baseUrl) {
-  if (!baseUrl) return 'openai'
-  const lower = baseUrl.toLowerCase()
-  if (lower.includes('anthropic')) return 'anthropic'
-  return 'openai'
-}
-
-/**
- * Call LLM with support for both OpenAI and Anthropic protocols
- */
-async function * callLLM (messages, settings, signal) {
-  const { baseUrl, apiKey, model, temperature } = settings
-  // Auto-detect protocol if not explicitly set, or use override
-  const protocol = settings.protocol || detectProtocol(baseUrl)
-
-  if (protocol === 'anthropic') {
-    yield * callAnthropic(messages, { baseUrl, apiKey, model, temperature }, signal)
-  } else {
-    yield * callOpenAI(messages, { baseUrl, apiKey, model, temperature }, signal)
-  }
-}
-
-async function * callOpenAI (messages, { baseUrl, apiKey, model, temperature }, signal) {
-  // Use same URL pattern as aiAssistant for consistency
-  const url = `${baseUrl}/chat/completions`
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: model || 'gpt-3.5-turbo',
-      messages,
-      temperature: temperature || 0.7,
-      stream: true
-    }),
-    signal
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    let errorMsg = `${response.status} ${response.statusText}`
-    try {
-      const errorJson = JSON.parse(errorText)
-      errorMsg = errorJson.error?.message || errorJson.message || errorMsg
-    } catch (e) {}
-    throw new Error(`API 请求失败 (${url}): ${errorMsg}`)
-  }
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || ''
-
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue
-      const data = line.slice(6).trim()
-      if (data === '[DONE]' || !data) continue
-      try {
-        const json = JSON.parse(data)
-        const content = json.choices?.[0]?.delta?.content
-        if (content) yield content
-      } catch (e) {}
-    }
-  }
-}
-
-async function * callAnthropic (messages, { baseUrl, apiKey, model, temperature }, signal) {
-  let systemPrompt = ''
-  const userMessages = []
-  for (const msg of messages) {
-    if (msg.role === 'system') {
-      systemPrompt = msg.content
-    } else {
-      userMessages.push(msg)
-    }
-  }
-
-  // Build URL - avoid duplicate /v1
-  const base = baseUrl.replace(/\/+$/, '')
-  const url = base.endsWith('/v1') ? `${base}/messages` : `${base}/v1/messages`
-
-  const body = {
-    model: model || 'claude-sonnet-4-20250514',
-    max_tokens: 8192,
-    messages: userMessages,
-    stream: true
-  }
-  if (systemPrompt) body.system = systemPrompt
-  if (temperature) body.temperature = temperature
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify(body),
-    signal
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    let errorMsg = `${response.status} ${response.statusText}`
-    try {
-      const errorJson = JSON.parse(errorText)
-      errorMsg = errorJson.error?.message || errorJson.message || errorMsg
-    } catch (e) {}
-    throw new Error(`API 请求失败 (${url}): ${errorMsg}`)
-  }
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || ''
-
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue
-      const data = line.slice(6).trim()
-      if (!data) continue
-      try {
-        const json = JSON.parse(data)
-        if (json.type === 'content_block_delta' && json.delta?.text) {
-          yield json.delta.text
-        }
-      } catch (e) {}
-    }
-  }
-}
-
-/**
  * Call LLM and collect full response
  */
 async function callLLMFull (messages, settings, signal) {
-  let result = ''
-  for await (const chunk of callLLM(messages, settings, signal)) {
-    result += chunk
-  }
-  return result
+  return collectLLMResponse(messages, settings, signal)
 }
 
 // ============================================================================
