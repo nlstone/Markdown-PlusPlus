@@ -111,6 +111,7 @@ const commandDescriptions = Object.freeze({
   'file.toggle-auto-save': 'File: Toggle Auto Save',
   'file.import-file': 'File: Import...',
   'file.export-file': 'File: Export...',
+  'file.export-file-docx': 'File: Export Word (.docx)',
   'file.zoom': 'Window: Zoom...',
   'file.check-update': 'MarkDown++: Check for Updates...',
   'paragraph.reset-paragraph': 'Paragraph: Transform into Paragraph',

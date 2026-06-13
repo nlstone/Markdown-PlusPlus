@@ -28,6 +28,11 @@ const getExportExtensionFilter = type => {
       name: 'Hypertext Markup Language',
       extensions: ['html']
     }]
+  } else if (type === 'docx') {
+    return [{
+      name: 'Word Document',
+      extensions: ['docx']
+    }]
   }
 
   // Allow all extensions.
@@ -69,7 +74,21 @@ const handleResponseForExport = async (e, { type, content, pathname, title, page
 
   if (filePath && !canceled) {
     try {
-      if (type === 'pdf') {
+      if (type === 'docx') {
+        if (!pandoc.exists()) {
+          return noticePandocNotFound(win, 'export DOCX files')
+        }
+        if (!content) {
+          throw new Error('No markdown content found.')
+        }
+        const tmpPath = path.join(app.getPath('temp'), `markdownpp-export-${Date.now()}.md`)
+        await writeFile(tmpPath, content, '.md', 'utf8')
+        try {
+          await pandoc.toFile(tmpPath, 'docx', filePath, '-f', 'markdown')
+        } finally {
+          try { await fs.remove(tmpPath) } catch (_) {}
+        }
+      } else if (type === 'pdf') {
         const options = { printBackground: true }
         Object.assign(options, getPdfPageOptions(pageOptions))
         const data = await win.webContents.printToPDF(options)
@@ -183,11 +202,11 @@ const showUnsavedFilesMessage = async (win, files) => {
   }
 }
 
-const noticePandocNotFound = win => {
+const noticePandocNotFound = (win, action = 'import files') => {
   return win.webContents.send('mt::pandoc-not-exists', {
-    title: 'Import Warning',
+    title: 'Pandoc Required',
     type: 'warning',
-    message: 'Install pandoc before you want to import files.',
+    message: `Install pandoc before you ${action}.`,
     time: 10000
   })
 }

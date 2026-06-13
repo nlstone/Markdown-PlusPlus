@@ -690,8 +690,7 @@ const actions = {
           }
         }
       } else if (addBlankTab) {
-        // Show welcome page (no untitled tab created)
-        // The Recent component will be shown when there's no currentFile
+        dispatch('NEW_UNTITLED_TAB', {})
       } else if (markdownList.length) {
         let isFirst = true
         for (const markdown of markdownList) {

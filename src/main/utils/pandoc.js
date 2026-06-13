@@ -12,9 +12,17 @@ const getCommand = () => {
   return pandocCommand
 }
 
+export const buildPandocOptions = (from, to, outputPath = null, ...args) => {
+  const option = ['-s', from, '-t', to]
+  if (outputPath) {
+    option.push('-o', outputPath)
+  }
+  return option.concat(args)
+}
+
 const pandoc = (from, to, ...args) => {
   const command = getCommand()
-  const option = ['-s', from, '-t', to].concat(args)
+  const option = buildPandocOptions(from, to, null, ...args)
 
   const converter = () => new Promise((resolve, reject) => {
     const proc = spawn(command, option)
@@ -35,6 +43,28 @@ const pandoc = (from, to, ...args) => {
   }
 
   return converter
+}
+
+pandoc.toFile = (from, to, outputPath, ...args) => {
+  const command = getCommand()
+  const option = buildPandocOptions(from, to, outputPath, ...args)
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, option)
+    let stderr = ''
+    proc.stderr.on('data', chunk => {
+      stderr += chunk.toString()
+    })
+    proc.on('error', reject)
+    proc.on('close', code => {
+      if (code === 0) {
+        resolve(outputPath)
+      } else {
+        reject(new Error(stderr || `pandoc exited with code ${code}`))
+      }
+    })
+    proc.stdin.end()
+  })
 }
 
 pandoc.exists = () => {

@@ -129,6 +129,11 @@ export default function (keybindings, userPreference, recentlyUsedFiles, i18n) {
         click (menuItem, browserWindow) {
           actions.exportFile(browserWindow, 'pdf')
         }
+      }, {
+        label: (i18n && i18n.menu && i18n.menu.file && i18n.menu.file.exportDocx) || 'Word (.docx)',
+        click (menuItem, browserWindow) {
+          actions.exportFile(browserWindow, 'docx')
+        }
       }
     ]
   }, {

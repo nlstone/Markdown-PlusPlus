@@ -1041,16 +1041,29 @@ export default {
         htmlTitle
       } = options
 
-      if (!/^pdf|print|styledHtml$/.test(type)) {
+      if (!/^(pdf|print|styledHtml|docx)$/.test(type)) {
         throw new Error(`Invalid type to export: "${type}".`)
       }
 
-      const extraCss = getCssForOptions(options)
-      const htmlToc = getHtmlToc(this.editor.getTOC(), options)
-
       switch (type) {
+        case 'docx': {
+          try {
+            const content = this.editor.getMarkdown()
+            this.$store.dispatch('EXPORT', { type, content })
+          } catch (err) {
+            log.error('Failed to export document:', err)
+            notice.notify({
+              title: 'Exporting Word document failed',
+              type: 'error',
+              message: err.message || 'There is something wrong when exporting.'
+            })
+          }
+          break
+        }
         case 'styledHtml': {
           try {
+            const extraCss = getCssForOptions(options)
+            const htmlToc = getHtmlToc(this.editor.getTOC(), options)
             const content = await this.editor.exportStyledHTML({
               title: htmlTitle || '',
               printOptimization: false,
@@ -1071,6 +1084,8 @@ export default {
         case 'pdf': {
           // NOTE: We need to set page size via Electron.
           try {
+            const extraCss = getCssForOptions(options)
+            const htmlToc = getHtmlToc(this.editor.getTOC(), options)
             const { pageSize, pageSizeWidth, pageSizeHeight, isLandscape } = options
             const pageOptions = {
               pageSize, pageSizeWidth, pageSizeHeight, isLandscape
@@ -1101,6 +1116,8 @@ export default {
         case 'print': {
           // NOTE: Print doesn't support page size or orientation.
           try {
+            const extraCss = getCssForOptions(options)
+            const htmlToc = getHtmlToc(this.editor.getTOC(), options)
             const html = await this.editor.exportStyledHTML({
               title: '',
               printOptimization: true,

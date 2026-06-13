@@ -80,6 +80,25 @@
             <div class="config-form__item">
               <label class="config-form__label">
                 <svg viewBox="0 0 24 24" width="14" height="14">
+                  <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                {{ $t('wiki.generationMode') }}
+              </label>
+              <div class="config-form__select-wrapper">
+                <select v-model="selectedMode" class="config-form__select">
+                  <option value="fast">{{ $t('wiki.modeFast') }}</option>
+                  <option value="deep">{{ $t('wiki.modeDeep') }}</option>
+                </select>
+                <svg class="config-form__select-arrow" viewBox="0 0 24 24" width="14" height="14">
+                  <path fill="currentColor" d="M7 10l5 5 5-5z"/>
+                </svg>
+              </div>
+              <p class="config-form__hint">{{ selectedMode === 'fast' ? $t('wiki.modeFastHint') : $t('wiki.modeDeepHint') }}</p>
+            </div>
+
+            <div class="config-form__item">
+              <label class="config-form__label">
+                <svg viewBox="0 0 24 24" width="14" height="14">
                   <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
                 {{ $t('wiki.protocol') }}
@@ -319,6 +338,7 @@ export default {
       currentStep: 1, // 1=config, 2=generating outline, 3=outline preview, 4=generating content, 5=complete
       selectedLanguage: 'zh',
       selectedProtocol: 'openai',
+      selectedMode: 'fast', // 'fast' or 'deep'
       tokenBudget: 150000,
       error: null,
       progressMessage: '',
@@ -448,6 +468,7 @@ export default {
           language: this.selectedLanguage,
           aiSettings: settings,
           signal: this.abortController.signal,
+          mode: this.selectedMode,
           tokensPerBatch: this.tokenBudget
         })
 

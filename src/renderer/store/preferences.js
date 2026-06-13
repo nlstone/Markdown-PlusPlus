@@ -79,7 +79,7 @@ const state = {
   typewriter: false, // typewriter mode
   focus: false, // focus mode
   sourceCode: false, // source code mode
-  splitPreview: true, // split preview mode - default ON, show preview pane only
+  splitPreview: false, // split preview mode
 
   // user configration
   imageFolderPath: '',

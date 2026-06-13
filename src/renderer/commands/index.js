@@ -123,6 +123,13 @@ const commands = [
         await delay(50)
         bus.$emit('showExportDialog', 'pdf')
       }
+    }, {
+      id: 'file.export-file-docx',
+      description: 'Word (.docx)',
+      execute: async () => {
+        await delay(50)
+        bus.$emit('showExportDialog', 'docx')
+      }
     }]
   }, {
     id: 'file.export-wiki',

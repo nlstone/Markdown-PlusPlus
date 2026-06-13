@@ -715,7 +715,12 @@ class WindowManager extends EventEmitter {
         filters
       })
 
-      if (filePath && !canceled) {
+      if (canceled || !filePath) {
+        e.sender.send('mt::export-wiki-success', { type, canceled: true })
+        return
+      }
+
+      if (filePath) {
         try {
           if (type === 'pdf') {
             // Write HTML to temp file, open in hidden window, print to PDF
