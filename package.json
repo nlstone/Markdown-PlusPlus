@@ -1,6 +1,6 @@
 {
   "name": "markdownpp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/nlstone/Markdown-PlusPlus/",
   "description": "Next generation markdown editor with ZRead mode, split-pane preview, and AI editing",
   "license": "MIT AND Commercial",
