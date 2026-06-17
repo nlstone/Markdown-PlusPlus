@@ -19,7 +19,7 @@ Welcome to the end-user documentation of MarkDown++.
 - [Environment variables](ENVIRONMENT.md)
 - [Export a document](EXPORT.md)
 - [Image uploader configuration](IMAGE_UPLOADER_CONFIGRATION.md)
-- [Installation instructions](../README.md#download-and-installation)
+- [Installation instructions](../README_EN.md#download-and-installation)
 - [Key bindings](KEYBINDINGS.md)
 - [Portable mode](PORTABLE.md)
 - [Preferences](PREFERENCES.md)

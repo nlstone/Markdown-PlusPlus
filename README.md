@@ -3,220 +3,180 @@
 <h1 align="center">MarkDown++</h1>
 
 <div align="center">
-  <strong>The Markdown Editor You've Been Waiting For</strong><br>
-  Free, powerful, and designed for the AI era.<br>
-  <sub>Available for Linux, macOS, and Windows.</sub>
+  <strong>你一直在等待的 Markdown 编辑器</strong><br>
+  免费、强大，专为 AI 时代和代码文档阅读打造。<br>
+  <sub>支持 Windows，Linux/macOS 可从源码构建。</sub>
 </div>
 
 <br>
 
 <div align="center">
-  <!-- License -->
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/nlstone/Markdown-PlusPlus.svg" alt="LICENSE">
   </a>
-  <!-- Downloads total -->
   <a href="https://github.com/nlstone/Markdown-PlusPlus/releases">
     <img src="https://img.shields.io/github/downloads/nlstone/Markdown-PlusPlus/total.svg" alt="total download">
   </a>
-  <!-- Downloads latest release -->
   <a href="https://github.com/nlstone/Markdown-PlusPlus/releases/latest">
     <img src="https://img.shields.io/github/downloads/nlstone/Markdown-PlusPlus/latest/total.svg" alt="latest download">
   </a>
-  <!-- Language -->
-  <a href="README.md">English</a> | <a href="README_zh-CN.md">中文</a>
+  <br>
+  <a href="README.md">中文</a> | <a href="README_EN.md">English</a>
 </div>
 
 <div align="center">
   <h3>
-    <a href="#why-markdown-in-the-ai-era">Why MarkDown++</a>
+    <a href="#为什么选择-markdown">为什么选择</a>
     <span> | </span>
-    <a href="#features">Features</a>
+    <a href="#功能特性">功能特性</a>
     <span> | </span>
-    <a href="#comparison">Comparison</a>
+    <a href="#下载安装">下载安装</a>
     <span> | </span>
-    <a href="#download-and-installation">Downloads</a>
-    <span> | </span>
-    <a href="#development">Development</a>
+    <a href="#开发构建">开发构建</a>
   </h3>
 </div>
 
 <br />
 
-## Why MarkDown++?
+## 为什么选择 MarkDown++？
 
-### The AI Era Demands a Better Markdown Editor
+在 AI 时代，Markdown 已经成为人与 AI、开发者与知识库之间的通用文本格式。MarkDown++ 在 MarkText 的基础上继续演进，面向写作、AI 辅助编辑、代码库文档阅读和项目 Wiki 生成，提供一个免费、现代、可本地运行的桌面体验。
 
-In the age of AI, Markdown has become the **universal bridge** between humans and AI. Whether you're prompting Claude, ChatGPT, or any other AI assistant, Markdown is the language you use to exchange ideas, structure thoughts, and collaborate with AI.
+适合这些场景：
 
-**But here's the problem:** Most free Markdown editors feel like they were built in 2010. They're clunky, lack modern features, and haven't evolved with the AI revolution.
+- **写作者**：专注写作、实时预览、主题和导出能力齐全。
+- **开发者**：支持 GFM、代码高亮、图表、项目文档和代码库 Wiki。
+- **AI 用户**：直接在编辑器中重写、扩写、总结内容，并可连接 OpenAI、Anthropic 或兼容接口。
+- **团队文档维护者**：为项目生成结构化 Wiki，阅读 `.md++` / `.zread` 文档集。
 
-### Why We Built MarkDown++
+## 功能特性
 
-We believe everyone deserves a **powerful, free, and beautiful** Markdown editor:
+### 核心 Markdown 编辑体验
 
-- **For Writers** — Clean, distraction-free writing with real-time preview
-- **For Developers** — GitHub Flavored Markdown, syntax highlighting, code blocks
-- **For AI Power Users** — Seamlessly edit and format prompts, responses, and conversations
-- **For Everyone** — Intuitive enough for beginners, powerful enough for pros
+- **默认预览阅读体验**：打开文档默认进入源码预览模式，并隐藏源码面板，只显示预览视图，更适合阅读。
+- **实时编辑与源码模式**：保留 WYSIWYG 实时编辑、源码编辑和分屏预览能力。
+- **完整 Markdown 支持**：CommonMark、GitHub Flavored Markdown、表格、任务列表、脚注、代码块。
+- **数学公式和图表**：支持 KaTeX、Mermaid、PlantUML、Vega 等内容。
+- **导出能力**：支持 HTML、PDF，并扩展 DOCX / Pandoc 导出流程。
+- **多主题与专注写作**：浅色、深色主题，专注模式、打字机模式和可配置编辑体验。
+- **图片处理**：支持拖放、剪贴板粘贴和图床上传。
 
-### The Problem with Existing Editors
+### 项目 Wiki 与 ZRead 阅读
 
-| Editor | Price | Key Issues |
-|--------|-------|------------|
-| **Typora** | Paid (~$15) | No longer free, closed source |
-| **Obsidian** | Free but complex | Knowledge base, not a pure editor; heavy resource usage |
-| **Notion** | Free tier limited | Cloud-based, not a desktop app, privacy concerns |
-| **VS Code** | Free but heavy | Overkill for Markdown, not user-friendly |
-| **MarkText** (our base) | Free but unmaintained | Development停滞, bug fixes slow |
+- **`.md++` 项目 Wiki**：在项目中生成 MarkDown++ 兼容的结构化 Wiki 文档。
+- **ZRead 兼容模式**：可读取 `.zread/wiki` 文档，像浏览知识库一样阅读代码库说明。
+- **多版本 Wiki**：支持发现、切换和浏览不同版本的 Wiki 文档。
+- **Wiki 导出**：侧边栏中的 Wiki / ZRead 文档可导出为 HTML 或 PDF。
 
-**MarkDown++** solves these problems — a modern, actively maintained, free desktop editor built for today's users.
+### AI 智能编辑
 
-## Features
+- **AI 助手面板**：在编辑器内直接与 AI 对话，用于摘要、解释、扩写和修改。
+- **智能重写**：选中文本后让 AI 改写、润色或按指令调整。
+- **多协议支持**：支持 OpenAI、Anthropic，以及 OpenAI 兼容接口。
+- **连接测试和超时处理**：设置页可验证 AI 配置，减少无响应请求带来的等待。
 
-### Core Editor (Inherited & Enhanced)
+### Wiki 生成器
 
-Everything you'd expect from a world-class Markdown editor:
+- **项目代码分析**：读取项目文件结构和源码，生成面向用户/开发者的项目 Wiki。
+- **快速模式**：默认聚焦项目理解、使用方式、关键架构和常见工作流。
+- **可最小化任务窗口**：生成 Wiki 时可最小化面板，继续编辑文档。
+- **Token 预算控制**：按预算分批读取文件，降低超长项目生成失败概率。
 
-- **Real-time Preview (WYSIWYG)** — See your formatted output as you type
-- **Live Split-Pane View** — Edit on the left, preview on the right — the best of both worlds
-- **Full Markdown Support** — [CommonMark](https://spec.commonmark.org/0.29/) + [GitHub Flavored Markdown](https://github.github.com/gfm/) + Pandoc extensions
-- **Advanced Syntax** — Math equations (KaTeX), tables, task lists, footnotes
-- **Rich Diagrams** — Mermaid, PlantUML, Vega charts
-- **Export Options** — HTML, PDF with beautiful formatting
-- **Multiple Themes** — Light, dark, and color schemes to match your style
-- **Focus & Typewriter Modes** — Distraction-free writing experience
-- **Image Handling** — Drag & drop, clipboard paste, cloud upload to GitHub/Imgur
+### 多语言界面
 
-### MarkDown++ Exclusive Features
+- 简体中文
+- English
 
-#### :book: ZRead Mode
+## 对比
 
-A dedicated reading mode for codebase documentation. After [ZRead](https://github.com/ZreadAI/zread_cli) generates documentation for your codebase, open the project folder in MarkDown++ — a "Z" button will appear in the left sidebar, allowing you to browse technical documentation just like ZRead's browse feature. Perfect for exploring and reading generated codebase documentation with zero distractions.
+| 特性 | MarkDown++ | Typora | Obsidian | MarkText |
+|------|:-----------:|:------:|:--------:|:--------:|
+| 免费个人使用 | 是 | 否 | 是 | 是 |
+| 开源 | 是 | 否 | 否 | 是 |
+| Markdown 编辑 | 是 | 是 | 是 | 是 |
+| 默认预览阅读 | 是 | 否 | 否 | 否 |
+| AI 助手 | 是 | 否 | 插件 | 否 |
+| 项目 Wiki 生成 | 是 | 否 | 否 | 否 |
+| ZRead / `.md++` 文档浏览 | 是 | 否 | 否 | 否 |
+| Windows 桌面包 | 是 | 是 | 是 | 是 |
 
-#### :robot: AI-Powered Editing
+个人和非商业用途免费。商业使用请查看 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)。
 
-Built-in AI assistant to supercharge your writing:
+## 截图
 
-- **Smart Rewrite** — Let AI help rephrase and improve your content
-- **AI Assistant** — Chat with AI directly in the editor for suggestions, summaries, or expansions
-- **Inline AI Actions** — Quick AI commands without leaving your document
+![MarkDown++ 截图](docs/markdownpp-main.png?raw=true)
 
-*Works with OpenAI, Anthropic, or any compatible API.*
+## 下载安装
 
-#### :globe_with_meridians: Multi-Language UI
+### Windows 推荐方式
 
-Full i18n support:
-- :cn: 简体中文
-- :us: English
+从 [最新版本](https://github.com/nlstone/Markdown-PlusPlus/releases/latest) 下载：
 
-More languages coming — [contributions welcome!](#contribution)
+- **安装包**：`markdownpp-setup.exe`
+- **便携版**：`markdownpp-portable.exe`
+- **压缩包**：`markdownpp-x64-win.zip`
 
-## Comparison
+Windows 是当前主要测试平台。Linux/macOS 可以从源码构建。
 
-| Feature | MarkDown++ | Typora | Obsidian | MarkText |
-|---------|:-----------:|:------:|:--------:|:--------:|
-| **Price** | Free* | ~$15 | Free | Free |
-| **Source Code** | Open | Closed | Open | Open |
-| **Actively Maintained** | :white_check_mark: | :x: | :white_check_mark: | :x: |
-| **Split-Pane Preview** | :white_check_mark: | :white_check_mark: | :x: | :white_check_mark: |
-| **ZRead Mode** | :white_check_mark: | :x: | :x: | :x: |
-| **AI Integration** | :white_check_mark: | :x: | Plugins | :x: |
-| **i18n Support** | :white_check_mark: | Limited | Plugins | Limited |
-| **Windows/macOS/Linux** | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-
-*Free for personal/非商业 use. Commercial use requires [commercial license](COMMERCIAL_LICENSE.md).
-
-## Screenshot
-
-![MarkDown++ Screenshot](docs/markdownpp-main.png?raw=true)
-
-*MarkDown++ combines powerful features with a beautiful, modern interface.*
-
-## Download and Installation
-
-### Windows (Recommended)
-
-Download from the [latest release](https://github.com/nlstone/Markdown-PlusPlus/releases/latest):
-
-- **Installer** (`markdownpp-setup.exe`) — Recommended. Includes "Open with MarkDown++" context menu integration.
-- **Portable** (`markdownpp-portable.exe`) — No installation required, runs from anywhere.
-
-> Windows is the primary tested platform. Linux/macOS builds available soon — or build from source!
-
-### Building from Source
+### 从源码构建
 
 ```bash
 git clone https://github.com/nlstone/Markdown-PlusPlus.git
 cd Markdown-PlusPlus
 yarn install
-yarn dev        # Run in development mode
-yarn build      # Build for production
+yarn dev
+yarn build
 ```
 
-See [Build Instructions](docs/dev/BUILD.md) for detailed requirements.
+详见 [构建说明](docs/dev/BUILD.md)。
 
-## License
+## 开发构建
 
-**MarkDown++ is free for personal and non-commercial use.**
+### 前置要求
 
-| License | Use Case |
-|---------|----------|
-| **MIT License** | Personal projects, open-source, education, non-commercial purposes |
-| **Commercial License** | Commercial SaaS, OEM embedding, proprietary redistribution |
+- Node.js >= 16
+- Yarn 1.x
+- Python 和 C++ 编译环境，用于原生模块编译
 
-See [LICENSE](LICENSE) and [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) for details.
-
----
-
-## Development
-
-Want to contribute or build from source?
-
-### Prerequisites
-
-- **Node.js**: >= v16
-- **Yarn**: v1.x (classic)
-- **Python**: For native module compilation
-- **C++ Compiler**: Platform-specific (VS Build Tools / Xcode / gcc)
-
-### Quick Start
+### 常用命令
 
 ```bash
 yarn install
 yarn dev
 yarn lint
-yarn test
+yarn unit
+yarn build
 ```
 
-## Keyboard Shortcuts
+## 快捷键
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+S` / `Cmd+S` | Save |
-| `Ctrl+Shift+S` / `Cmd+Shift+S` | Save As |
-| `Ctrl+P` / `Cmd+P` | Quick Open |
-| `Ctrl+F` / `Cmd+F` | Find |
-| `Ctrl+H` / `Cmd+Alt+F` | Replace |
-| `Ctrl+/` / `Cmd+/` | Toggle source code mode |
-| `Ctrl+Shift+P` / `Cmd+Shift+P` | Command palette |
+| 快捷键 | 操作 |
+|--------|------|
+| `Ctrl+S` / `Cmd+S` | 保存 |
+| `Ctrl+Shift+S` / `Cmd+Shift+S` | 另存为 |
+| `Ctrl+P` / `Cmd+P` | 快速打开 |
+| `Ctrl+F` / `Cmd+F` | 查找 |
+| `Ctrl+H` / `Cmd+Alt+F` | 替换 |
+| `Ctrl+E` / `Cmd+Option+S` | 切换源码模式 |
+| `Ctrl+Shift+P` / `Cmd+Shift+P` | 命令面板 |
 
----
+## 许可证
 
-## Contribution
+MarkDown++ 对个人和非商业用途免费。
 
-MarkDown++ is in active development. We welcome contributions!
+| 许可证 | 适用场景 |
+|--------|----------|
+| MIT License | 个人项目、开源项目、教育和非商业用途 |
+| Commercial License | 商业 SaaS、OEM 嵌入、闭源再分发 |
 
-- **Bug reports**: [Open an issue](https://github.com/nlstone/Markdown-PlusPlus/issues/new?template=bug_report.md)
-- **Feature requests**: [Suggest an idea](https://github.com/nlstone/Markdown-PlusPlus/issues/new?template=feature_request.md)
-- **Pull requests**: Submit PRs against the `dev` branch
+详见 [LICENSE](LICENSE) 和 [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)。
 
-Please read the [Contributing Guide](CONTRIBUTING.md) before making a pull request.
+## 贡献
 
----
+欢迎提交 Issue 和 Pull Request。开发分支为 `dev`。
 
 <div align="center">
 
-**Star us on GitHub if you like MarkDown++!** :star:
+**如果你喜欢 MarkDown++，欢迎给项目一个 Star。**
 
 </div>
