@@ -1,6 +1,12 @@
 # Export a Document
 
-MarkDown++ allows you to export a markdown document as PDF and HTML file or to print the document.
+MarkDown++ allows you to export a markdown document as PDF, HTML, or Word `.docx` file, or to print the document.
+
+## Word documents
+
+Word `.docx` export requires [pandoc](https://pandoc.org/) to be installed. You can set the `MARKDOWNPP_PANDOC` environment variable if pandoc is not available on your `PATH`.
+
+DOCX export converts the current Markdown source through pandoc. It uses Word/pandoc document styles, so it will not exactly match the HTML/PDF export theme.
 
 ## Options
 

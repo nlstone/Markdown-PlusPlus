@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <text x="1" y="21" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="currentColor">AI</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path d="M5.25 5.75C5.25 4.78 6.03 4 7 4h7.75c2.76 0 5 2.24 5 5v3.25c0 2.76-2.24 5-5 5h-2.8L8.2 20.1c-.44.33-1.08.02-1.08-.53v-2.44H7c-.97 0-1.75-.78-1.75-1.75V5.75z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+  <path d="M12.5 7.25 13.2 9l1.8.7-1.8.7-.7 1.75-.7-1.75-1.8-.7 1.8-.7.7-1.75zM16.35 12.9l.38.93.92.37-.92.38-.38.92-.37-.92-.93-.38.93-.37.37-.93z" fill="currentColor"/>
+  <path d="M8.5 13.75h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 </svg>

@@ -111,13 +111,16 @@ const commandDescriptions = Object.freeze({
   'file.toggle-auto-save': 'File: Toggle Auto Save',
   'file.import-file': 'File: Import...',
   'file.export-file': 'File: Export...',
+  'file.export-file-docx': 'File: Export Word (.docx)',
   'file.zoom': 'Window: Zoom...',
   'file.check-update': 'MarkDown++: Check for Updates...',
   'paragraph.reset-paragraph': 'Paragraph: Transform into Paragraph',
   'window.change-theme': 'Theme: Change Theme...',
   'view.text-direction': 'View: Set Text Direction',
   'docs.user-guide': 'MarkDown++: End User Guide',
-  'docs.markdown-syntax': 'MarkDown++: Markdown Syntax Guide'
+  'docs.markdown-syntax': 'MarkDown++: Markdown Syntax Guide',
+  'tools.generate-wiki': 'Tools: Generate Project Wiki',
+  'file.export-wiki': 'File: Export Wiki Documentation...'
 })
 
 export default id => {

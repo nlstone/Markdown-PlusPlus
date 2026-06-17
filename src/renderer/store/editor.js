@@ -660,7 +660,6 @@ const actions = {
         lineEnding,
         sideBarVisibility,
         tabBarVisibility,
-        sourceCodeModeEnabled,
         sessionTabs
       } = config
 
@@ -675,7 +674,11 @@ const actions = {
 
       commit('SET_MODE', {
         type: 'sourceCode',
-        checked: !!sourceCodeModeEnabled
+        checked: false
+      })
+      commit('SET_MODE', {
+        type: 'splitPreview',
+        checked: true
       })
 
       // Restore session tabs if available (from lastState)
@@ -690,8 +693,7 @@ const actions = {
           }
         }
       } else if (addBlankTab) {
-        // Show welcome page (no untitled tab created)
-        // The Recent component will be shown when there's no currentFile
+        dispatch('NEW_UNTITLED_TAB', {})
       } else if (markdownList.length) {
         let isFirst = true
         for (const markdown of markdownList) {
@@ -973,7 +975,11 @@ const actions = {
       // Update old tab or discard changes
       for (const tab of state.tabs) {
         if (tab.id && tab.id === id) {
-          tab.markdown = adjustTrailingNewlines(markdown, tab.trimTrailingNewline)
+          const comparableOldMarkdown = adjustTrailingNewlines(tab.markdown, tab.trimTrailingNewline)
+          const nextMarkdown = adjustTrailingNewlines(markdown, tab.trimTrailingNewline)
+          if (nextMarkdown !== comparableOldMarkdown) {
+            tab.markdown = nextMarkdown
+          }
           // Set cursor
           if (cursor) {
             tab.cursor = cursor
@@ -988,6 +994,7 @@ const actions = {
       return
     }
 
+    const comparableOldMarkdown = adjustTrailingNewlines(oldMarkdown, trimTrailingNewline)
     markdown = adjustTrailingNewlines(markdown, trimTrailingNewline)
     commit('SET_MARKDOWN', markdown)
 
@@ -1020,7 +1027,7 @@ const actions = {
     }
 
     // Change save status/save to file only when the markdown changed!
-    if (markdown !== oldMarkdown) {
+    if (markdown !== comparableOldMarkdown) {
       commit('SET_SAVE_STATUS', false)
 
       // Save file is auto save is enable and file exist on disk.

@@ -106,6 +106,7 @@
 
 <script>
 import bus from '../../bus'
+import { callLLM } from '@/services/llmClient'
 
 export default {
   name: 'SmartRewritePanel',
@@ -336,57 +337,12 @@ export default {
       ]
 
       try {
-        const response = await fetch(`${this.aiSettings.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.aiSettings.apiKey}`
-          },
-          body: JSON.stringify({
-            model: this.aiSettings.model || 'gpt-3.5-turbo',
-            messages,
-            temperature: this.aiSettings.temperature || 0.7,
-            stream: true
-          })
-        })
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          let errorMsg = response.status
-          try {
-            const errorJson = JSON.parse(errorText)
-            errorMsg = errorJson.error?.message || response.status
-          } catch (e) {}
-          throw new Error(`${this.$t('smartRewrite.error')}: ${errorMsg}`)
-        }
-
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value, { stream: true })
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6).trim()
-              if (data === '[DONE]' || !data) continue
-              try {
-                const json = JSON.parse(data)
-                const content = json.choices?.[0]?.delta?.content
-                if (content) {
-                  this.streamingBuffer += content
-                  const now = Date.now()
-                  if (now - this.lastUpdateTime >= 50) {
-                    this.resultText = this.streamingBuffer
-                    this.lastUpdateTime = now
-                  }
-                }
-              } catch (e) {}
-            }
+        for await (const content of callLLM(messages, this.aiSettings)) {
+          this.streamingBuffer += content
+          const now = Date.now()
+          if (now - this.lastUpdateTime >= 50) {
+            this.resultText = this.streamingBuffer
+            this.lastUpdateTime = now
           }
         }
 

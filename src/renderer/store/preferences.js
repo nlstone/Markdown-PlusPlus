@@ -79,7 +79,7 @@ const state = {
   typewriter: false, // typewriter mode
   focus: false, // focus mode
   sourceCode: false, // source code mode
-  splitPreview: true, // split preview mode - default ON, show preview pane only
+  splitPreview: true, // split preview mode
 
   // user configration
   imageFolderPath: '',
@@ -101,7 +101,8 @@ const state = {
     baseUrl: '',
     apiKey: '',
     model: 'gpt-3.5-turbo',
-    temperature: 0.7
+    temperature: 0.7,
+    protocol: 'openai' // 'openai' | 'anthropic'
   },
 
   // AI conversation history

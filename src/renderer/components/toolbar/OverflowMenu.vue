@@ -18,6 +18,7 @@
       <div class="overflow-item" @click="importFile">{{ $t('toolbar.import') }}</div>
       <div class="overflow-item" @click="exportHtml">{{ $t('toolbar.exportHtml') }}</div>
       <div class="overflow-item" @click="exportPdf">{{ $t('toolbar.exportPdf') }}</div>
+      <div class="overflow-item" @click="exportDocx">{{ $t('toolbar.exportDocx') }}</div>
       <div class="overflow-item" @click="print">{{ $t('toolbar.print') }}</div>
       <div class="overflow-item" @click="reloadImages">{{ $t('toolbar.reloadImages') }}</div>
     </div>
@@ -106,6 +107,10 @@ export default {
     },
     exportPdf () {
       bus.$emit('showExportDialog', 'pdf')
+      this.closeMenu()
+    },
+    exportDocx () {
+      bus.$emit('showExportDialog', 'docx')
       this.closeMenu()
     },
     print () {

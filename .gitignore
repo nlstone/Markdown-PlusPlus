@@ -20,6 +20,9 @@ thumbs.db
 .omc/
 dev-error.log
 dev-output.log
+dev-start.err.log
+dev-start.out.log
+.codex-run/
 .sisyphus/
 .omx/
 .opencode/

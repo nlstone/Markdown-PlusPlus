@@ -6,11 +6,13 @@
  */
 
 import { ipcRenderer } from 'electron'
+import { normalizeWikiVersions, transformWikiPagesToTree } from 'common/wikiDocs'
 
 const state = {
   hasZread: false,
   rootPath: null,
   versionPath: null,
+  versions: [],
   structure: [],
   pages: [],
   loading: false,
@@ -34,6 +36,7 @@ const mutations = {
     state.hasZread = false
     state.rootPath = null
     state.versionPath = null
+    state.versions = []
     state.structure = []
     state.pages = []
     state.loading = false
@@ -41,86 +44,22 @@ const mutations = {
   }
 }
 
-/**
- * Transform flat pages array to hierarchical tree structure
- * Structure: section -> group -> page
- */
-function transformToTree (pages, rootPath, versionPath) {
-  const sectionsMap = {}
-
-  for (const page of pages) {
-    const sectionName = page.section || '未分类'
-    const groupName = page.group
-
-    // Create section if not exists
-    if (!sectionsMap[sectionName]) {
-      sectionsMap[sectionName] = {
-        label: sectionName,
-        children: {}
-      }
-    }
-
-    const sectionNode = sectionsMap[sectionName]
-
-    if (!groupName) {
-      // No group, add directly to section as a leaf
-      sectionNode.children[page.title] = {
-        label: page.title,
-        file: page.file,
-        fullPath: `${rootPath}/.zread/wiki/${versionPath}/${page.file}`,
-        level: page.level,
-        isLeaf: true
-      }
-    } else {
-      // Has group, add to group under section
-      if (!sectionNode.children[groupName]) {
-        sectionNode.children[groupName] = {
-          label: groupName,
-          children: {}
-        }
-      }
-      sectionNode.children[groupName].children[page.title] = {
-        label: page.title,
-        file: page.file,
-        fullPath: `${rootPath}/.zread/wiki/${versionPath}/${page.file}`,
-        level: page.level,
-        isLeaf: true
-      }
-    }
-  }
-
-  // Convert maps to arrays for el-tree
-  const result = Object.values(sectionsMap).map(section => ({
-    label: section.label,
-    children: Object.values(section.children).map(item => {
-      if (item.isLeaf) {
-        // Direct leaf under section
-        return item
-      } else {
-        // Group node with children
-        return {
-          label: item.label,
-          children: Object.values(item.children)
-        }
-      }
-    })
-  }))
-
-  return result
-}
-
 const actions = {
   /**
    * Check if .zread directory exists and load structure
    */
-  CHECK_ZREAD ({ commit, state }, rootPath) {
+  CHECK_ZREAD ({ commit, state }, payload) {
+    const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+    const versionPath = typeof payload === 'object' ? payload?.versionPath : null
+    const force = typeof payload === 'object' ? !!payload?.force : false
+
     if (!rootPath) {
       commit('CLEAR_ZREAD')
       return
     }
 
     // Skip if already checking same path
-    if (state.rootPath === rootPath && state.hasZread) {
+    if (!force && state.rootPath === rootPath && state.hasZread && (!versionPath || state.versionPath === versionPath)) {
       return
     }
 
@@ -128,7 +67,7 @@ const actions = {
     commit('SET_ZREAD_ERROR', null)
 
     // Request main process to check and load zread
-    ipcRenderer.send('mt::check-zread', rootPath)
+    ipcRenderer.send('mt::check-zread', { rootPath, versionPath })
   },
 
   /**
@@ -144,12 +83,15 @@ const actions = {
       hasZread: true,
       rootPath: result.rootPath,
       versionPath: result.versionPath,
+      versions: normalizeWikiVersions(result.versions || [], result.currentVersionPath || result.versionPath),
       pages: result.pages || []
     })
 
     if (result.pages && result.pages.length > 0) {
-      const structure = transformToTree(result.pages, result.rootPath, result.versionPath)
+      const structure = transformWikiPagesToTree(result.pages, result.rootPath, result.versionPath, '.zread/wiki')
       commit('SET_ZREAD_STRUCTURE', structure)
+    } else {
+      commit('SET_ZREAD_STRUCTURE', [])
     }
 
     commit('SET_ZREAD_LOADING', false)

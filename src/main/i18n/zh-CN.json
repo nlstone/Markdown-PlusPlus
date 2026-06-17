@@ -17,6 +17,7 @@
       "export": "导出",
       "exportHtml": "HTML",
       "exportPdf": "PDF",
+      "exportDocx": "Word (.docx)",
       "print": "打印",
       "preferences": "偏好设置...",
       "closeTab": "关闭标签页",

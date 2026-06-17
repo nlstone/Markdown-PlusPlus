@@ -67,7 +67,8 @@ export const BLACK_LIST = Object.freeze([
 
 export const EXTENSION_HASN = Object.freeze({
   styledHtml: '.html',
-  pdf: '.pdf'
+  pdf: '.pdf',
+  docx: '.docx'
 })
 
 export const TITLE_BAR_HEIGHT = isOsx ? 21 : 32

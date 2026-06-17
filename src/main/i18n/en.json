@@ -17,6 +17,7 @@
       "export": "Export",
       "exportHtml": "HTML",
       "exportPdf": "PDF",
+      "exportDocx": "Word (.docx)",
       "print": "Print",
       "preferences": "Preferences...",
       "closeTab": "Close Tab",

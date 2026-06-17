@@ -1,10 +1,46 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import EventEmitter from 'events'
 import log from 'electron-log'
 import path from 'path'
 import fs from 'fs'
 import Watcher, { WATCHER_STABILITY_THRESHOLD, WATCHER_STABILITY_POLL_INTERVAL } from '../filesystem/watcher'
 import { WindowType } from '../windows/base'
+
+function getWikiVersions (wikiRootPath) {
+  if (!fs.existsSync(wikiRootPath)) return []
+
+  return fs.readdirSync(wikiRootPath, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => {
+      const versionPath = entry.name
+      const wikiJsonPath = path.join(wikiRootPath, versionPath, 'wiki.json')
+      if (!fs.existsSync(wikiJsonPath)) return null
+
+      try {
+        const wikiData = JSON.parse(fs.readFileSync(wikiJsonPath, 'utf-8'))
+        return {
+          versionPath,
+          title: wikiData.title || versionPath,
+          pageCount: Array.isArray(wikiData.pages) ? wikiData.pages.length : 0
+        }
+      } catch (err) {
+        log.warn(`Failed to read wiki version ${wikiJsonPath}:`, err)
+        return {
+          versionPath,
+          title: versionPath,
+          pageCount: 0
+        }
+      }
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.versionPath.localeCompare(a.versionPath))
+}
+
+function readWikiCurrentVersion (wikiRootPath) {
+  const currentPath = path.join(wikiRootPath, 'current')
+  if (!fs.existsSync(currentPath)) return ''
+  return fs.readFileSync(currentPath, 'utf-8').trim()
+}
 
 class WindowActivityList {
   constructor () {
@@ -442,21 +478,23 @@ class WindowManager extends EventEmitter {
     })
 
     // ZRead documentation structure detection and loading
-    ipcMain.on('mt::check-zread', async (e, rootPath) => {
+    ipcMain.on('mt::check-zread', async (e, payload) => {
       const win = BrowserWindow.fromWebContents(e.sender)
       if (!win) return
 
       try {
-        const currentPath = path.join(rootPath, '.zread', 'wiki', 'current')
+        const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+        const requestedVersionPath = typeof payload === 'object' ? payload?.versionPath : null
+        const wikiRootPath = path.join(rootPath, '.zread', 'wiki')
 
-        // Check if .zread/wiki/current exists
-        if (!fs.existsSync(currentPath)) {
+        if (!rootPath || !fs.existsSync(wikiRootPath)) {
           e.sender.send('mt::zread-result', { hasZread: false })
           return
         }
 
-        // Read current file to get version path
-        const versionPath = fs.readFileSync(currentPath, 'utf-8').trim()
+        const currentVersionPath = readWikiCurrentVersion(wikiRootPath)
+        const versions = getWikiVersions(wikiRootPath)
+        const versionPath = requestedVersionPath || currentVersionPath || versions[0]?.versionPath
 
         if (!versionPath) {
           e.sender.send('mt::zread-result', { hasZread: false })
@@ -477,11 +515,298 @@ class WindowManager extends EventEmitter {
           hasZread: true,
           rootPath,
           versionPath,
+          currentVersionPath,
+          versions,
           pages: wikiData.pages || []
         })
       } catch (err) {
         log.error('ZRead check error:', err)
         e.sender.send('mt::zread-error', { message: err.message })
+      }
+    })
+
+    // .md++ wiki detection (same format as zread)
+    ipcMain.on('mt::check-wiki', async (e, payload) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      try {
+        const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+        const requestedVersionPath = typeof payload === 'object' ? payload?.versionPath : null
+        const wikiRootPath = path.join(rootPath, '.md++', 'wiki')
+
+        if (!rootPath || !fs.existsSync(wikiRootPath)) {
+          e.sender.send('mt::wiki-result', { hasWiki: false })
+          return
+        }
+
+        const currentVersionPath = readWikiCurrentVersion(wikiRootPath)
+        const versions = getWikiVersions(wikiRootPath)
+        const versionPath = requestedVersionPath || currentVersionPath || versions[0]?.versionPath
+
+        if (!versionPath) {
+          e.sender.send('mt::wiki-result', { hasWiki: false })
+          return
+        }
+
+        const wikiJsonPath = path.join(rootPath, '.md++', 'wiki', versionPath, 'wiki.json')
+        if (!fs.existsSync(wikiJsonPath)) {
+          e.sender.send('mt::wiki-error', { message: 'wiki.json not found' })
+          return
+        }
+
+        const wikiContent = fs.readFileSync(wikiJsonPath, 'utf-8')
+        const wikiData = JSON.parse(wikiContent)
+
+        e.sender.send('mt::wiki-result', {
+          hasWiki: true,
+          rootPath,
+          versionPath,
+          currentVersionPath,
+          versions,
+          pages: wikiData.pages || []
+        })
+      } catch (err) {
+        log.error('Wiki check error:', err)
+        e.sender.send('mt::wiki-error', { message: err.message })
+      }
+    })
+
+    // Wiki file tree reading — scan a local directory and return file tree + README
+    ipcMain.on('mt::wiki-read-file-tree', async (e, rootPath) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      try {
+        if (!rootPath || !fs.existsSync(rootPath) || !fs.statSync(rootPath).isDirectory()) {
+          e.sender.send('mt::wiki-file-tree-error', { message: 'Invalid directory path' })
+          return
+        }
+
+        const EXCLUDED_DIRS = new Set([
+          'node_modules', '.git', '.svn', '.hg',
+          'dist', 'build', 'out', 'target', 'bin', 'obj',
+          '.idea', '.vscode', '.vs',
+          '__pycache__', '.pytest_cache', '.mypy_cache',
+          '.venv', 'venv', 'env',
+          '.md++', '.zread'
+        ])
+
+        const EXCLUDED_FILES = new Set([
+          'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml',
+          'poetry.lock', 'Cargo.lock', 'composer.lock',
+          '.DS_Store', 'Thumbs.db'
+        ])
+
+        const fileTreeLines = []
+        let readmeContent = ''
+
+        const walk = (dir, prefix) => {
+          let entries
+          try {
+            entries = fs.readdirSync(dir, { withFileTypes: true })
+          } catch (_) { return }
+
+          // Sort: directories first, then files
+          entries.sort((a, b) => {
+            if (a.isDirectory() && !b.isDirectory()) return -1
+            if (!a.isDirectory() && b.isDirectory()) return 1
+            return a.name.localeCompare(b.name)
+          })
+
+          for (const entry of entries) {
+            if (entry.name.startsWith('.') && entry.name !== '.') continue
+            if (EXCLUDED_DIRS.has(entry.name)) continue
+            if (entry.isFile() && EXCLUDED_FILES.has(entry.name)) continue
+
+            const relPath = prefix ? `${prefix}/${entry.name}` : entry.name
+
+            if (entry.isDirectory()) {
+              walk(path.join(dir, entry.name), relPath)
+            } else {
+              fileTreeLines.push(relPath)
+              // Capture README
+              if (!readmeContent && entry.name.toLowerCase() === 'readme.md') {
+                try {
+                  readmeContent = fs.readFileSync(path.join(dir, entry.name), 'utf-8')
+                } catch (_) {}
+              }
+            }
+          }
+        }
+
+        walk(rootPath, '')
+
+        e.sender.send('mt::wiki-file-tree-result', {
+          fileTree: fileTreeLines.join('\n'),
+          readme: readmeContent
+        })
+      } catch (err) {
+        log.error('Wiki file tree read error:', err)
+        e.sender.send('mt::wiki-file-tree-error', { message: err.message })
+      }
+    })
+
+    // Wiki save — write generated wiki data to .md++/ directory
+    ipcMain.on('mt::wiki-save', async (e, { rootPath, wikiJson, pages }) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      try {
+        if (!rootPath || !fs.existsSync(rootPath)) {
+          e.sender.send('mt::wiki-save-error', { message: 'Invalid root path' })
+          return
+        }
+
+        const wikiDir = path.join(rootPath, '.md++', 'wiki')
+        const versionId = wikiJson.id || new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)
+        const versionDir = path.join(wikiDir, 'versions', versionId)
+
+        // Create directory structure
+        fs.mkdirSync(versionDir, { recursive: true })
+
+        // Write wiki.json
+        fs.writeFileSync(
+          path.join(versionDir, 'wiki.json'),
+          JSON.stringify(wikiJson, null, 2),
+          'utf-8'
+        )
+
+        // Write each page
+        for (const page of pages) {
+          fs.writeFileSync(
+            path.join(versionDir, page.filename),
+            page.content,
+            'utf-8'
+          )
+        }
+
+        // Update current pointer
+        fs.writeFileSync(
+          path.join(wikiDir, 'current'),
+          `versions/${versionId}`,
+          'utf-8'
+        )
+
+        e.sender.send('mt::wiki-save-result', { success: true, versionId })
+      } catch (err) {
+        log.error('Wiki save error:', err)
+        e.sender.send('mt::wiki-save-error', { message: err.message })
+      }
+    })
+
+    // Wiki file content reading — read specific files from a directory
+    ipcMain.on('mt::wiki-read-files', async (e, { rootPath, filePaths, maxLines }) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      try {
+        if (!rootPath || !fs.existsSync(rootPath)) {
+          e.sender.send('mt::wiki-read-files-error', { message: 'Invalid root path' })
+          return
+        }
+
+        const results = {}
+        const linesPerFile = maxLines || 100
+
+        for (const relPath of filePaths) {
+          const fullPath = path.join(rootPath, relPath)
+          try {
+            if (!fs.existsSync(fullPath)) {
+              results[relPath] = { error: 'File not found' }
+              continue
+            }
+
+            const content = fs.readFileSync(fullPath, 'utf-8')
+            const lines = content.split('\n')
+
+            // For small files (<500 lines), read all; for large files, read first N lines
+            if (lines.length <= 500) {
+              results[relPath] = {
+                content: content,
+                lines: lines.length,
+                truncated: false
+              }
+            } else {
+              results[relPath] = {
+                content: lines.slice(0, linesPerFile).join('\n'),
+                lines: lines.length,
+                truncated: true
+              }
+            }
+          } catch (err) {
+            results[relPath] = { error: err.message }
+          }
+        }
+
+        e.sender.send('mt::wiki-read-files-result', { files: results })
+      } catch (err) {
+        log.error('Wiki read files error:', err)
+        e.sender.send('mt::wiki-read-files-error', { message: err.message })
+      }
+    })
+
+    // Wiki export — save wiki as HTML or PDF
+    ipcMain.on('mt::export-wiki', async (e, { type, content, title }) => {
+      const win = BrowserWindow.fromWebContents(e.sender)
+      if (!win) return
+
+      const extension = type === 'pdf' ? '.pdf' : '.html'
+      const filters = type === 'pdf'
+        ? [{ name: 'PDF Document', extensions: ['pdf'] }]
+        : [{ name: 'HTML Document', extensions: ['html'] }]
+
+      const { filePath, canceled } = await dialog.showSaveDialog(win, {
+        defaultPath: path.join(app.getPath('documents'), `${title || 'wiki'}${extension}`),
+        filters
+      })
+
+      if (canceled || !filePath) {
+        e.sender.send('mt::export-wiki-success', { type, canceled: true })
+        return
+      }
+
+      if (filePath) {
+        try {
+          if (type === 'pdf') {
+            // Write HTML to temp file, open in hidden window, print to PDF
+            const tmpPath = filePath + '.tmp.html'
+            fs.writeFileSync(tmpPath, content, 'utf-8')
+
+            const pdfWin = new BrowserWindow({
+              show: false,
+              webPreferences: { nodeIntegration: false }
+            })
+
+            pdfWin.loadFile(tmpPath)
+
+            pdfWin.webContents.on('did-finish-load', async () => {
+              // Wait for mermaid to render
+              await new Promise(resolve => setTimeout(resolve, 3000))
+              try {
+                const data = await pdfWin.webContents.printToPDF({
+                  printBackground: true,
+                  pageSize: 'A4',
+                  margins: { top: 0, bottom: 0, left: 0, right: 0 }
+                })
+                fs.writeFileSync(filePath, data)
+                e.sender.send('mt::export-wiki-success', { type: 'pdf', filePath })
+              } catch (pdfErr) {
+                log.error('PDF generation error:', pdfErr)
+                e.sender.send('mt::export-wiki-error', { message: pdfErr.message })
+              } finally {
+                pdfWin.close()
+                try { fs.unlinkSync(tmpPath) } catch (_) {}
+              }
+            })
+          } else {
+            fs.writeFileSync(filePath, content, 'utf-8')
+            e.sender.send('mt::export-wiki-success', { type: 'html', filePath })
+          }
+        } catch (err) {
+          log.error('Wiki export error:', err)
+          e.sender.send('mt::export-wiki-error', { message: err.message })
+        }
       }
     })
 

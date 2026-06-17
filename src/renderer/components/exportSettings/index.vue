@@ -299,6 +299,11 @@ export default {
   },
   methods: {
     showDialog (type) {
+      if (type === 'docx') {
+        bus.$emit('export', { type })
+        return
+      }
+
       this.exportType = type
       this.isPrintable = type !== 'styledHtml'
       if (!this.isPrintable && (this.activeName === 'header' || this.activeName === 'page')) {

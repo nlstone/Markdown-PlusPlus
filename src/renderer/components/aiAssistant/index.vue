@@ -123,20 +123,32 @@
     </div>
 
     <!-- 设置弹窗 -->
-    <div v-if="showSettings" class="settings-modal" @click.self="showSettings = false">
+    <div
+      v-if="showSettings"
+      class="settings-modal"
+      @mousedown="handleSettingsModalMouseDown"
+      @click="handleSettingsModalClick"
+    >
       <div class="settings-content">
         <h3>AI 设置</h3>
         <div class="form-item">
+          <label>协议</label>
+          <select v-model="localSettings.protocol" class="protocol-select">
+            <option value="openai">OpenAI 兼容</option>
+            <option value="anthropic">Anthropic</option>
+          </select>
+        </div>
+        <div class="form-item">
           <label>Base URL</label>
-          <input v-model="localSettings.baseUrl" placeholder="https://api.openai.com/v1" />
+          <input v-model="localSettings.baseUrl" :placeholder="protocolDefaults.baseUrl" />
         </div>
         <div class="form-item">
           <label>API Key</label>
-          <input v-model="localSettings.apiKey" type="password" placeholder="sk-..." />
+          <input v-model="localSettings.apiKey" type="password" :placeholder="protocolDefaults.apiKeyPlaceholder" />
         </div>
         <div class="form-item">
           <label>模型</label>
-          <input v-model="localSettings.model" placeholder="gpt-3.5-turbo" />
+          <input v-model="localSettings.model" :placeholder="protocolDefaults.modelPlaceholder" />
         </div>
         <div class="form-actions">
           <button @click="testConnection">测试连接</button>
@@ -154,6 +166,7 @@
 <script>
 import bus from '@/bus'
 import notice from '@/services/notification'
+import { callLLM, getProtocolDefaults, normalizeLLMSettings, testLLMConnection } from '@/services/llmClient'
 
 export default {
   name: 'AiAssistant',
@@ -166,11 +179,13 @@ export default {
       messages: [],
       streamingBuffer: '', // Buffer for streaming content
       lastUpdateTime: 0, // Track last update time for throttling
+      settingsModalMouseDownOnBackdrop: false,
       localSettings: {
         baseUrl: '',
         apiKey: '',
         model: 'gpt-3.5-turbo',
-        temperature: 0.7
+        temperature: 0.7,
+        protocol: 'openai'
       },
       testResult: '',
       testSuccess: false,
@@ -209,17 +224,31 @@ export default {
     },
     hasSelection () {
       return !!this.currentSelection
+    },
+    protocolDefaults () {
+      return getProtocolDefaults(this.localSettings.protocol)
     }
   },
   watch: {
     aiSettings: {
       handler (val) {
         if (val) {
-          this.localSettings = { ...val }
+          this.localSettings = normalizeLLMSettings(val)
         }
       },
       immediate: true,
       deep: true
+    },
+    'localSettings.protocol' (value, oldValue) {
+      if (!oldValue || value === oldValue) return
+      const oldDefaults = getProtocolDefaults(oldValue)
+      const nextDefaults = getProtocolDefaults(value)
+      if (!this.localSettings.baseUrl || this.localSettings.baseUrl === oldDefaults.baseUrl) {
+        this.localSettings.baseUrl = nextDefaults.baseUrl
+      }
+      if (!this.localSettings.model || this.localSettings.model === oldDefaults.model) {
+        this.localSettings.model = nextDefaults.model
+      }
     }
   },
   created () {
@@ -236,6 +265,18 @@ export default {
 
     togglePanel () {
       this.$store.dispatch('TOGGLE_AI_PANEL')
+    },
+
+    handleSettingsModalMouseDown (event) {
+      this.settingsModalMouseDownOnBackdrop = event.target === event.currentTarget
+    },
+
+    handleSettingsModalClick (event) {
+      const clickedBackdrop = event.target === event.currentTarget
+      if (clickedBackdrop && this.settingsModalMouseDownOnBackdrop) {
+        this.showSettings = false
+      }
+      this.settingsModalMouseDownOnBackdrop = false
     },
 
     scrollToBottom () {
@@ -337,59 +378,13 @@ export default {
       const lastIndex = this.messages.length - 1
 
       try {
-        const response = await fetch(`${this.aiSettings.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.aiSettings.apiKey}`
-          },
-          body: JSON.stringify({
-            model: this.aiSettings.model || 'gpt-3.5-turbo',
-            messages: apiMessages,
-            temperature: this.aiSettings.temperature || 0.7,
-            stream: true
-          })
-        })
-
-        if (!response.ok) {
-          const errorText = await response.text()
-          let errorMsg = response.status
-          try {
-            const errorJson = JSON.parse(errorText)
-            errorMsg = errorJson.error?.message || response.status
-          } catch (e) {}
-          throw new Error(`API 请求失败: ${errorMsg}`)
-        }
-
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value, { stream: true })
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6).trim()
-              if (data === '[DONE]' || !data) continue
-              try {
-                const json = JSON.parse(data)
-                const content = json.choices?.[0]?.delta?.content
-                if (content) {
-                  this.streamingBuffer += content
-                  // Throttle UI updates to every 50ms
-                  const now = Date.now()
-                  if (now - this.lastUpdateTime >= 50) {
-                    this.messages[lastIndex].content = this.streamingBuffer
-                    this.lastUpdateTime = now
-                    this.scrollToBottom()
-                  }
-                }
-              } catch (e) {}
-            }
+        for await (const content of callLLM(apiMessages, this.aiSettings)) {
+          this.streamingBuffer += content
+          const now = Date.now()
+          if (now - this.lastUpdateTime >= 50) {
+            this.messages[lastIndex].content = this.streamingBuffer
+            this.lastUpdateTime = now
+            this.scrollToBottom()
           }
         }
 
@@ -427,30 +422,12 @@ export default {
       this.testSuccess = false
 
       try {
-        const response = await fetch(`${this.localSettings.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.localSettings.apiKey}`
-          },
-          body: JSON.stringify({
-            model: this.localSettings.model || 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: 'test' }],
-            max_tokens: 1
-          })
-        })
-
-        if (response.ok) {
+        const result = await testLLMConnection(this.localSettings)
+        if (result.ok) {
           this.testResult = '连接成功！'
           this.testSuccess = true
         } else {
-          const errorText = await response.text()
-          let errorMsg = response.status
-          try {
-            const errorJson = JSON.parse(errorText)
-            errorMsg = errorJson.error?.message || response.status
-          } catch (e) {}
-          this.testResult = `连接失败: ${errorMsg}`
+          this.testResult = `连接失败: ${result.error}`
           this.testSuccess = false
         }
       } catch (error) {
@@ -462,7 +439,7 @@ export default {
     saveSettings () {
       this.$store.dispatch('SET_SINGLE_PREFERENCE', {
         type: 'aiSettings',
-        value: { ...this.localSettings }
+        value: normalizeLLMSettings(this.localSettings)
       })
       this.showSettings = false
     },
@@ -972,6 +949,18 @@ export default {
   color: var(--floatFontColor, #333333);
   font-size: 13px;
   box-sizing: border-box;
+}
+
+.form-item .protocol-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--floatBorderColor, #e0e0e0);
+  border-radius: 4px;
+  background: var(--floatBgColor, #f5f5f5);
+  color: var(--floatFontColor, #333333);
+  font-size: 13px;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .form-actions {
