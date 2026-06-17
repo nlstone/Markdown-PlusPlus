@@ -16,6 +16,7 @@ const PROTOCOL_DEFAULTS = {
     modelPlaceholder: 'claude-sonnet-4-20250514'
   }
 }
+const DEFAULT_REQUEST_TIMEOUT_MS = 300000
 
 export function detectProtocol (baseUrl) {
   if (!baseUrl) return 'openai'
@@ -72,36 +73,45 @@ export async function testLLMConnection (settings, signal) {
 
 async function * callOpenAI (messages, settings, signal) {
   const url = `${settings.baseUrl.replace(/\/+$/, '')}/chat/completions`
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${settings.apiKey}`
-    },
-    body: JSON.stringify({
-      model: settings.model,
-      messages,
-      temperature: settings.temperature,
-      stream: settings.stream !== false,
-      max_tokens: settings.maxTokens
-    }),
-    signal
-  })
+  const request = withRequestTimeout(signal, settings.requestTimeoutMs)
+  let response
 
-  await ensureResponseOk(response, url)
+  try {
+    response = await request.race(fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${settings.apiKey}`
+      },
+      body: JSON.stringify({
+        model: settings.model,
+        messages,
+        temperature: settings.temperature,
+        stream: settings.stream !== false,
+        max_tokens: settings.maxTokens
+      }),
+      signal: request.signal
+    }), url)
 
-  if (settings.stream === false) {
-    const json = await response.json()
-    const content = json.choices?.[0]?.message?.content || ''
-    if (content) yield content
-    return
+    await ensureResponseOk(response, url)
+
+    if (settings.stream === false) {
+      const json = await request.race(response.json(), url)
+      const content = json.choices?.[0]?.message?.content || ''
+      if (content) yield content
+      return
+    }
+
+    yield * parseEventStream(response, event => {
+      if (event === '[DONE]') return ''
+      const json = parseJsonEvent(event)
+      return json?.choices?.[0]?.delta?.content || ''
+    }, request, url)
+  } catch (error) {
+    throw normalizeRequestError(error, url, request)
+  } finally {
+    request.clear()
   }
-
-  yield * parseEventStream(response, event => {
-    if (event === '[DONE]') return ''
-    const json = parseJsonEvent(event)
-    return json?.choices?.[0]?.delta?.content || ''
-  })
 }
 
 async function * callAnthropic (messages, settings, signal) {
@@ -116,34 +126,43 @@ async function * callAnthropic (messages, settings, signal) {
   if (systemPrompt) body.system = systemPrompt
   if (settings.temperature != null) body.temperature = settings.temperature
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': settings.apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify(body),
-    signal
-  })
+  const request = withRequestTimeout(signal, settings.requestTimeoutMs)
+  let response
 
-  await ensureResponseOk(response, url)
+  try {
+    response = await request.race(fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': settings.apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(body),
+      signal: request.signal
+    }), url)
 
-  if (settings.stream === false) {
-    const json = await response.json()
-    const content = (json.content || [])
-      .filter(item => item.type === 'text' && item.text)
-      .map(item => item.text)
-      .join('')
-    if (content) yield content
-    return
+    await ensureResponseOk(response, url)
+
+    if (settings.stream === false) {
+      const json = await request.race(response.json(), url)
+      const content = (json.content || [])
+        .filter(item => item.type === 'text' && item.text)
+        .map(item => item.text)
+        .join('')
+      if (content) yield content
+      return
+    }
+
+    yield * parseEventStream(response, event => {
+      const json = parseJsonEvent(event)
+      if (json?.type !== 'content_block_delta') return ''
+      return json.delta?.text || ''
+    }, request, url)
+  } catch (error) {
+    throw normalizeRequestError(error, url, request)
+  } finally {
+    request.clear()
   }
-
-  yield * parseEventStream(response, event => {
-    const json = parseJsonEvent(event)
-    if (json?.type !== 'content_block_delta') return ''
-    return json.delta?.text || ''
-  })
 }
 
 function splitSystemPrompt (messages) {
@@ -166,6 +185,63 @@ function getAnthropicMessagesUrl (baseUrl) {
   return base.endsWith('/v1') ? `${base}/messages` : `${base}/v1/messages`
 }
 
+function withRequestTimeout (externalSignal, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
+  const controller = new AbortController()
+  let rejectAbort
+  const abortPromise = new Promise((resolve, reject) => {
+    rejectAbort = reject
+  })
+  const request = {
+    signal: controller.signal,
+    timedOut: false,
+    race: (promise, url) => {
+      request.url = url
+      return Promise.race([promise, abortPromise])
+    },
+    clear: () => {
+      clearTimeout(timer)
+      controller.signal.removeEventListener('abort', rejectFromAbort)
+      if (externalSignal) externalSignal.removeEventListener('abort', abortFromExternalSignal)
+    }
+  }
+
+  const rejectFromAbort = () => {
+    const error = request.timedOut
+      ? createTimeoutError(request.url)
+      : new DOMException('The operation was aborted.', 'AbortError')
+    rejectAbort(error)
+  }
+  const abortFromExternalSignal = () => {
+    controller.abort()
+  }
+  const timer = setTimeout(() => {
+    request.timedOut = true
+    controller.abort()
+  }, Math.max(1, timeoutMs))
+
+  controller.signal.addEventListener('abort', rejectFromAbort)
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      abortFromExternalSignal()
+    } else {
+      externalSignal.addEventListener('abort', abortFromExternalSignal)
+    }
+  }
+
+  return request
+}
+
+function normalizeRequestError (error, url, request) {
+  if (request.timedOut) {
+    return createTimeoutError(url)
+  }
+  return error
+}
+
+function createTimeoutError (url) {
+  return new Error(`API 请求超时 (${url})，请检查网络、模型响应速度，或调低项目文档的每批 Token 预算后重试。`)
+}
+
 async function ensureResponseOk (response, url) {
   if (response.ok) return
 
@@ -178,13 +254,13 @@ async function ensureResponseOk (response, url) {
   throw new Error(`API 请求失败 (${url}): ${errorMsg}`)
 }
 
-async function * parseEventStream (response, pickContent) {
+async function * parseEventStream (response, pickContent, request, url) {
   const reader = response.body.getReader()
   const decoder = new TextDecoder()
   let buffer = ''
 
   while (true) {
-    const { done, value } = await reader.read()
+    const { done, value } = await request.race(reader.read(), url)
     if (done) break
 
     buffer += decoder.decode(value, { stream: true })

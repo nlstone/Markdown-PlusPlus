@@ -180,4 +180,32 @@ describe('LLM Client', () => {
     expect(requests[0].url).to.equal('https://api.anthropic.com/v1/messages')
     expect(JSON.parse(requests[0].options.body).stream).to.equal(false)
   })
+
+  it('aborts OpenAI-compatible requests after the configured timeout', async () => {
+    let abortSignal
+    window.fetch = (url, options) => {
+      requests.push({ url, options })
+      abortSignal = options.signal
+      return new Promise(() => {})
+    }
+
+    let error
+    try {
+      await collectLLMResponse([
+        { role: 'user', content: 'Analyze code' }
+      ], {
+        protocol: 'openai',
+        baseUrl: 'https://example.test/v1',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+        requestTimeoutMs: 10
+      })
+    } catch (err) {
+      error = err
+    }
+
+    expect(error).to.be.an('error')
+    expect(error.message).to.include('API 请求超时')
+    expect(abortSignal.aborted).to.equal(true)
+  })
 })

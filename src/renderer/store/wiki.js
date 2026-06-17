@@ -6,11 +6,13 @@
  */
 
 import { ipcRenderer } from 'electron'
+import { normalizeWikiVersions, transformWikiPagesToTree } from 'common/wikiDocs'
 
 const state = {
   hasWiki: false,
   rootPath: null,
   versionPath: null,
+  versions: [],
   structure: [],
   pages: [],
   loading: false,
@@ -38,6 +40,7 @@ const mutations = {
     state.hasWiki = false
     state.rootPath = null
     state.versionPath = null
+    state.versions = []
     state.structure = []
     state.pages = []
     state.loading = false
@@ -54,63 +57,6 @@ const mutations = {
   }
 }
 
-/**
- * Transform flat pages array to hierarchical tree structure
- * Structure: section -> group -> page
- */
-function transformToTree (pages, rootPath, versionPath) {
-  const sectionsMap = {}
-
-  for (const page of pages) {
-    const sectionName = page.section || '未分类'
-    const groupName = page.group
-
-    if (!sectionsMap[sectionName]) {
-      sectionsMap[sectionName] = {
-        label: sectionName,
-        children: {}
-      }
-    }
-
-    const sectionNode = sectionsMap[sectionName]
-
-    if (!groupName) {
-      sectionNode.children[page.title] = {
-        label: page.title,
-        file: page.file,
-        fullPath: `${rootPath}/.md++/wiki/${versionPath}/${page.file}`,
-        level: page.level,
-        isLeaf: true
-      }
-    } else {
-      if (!sectionNode.children[groupName]) {
-        sectionNode.children[groupName] = {
-          label: groupName,
-          children: {}
-        }
-      }
-      sectionNode.children[groupName].children[page.title] = {
-        label: page.title,
-        file: page.file,
-        fullPath: `${rootPath}/.md++/wiki/${versionPath}/${page.file}`,
-        level: page.level,
-        isLeaf: true
-      }
-    }
-  }
-
-  return Object.values(sectionsMap).map(section => ({
-    label: section.label,
-    children: Object.values(section.children).map(item => {
-      if (item.isLeaf) return item
-      return {
-        label: item.label,
-        children: Object.values(item.children)
-      }
-    })
-  }))
-}
-
 const actions = {
   /**
    * Check if .md++ directory exists and load structure
@@ -118,6 +64,7 @@ const actions = {
    */
   CHECK_WIKI ({ commit, state }, payload) {
     const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+    const versionPath = typeof payload === 'object' ? payload?.versionPath : null
     const force = typeof payload === 'object' ? !!payload?.force : false
 
     if (!rootPath) {
@@ -125,14 +72,14 @@ const actions = {
       return
     }
 
-    if (!force && state.rootPath === rootPath && state.hasWiki) {
+    if (!force && state.rootPath === rootPath && state.hasWiki && (!versionPath || state.versionPath === versionPath)) {
       return
     }
 
     commit('SET_WIKI_LOADING', true)
     commit('SET_WIKI_ERROR', null)
 
-    ipcRenderer.send('mt::check-wiki', rootPath)
+    ipcRenderer.send('mt::check-wiki', { rootPath, versionPath })
   },
 
   /**
@@ -148,12 +95,15 @@ const actions = {
       hasWiki: true,
       rootPath: result.rootPath,
       versionPath: result.versionPath,
+      versions: normalizeWikiVersions(result.versions || [], result.currentVersionPath || result.versionPath),
       pages: result.pages || []
     })
 
     if (result.pages && result.pages.length > 0) {
-      const structure = transformToTree(result.pages, result.rootPath, result.versionPath)
+      const structure = transformWikiPagesToTree(result.pages, result.rootPath, result.versionPath, '.md++/wiki')
       commit('SET_WIKI_STRUCTURE', structure)
+    } else {
+      commit('SET_WIKI_STRUCTURE', [])
     }
 
     commit('SET_WIKI_LOADING', false)

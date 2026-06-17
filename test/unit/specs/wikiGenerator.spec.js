@@ -7,6 +7,14 @@
 
 /* eslint-disable no-unused-expressions */
 
+import {
+  analyzeBatchWithFallback,
+  buildFileBatches,
+  getPageContentPrompt,
+  getStructurePrompt,
+  selectFilesWithinTokenBudget
+} from '@/services/wikiGenerator'
+
 // Test data
 const SAMPLE_STRUCTURE_XML = `<wiki_structure>
   <title>Test Project Wiki</title>
@@ -153,6 +161,40 @@ describe('Wiki Generator', () => {
   // ============================================================================
 
   describe('Batch Creation', () => {
+    it('should enforce token budget in deep mode batches', () => {
+      const fileContents = {
+        'src/a.js': { content: 'a'.repeat(12000) },
+        'src/b.js': { content: 'b'.repeat(12000) },
+        'src/c.js': { content: 'c'.repeat(12000) }
+      }
+
+      const batches = buildFileBatches(fileContents, 4000)
+
+      expect(batches.length).to.equal(3)
+      batches.forEach(batch => {
+        const batchTokens = Object.values(batch).reduce((sum, file) => {
+          return sum + Math.ceil((file.content || '').length / 4) + 100
+        }, 0)
+        expect(batchTokens).to.be.at.most(3000)
+      })
+    })
+
+    it('should trim oversized page context to the token budget', () => {
+      const files = [
+        { path: 'src/a.js', content: 'a'.repeat(12000) },
+        { path: 'src/b.js', content: 'b'.repeat(12000) },
+        { path: 'src/c.js', content: 'c'.repeat(12000) }
+      ]
+
+      const selected = selectFilesWithinTokenBudget(files, 4000)
+      const selectedTokens = selected.reduce((sum, file) => {
+        return sum + Math.ceil((file.content || '').length / 4) + 100
+      }, 0)
+
+      expect(selected.map(file => file.path)).to.deep.equal(['src/a.js'])
+      expect(selectedTokens).to.be.at.most(3000)
+    })
+
     it('should create batches within token budget', () => {
       const files = [
         { path: 'file1.js', tokens: 1000 },
@@ -226,6 +268,72 @@ describe('Wiki Generator', () => {
       }
 
       expect(batches.length).to.equal(0)
+    })
+  })
+
+  describe('Fast mode documentation prompts', () => {
+    it('prioritizes quick project understanding sections in the Chinese outline prompt', () => {
+      const prompt = getStructurePrompt(
+        'README.md\npackage.json\nsrc/main.js',
+        '# Demo',
+        '### 项目定位\nDemo project',
+        'zh',
+        'fast'
+      )
+
+      expect(prompt).to.include('项目概述')
+      expect(prompt).to.include('基本功能')
+      expect(prompt).to.include('快速开始')
+      expect(prompt).to.include('使用指南')
+      expect(prompt).to.include('技术栈')
+      expect(prompt).to.include('二次开发')
+      expect(prompt).to.include('待确认')
+    })
+
+    it('keeps fast page content focused on guide-style documentation instead of deep implementation detail', () => {
+      const prompt = getPageContentPrompt(
+        '快速开始',
+        ['README.md', 'package.json'],
+        'zh',
+        [],
+        'fast',
+        {}
+      )
+
+      expect(prompt).to.include('本章概述')
+      expect(prompt).to.include('功能或机制说明')
+      expect(prompt).to.include('核心流程')
+      expect(prompt).to.include('关键代码与文件说明')
+      expect(prompt).to.include('使用示例')
+      expect(prompt).to.include('常见问题')
+      expect(prompt).to.include('待确认事项')
+      expect(prompt).to.not.include('每个章节都应该有')
+    })
+  })
+
+  describe('Batch Analysis Retry', () => {
+    it('should split a failed batch and retry smaller batches', async () => {
+      const batch = {
+        'src/a.js': { content: 'a'.repeat(1000) },
+        'src/b.js': { content: 'b'.repeat(1000) }
+      }
+      const calls = []
+      const callBatch = files => {
+        calls.push(Object.keys(files))
+        if (Object.keys(files).length > 1) {
+          return Promise.reject(new Error('API 请求失败 (https://example.test/v1/messages): 500 Internal Server Error'))
+        }
+        return Promise.resolve(`analysis:${Object.keys(files)[0]}`)
+      }
+
+      const result = await analyzeBatchWithFallback(batch, callBatch)
+
+      expect(calls).to.deep.equal([
+        ['src/a.js', 'src/b.js'],
+        ['src/a.js'],
+        ['src/b.js']
+      ])
+      expect(result).to.equal('analysis:src/a.js\n\nanalysis:src/b.js')
     })
   })
 

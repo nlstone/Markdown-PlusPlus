@@ -342,7 +342,4 @@ export default {
   .ai-drag-bar:hover {
     background: var(--themeColor);
   }
-  .ai-drag-bar:hover {
-    background: var(--themeColor);
-  }
 </style>

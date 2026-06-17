@@ -6,6 +6,42 @@ import fs from 'fs'
 import Watcher, { WATCHER_STABILITY_THRESHOLD, WATCHER_STABILITY_POLL_INTERVAL } from '../filesystem/watcher'
 import { WindowType } from '../windows/base'
 
+function getWikiVersions (wikiRootPath) {
+  if (!fs.existsSync(wikiRootPath)) return []
+
+  return fs.readdirSync(wikiRootPath, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => {
+      const versionPath = entry.name
+      const wikiJsonPath = path.join(wikiRootPath, versionPath, 'wiki.json')
+      if (!fs.existsSync(wikiJsonPath)) return null
+
+      try {
+        const wikiData = JSON.parse(fs.readFileSync(wikiJsonPath, 'utf-8'))
+        return {
+          versionPath,
+          title: wikiData.title || versionPath,
+          pageCount: Array.isArray(wikiData.pages) ? wikiData.pages.length : 0
+        }
+      } catch (err) {
+        log.warn(`Failed to read wiki version ${wikiJsonPath}:`, err)
+        return {
+          versionPath,
+          title: versionPath,
+          pageCount: 0
+        }
+      }
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.versionPath.localeCompare(a.versionPath))
+}
+
+function readWikiCurrentVersion (wikiRootPath) {
+  const currentPath = path.join(wikiRootPath, 'current')
+  if (!fs.existsSync(currentPath)) return ''
+  return fs.readFileSync(currentPath, 'utf-8').trim()
+}
+
 class WindowActivityList {
   constructor () {
     // Oldest             Newest
@@ -442,21 +478,23 @@ class WindowManager extends EventEmitter {
     })
 
     // ZRead documentation structure detection and loading
-    ipcMain.on('mt::check-zread', async (e, rootPath) => {
+    ipcMain.on('mt::check-zread', async (e, payload) => {
       const win = BrowserWindow.fromWebContents(e.sender)
       if (!win) return
 
       try {
-        const currentPath = path.join(rootPath, '.zread', 'wiki', 'current')
+        const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+        const requestedVersionPath = typeof payload === 'object' ? payload?.versionPath : null
+        const wikiRootPath = path.join(rootPath, '.zread', 'wiki')
 
-        // Check if .zread/wiki/current exists
-        if (!fs.existsSync(currentPath)) {
+        if (!rootPath || !fs.existsSync(wikiRootPath)) {
           e.sender.send('mt::zread-result', { hasZread: false })
           return
         }
 
-        // Read current file to get version path
-        const versionPath = fs.readFileSync(currentPath, 'utf-8').trim()
+        const currentVersionPath = readWikiCurrentVersion(wikiRootPath)
+        const versions = getWikiVersions(wikiRootPath)
+        const versionPath = requestedVersionPath || currentVersionPath || versions[0]?.versionPath
 
         if (!versionPath) {
           e.sender.send('mt::zread-result', { hasZread: false })
@@ -477,6 +515,8 @@ class WindowManager extends EventEmitter {
           hasZread: true,
           rootPath,
           versionPath,
+          currentVersionPath,
+          versions,
           pages: wikiData.pages || []
         })
       } catch (err) {
@@ -486,19 +526,23 @@ class WindowManager extends EventEmitter {
     })
 
     // .md++ wiki detection (same format as zread)
-    ipcMain.on('mt::check-wiki', async (e, rootPath) => {
+    ipcMain.on('mt::check-wiki', async (e, payload) => {
       const win = BrowserWindow.fromWebContents(e.sender)
       if (!win) return
 
       try {
-        const currentPath = path.join(rootPath, '.md++', 'wiki', 'current')
+        const rootPath = typeof payload === 'string' ? payload : payload?.rootPath
+        const requestedVersionPath = typeof payload === 'object' ? payload?.versionPath : null
+        const wikiRootPath = path.join(rootPath, '.md++', 'wiki')
 
-        if (!fs.existsSync(currentPath)) {
+        if (!rootPath || !fs.existsSync(wikiRootPath)) {
           e.sender.send('mt::wiki-result', { hasWiki: false })
           return
         }
 
-        const versionPath = fs.readFileSync(currentPath, 'utf-8').trim()
+        const currentVersionPath = readWikiCurrentVersion(wikiRootPath)
+        const versions = getWikiVersions(wikiRootPath)
+        const versionPath = requestedVersionPath || currentVersionPath || versions[0]?.versionPath
 
         if (!versionPath) {
           e.sender.send('mt::wiki-result', { hasWiki: false })
@@ -518,6 +562,8 @@ class WindowManager extends EventEmitter {
           hasWiki: true,
           rootPath,
           versionPath,
+          currentVersionPath,
+          versions,
           pages: wikiData.pages || []
         })
       } catch (err) {

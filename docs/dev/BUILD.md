@@ -10,7 +10,7 @@ git clone https://github.com/nlstone/Markdown-PlusPlus.git
 
 Before you can get started developing, you need set up your build environment:
 
-- Node.js `>=v16` but `<v17` and yarn
+- Node.js `>=v16` and yarn. Node 24 is supported; after changing Node versions, rebuild legacy native dependencies with `yarn rebuild`.
 - Python `>=v3.6` for node-gyp
 - C++ compiler and development tools
 - Build is supported on Linux, macOS and Windows

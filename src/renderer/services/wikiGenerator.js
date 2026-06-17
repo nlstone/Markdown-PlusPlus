@@ -16,11 +16,13 @@ import { callLLM, collectLLMResponse } from './llmClient'
 const CHARS_PER_TOKEN = 4 // Average for code
 const TOKENS_PER_FILE_META = 100 // File path + metadata overhead
 const MAX_FILES_PER_BATCH = 50 // Max files per LLM request
+const MIN_CONTENT_TOKENS_PER_FILE = 500
+const REQUEST_CONTENT_BUDGET_RATIO = 0.75 // Leave room for prompt instructions and JSON/SSE overhead.
 
 // Wiki generation modes
 const WIKI_MODE = {
   FAST: 'fast', // Quick overview, token-efficient
-  DEEP: 'deep' // Comprehensive documentation, no token limits
+  DEEP: 'deep' // Comprehensive documentation, full-file reads with bounded request context
 }
 
 // Mode-specific configurations
@@ -39,8 +41,8 @@ const MODE_CONFIG = {
   [WIKI_MODE.DEEP]: {
     linesPerFile: 0, // 0 = full file
     maxFilesToRead: 999999, // no limit
-    batchEnabled: false,
-    tokensPerBatch: 999999,
+    batchEnabled: true,
+    tokensPerBatch: 150000,
     pageCountMin: 25,
     pageCountMax: 40,
     additionalFilesPerPage: 20,
@@ -55,6 +57,126 @@ const MODE_CONFIG = {
 function estimateTokens (text) {
   if (!text) return 0
   return Math.ceil(text.length / CHARS_PER_TOKEN) + TOKENS_PER_FILE_META
+}
+
+function limitContentToTokenBudget (content, tokenBudget) {
+  if (!content) return ''
+  const contentBudget = Math.max(0, tokenBudget - TOKENS_PER_FILE_META)
+  const maxChars = contentBudget * CHARS_PER_TOKEN
+
+  if (content.length <= maxChars) return content
+  return content.slice(0, maxChars)
+}
+
+function normalizeTokenBudget (tokenBudget) {
+  return Math.max(tokenBudget || MODE_CONFIG[WIKI_MODE.FAST].tokensPerBatch, TOKENS_PER_FILE_META + MIN_CONTENT_TOKENS_PER_FILE)
+}
+
+function getContentTokenBudget (tokenBudget) {
+  return Math.max(
+    TOKENS_PER_FILE_META + MIN_CONTENT_TOKENS_PER_FILE,
+    Math.floor(normalizeTokenBudget(tokenBudget) * REQUEST_CONTENT_BUDGET_RATIO)
+  )
+}
+
+export function buildFileBatches (fileContents, tokenBudget, maxFilesPerBatch = MAX_FILES_PER_BATCH) {
+  const batchTokenBudget = getContentTokenBudget(tokenBudget)
+  const fileEntries = Object.entries(fileContents).filter(([_, data]) => !data.error)
+  const batches = []
+  let currentBatch = {}
+  let currentTokens = 0
+
+  for (const [filePath, data] of fileEntries) {
+    const originalContent = data.content || ''
+    const fileTokens = estimateTokens(originalContent)
+    let fileData = data
+    if (fileTokens > batchTokenBudget) {
+      fileData = {
+        ...data,
+        content: limitContentToTokenBudget(originalContent, batchTokenBudget),
+        truncated: true,
+        lines: data.lines || originalContent.split('\n').length
+      }
+    }
+    const boundedFileTokens = estimateTokens(fileData.content || '')
+
+    if (currentTokens + boundedFileTokens > batchTokenBudget && Object.keys(currentBatch).length > 0) {
+      batches.push({ ...currentBatch })
+      currentBatch = {}
+      currentTokens = 0
+    }
+
+    currentBatch[filePath] = fileData
+    currentTokens += boundedFileTokens
+
+    if (Object.keys(currentBatch).length >= maxFilesPerBatch) {
+      batches.push({ ...currentBatch })
+      currentBatch = {}
+      currentTokens = 0
+    }
+  }
+
+  if (Object.keys(currentBatch).length > 0) {
+    batches.push(currentBatch)
+  }
+
+  return batches
+}
+
+export function selectFilesWithinTokenBudget (files, tokenBudget) {
+  const batchTokenBudget = getContentTokenBudget(tokenBudget)
+  const selected = []
+  let currentTokens = 0
+
+  for (const file of files) {
+    const originalContent = file.content || ''
+    const remainingBudget = batchTokenBudget - currentTokens
+    if (remainingBudget <= TOKENS_PER_FILE_META) break
+
+    const fileTokens = estimateTokens(originalContent)
+    if (currentTokens + fileTokens <= batchTokenBudget) {
+      selected.push(file)
+      currentTokens += fileTokens
+      continue
+    }
+
+    if (selected.length === 0) {
+      const boundedContent = limitContentToTokenBudget(originalContent, remainingBudget)
+      if (boundedContent) {
+        selected.push({
+          ...file,
+          content: boundedContent,
+          truncated: true
+        })
+      }
+    }
+    break
+  }
+
+  return selected
+}
+
+function isRetryableBatchError (error) {
+  const message = error?.message || ''
+  return /(?:413|429|500|502|503|504|Payload Too Large|Internal Server Error|Bad Gateway|Service Unavailable|Gateway Timeout|API 请求超时)/i.test(message)
+}
+
+export async function analyzeBatchWithFallback (batch, callBatch) {
+  try {
+    return await callBatch(batch)
+  } catch (error) {
+    const entries = Object.entries(batch)
+    if (!isRetryableBatchError(error) || entries.length <= 1) {
+      throw error
+    }
+
+    const splitAt = Math.ceil(entries.length / 2)
+    const leftBatch = Object.fromEntries(entries.slice(0, splitAt))
+    const rightBatch = Object.fromEntries(entries.slice(splitAt))
+    const leftAnalysis = await analyzeBatchWithFallback(leftBatch, callBatch)
+    const rightAnalysis = await analyzeBatchWithFallback(rightBatch, callBatch)
+    return [leftAnalysis, rightAnalysis].filter(Boolean).join('\n\n')
+  }
 }
 
 /**
@@ -301,7 +423,7 @@ ${isDeepMode ? '### Detailed Module Analysis\nFor each core module, provide:\n- 
 /**
  * Structure generation prompt - generate wiki outline from file analysis
  */
-function getStructurePrompt (fileTree, readme, projectSummary, language, mode = WIKI_MODE.FAST) {
+export function getStructurePrompt (fileTree, readme, projectSummary, language, mode = WIKI_MODE.FAST) {
   const isDeepMode = mode === WIKI_MODE.DEEP
 
   if (language === 'zh') {
@@ -327,6 +449,25 @@ ${projectSummary}
 ## 核心原则
 
 **章节必须反映项目的实际业务领域，不要使用通用模板。**
+${!isDeepMode
+    ? `
+快速模式目标：生成让用户和开发者快速理解项目的正式技术文档，而不是深挖每个实现细节。
+
+必须优先覆盖以下文档主题：
+- 项目概述：项目定位、适用场景、核心价值、技术栈概览
+- 快速开始：环境要求、安装依赖、配置项目、启动项目、验证运行结果
+- 基本功能：功能列表、主要能力、典型使用场景
+- 使用指南：常见工作流、关键入口、面向用户的操作路径
+- 项目结构：目录结构、核心目录、关键文件
+- 系统架构：总体架构、模块划分、数据流、调用链路、外部依赖
+- 核心模块说明：只覆盖最重要模块，不追逐所有细节
+- 配置说明：配置文件、环境变量、启动脚本、重要配置项
+- 开发指南：本地开发、调试方法、测试方法、编码约定
+- 部署与构建：构建方式、发布/部署入口、CI/CD 或 Docker 信息（如果资料中存在）
+- 二次开发与扩展：扩展点、插件/接口/事件机制、与外部系统集成方式（如果存在）
+- 常见问题与待确认事项：资料不足时标注“待确认”，说明需要补充哪些文件或信息
+`
+    : ''}
 
 在设计结构之前，先回答以下问题：
 1. 这个项目解决什么问题？它的核心价值是什么？
@@ -350,6 +491,7 @@ ${projectSummary}
 ### 页面设计原则：
 - **项目的核心功能必须有独立页面**，不能被合并或省略
 - 如果项目有"功能清单"（如检测方法列表、API 端点、组件库），必须有专门页面列出所有项目
+- 快速模式下必须优先生成“基本功能/功能列表”和“使用指南”页面，让新用户先知道能做什么、怎么用
 - 如果项目有"核心机制"（如算法、协议、工作流），每个机制应有独立的详解页面
 - 页面标题要具体明确（如"OpenAI 协议检测方法"而非"检测"）
 - 每个页面应有清晰的职责边界，不要有重叠
@@ -433,6 +575,25 @@ Determine the most logical structure for a wiki based on the repository's conten
 ## Core Principle
 
 **Sections must reflect the project's actual business domain. Do NOT use generic templates.**
+${!isDeepMode
+    ? `
+Fast mode goal: generate formal project documentation that helps users and developers understand the project quickly, not exhaustive implementation deep dives.
+
+Prioritize these documentation topics:
+- Project Overview: positioning, use cases, core value, tech stack overview
+- Quick Start: prerequisites, installation, configuration, startup, validation
+- Basic Features: feature list, main capabilities, typical usage scenarios
+- Usage Guide: common workflows, key entry points, user-facing operation paths
+- Project Structure: directory structure, core directories, key files
+- System Architecture: overall architecture, module boundaries, data flow, call chains, external dependencies
+- Core Modules: only the most important modules, without chasing every implementation detail
+- Configuration: config files, environment variables, startup scripts, important options
+- Development Guide: local development, debugging, testing, coding conventions
+- Build & Deployment: build process, release/deployment entry points, CI/CD or Docker details when present
+- Extension & Secondary Development: extension points, plugins/interfaces/events, external integration when present
+- FAQ and To Be Confirmed: mark uncertain information as "To be confirmed" and explain what files or details are needed
+`
+    : ''}
 
 Before designing the structure, answer these questions:
 1. What problem does this project solve? What is its core value?
@@ -456,6 +617,7 @@ Use three-level organization: **Sections → Groups → Pages**
 ### Page Design Principles:
 - **Core features of the project MUST have dedicated pages** — do not merge or omit them
 - If the project has "feature lists" (e.g., detection methods, API endpoints, component library), there MUST be a dedicated page listing all items
+- In fast mode, prioritize "Basic Features / Feature List" and "Usage Guide" pages so new users understand what the project does and how to use it
 - If the project has "core mechanisms" (e.g., algorithms, protocols, workflows), each mechanism should have its own detailed page
 - Page titles must be specific and clear (e.g., "OpenAI Protocol Detection Methods" not just "Detection")
 - Each page should have a clear scope with no overlap
@@ -522,10 +684,134 @@ IMPORTANT FORMATTING INSTRUCTIONS:
 /**
  * Page content generation prompt - adapted from ZRead style
  */
-function getPageContentPrompt (pageTitle, filePaths, language, relatedPages = [], mode = WIKI_MODE.FAST, config = {}) {
+export function getPageContentPrompt (pageTitle, filePaths, language, relatedPages = [], mode = WIKI_MODE.FAST, config = {}) {
   const filePathsStr = filePaths.map(p => `- ${p}`).join('\n')
   const isDeepMode = mode === WIKI_MODE.DEEP
   const diagramsPerSection = config.diagramsPerSection || (isDeepMode ? 3 : 1)
+
+  if (!isDeepMode) {
+    if (language === 'zh') {
+      return `你是一名资深技术文档工程师和软件架构师。
+请基于提供的项目资料，为软件项目生成一章正式、清晰、工程化的 Markdown 技术文档。
+
+你会收到：
+1. "[WIKI_PAGE_TOPIC]"：当前章节标题。
+2. "[RELEVANT_SOURCE_FILES]"：你必须引用的项目文件。只能基于这些资料写作，不要编造不存在的功能、接口、配置项或架构。
+
+## 开头格式
+页面第一部分必须是 \`<details>\` 块，列出你使用的所有源文件：
+<details>
+<summary>相关源文件</summary>
+
+以下是生成此页面时使用的上下文文件：
+
+${filePathsStr}
+</details>
+
+在 \`<details>\` 后不要使用 H1 标题，直接进入正文。
+
+## 快速模式写作目标
+- 帮助用户、开发者、技术负责人快速理解 "${pageTitle}"。
+- 内容要有条理，优先解释“是什么、能做什么、怎么用、由哪些模块支撑、涉及哪些技术要点”。
+- 不必追逐所有实现细节；只有在理解功能、配置、架构或扩展方式时才说明关键源码逻辑。
+- 如果资料不足，明确写“待确认”，并说明需要补充哪些文件或信息。
+
+## 推荐内容结构
+请按当前章节主题选择并组织以下小节，不相关的小节可以省略，但整体顺序要自然：
+
+## 1. 本章概述
+说明本章解决什么问题，读者读完后应该掌握什么。
+
+## 2. 功能或机制说明
+结合项目代码和配置说明功能、运行机制、设计思路。面向“快速了解项目”，优先用功能列表、表格和场景说明。
+
+## 3. 核心流程
+如果涉及启动流程、调用链、数据流、生命周期或用户操作路径，请用步骤化方式说明。必要时使用 1 个 Mermaid 图辅助理解。
+
+## 4. 关键代码与文件说明
+列出相关文件路径，并解释每个文件的作用。格式建议：| 文件 | 作用 | 说明 |
+
+## 5. 配置项说明
+如果涉及配置，请用表格说明配置项、含义、默认值、是否必填、使用场景。
+
+## 6. 使用示例
+如果资料中有命令、代码示例、配置示例或典型操作路径，请给出简洁示例；不要编造不存在的命令或 API。
+
+## 7. 常见问题与注意事项
+说明使用、部署、开发或扩展过程中容易遇到的问题。
+
+## 8. 待确认事项
+列出当前资料无法确认，但正式文档中建议补充的内容。
+
+## 写作要求
+- 使用中文。
+- 结构清晰，段落短，尽量使用表格和列表帮助快速扫描。
+- 适度体现框架、架构、技术栈和关键模块，不要变成源码逐行讲解。
+- 涉及源码逻辑时标注文件路径；不要大段贴代码，只引用必要的 1-3 行短片段。
+- 交叉引用可使用 \`[页面标题](slug)\`，相关页面：${relatedPages.length ? relatedPages.join(', ') : '无'}。
+- 不确定的信息必须标注“待确认”，不要猜测。`
+    }
+
+    return `You are a senior technical documentation engineer and software architect.
+Generate one formal, clear, engineering-oriented Markdown documentation chapter for a software project based only on the provided project materials.
+
+You will receive:
+1. "[WIKI_PAGE_TOPIC]": the current chapter title.
+2. "[RELEVANT_SOURCE_FILES]": project files you must use. Do not invent features, APIs, configuration, or architecture that cannot be supported by the provided materials.
+
+## Opening Format
+The first part of the page MUST be a \`<details>\` block listing all source files:
+<details>
+<summary>Relevant source files</summary>
+
+The following files were used as context for generating this page:
+
+${filePathsStr}
+</details>
+
+After the \`<details>\` block, do NOT use an H1 title. Start directly with the body.
+
+## Fast Mode Goal
+- Help users, developers, and technical leads quickly understand "${pageTitle}".
+- Explain what it is, what it can do, how to use it, which modules support it, and which technical points matter.
+- Do not chase every implementation detail; explain source logic only when it helps readers understand features, configuration, architecture, or extension points.
+- If information is missing, mark it as "To be confirmed" and explain which files or details are needed.
+
+## Recommended Content Structure
+Choose and organize these sections according to the current topic. Omit irrelevant sections, but keep the flow natural:
+
+## 1. Chapter Overview
+Explain what problem this chapter solves and what readers should understand after reading it.
+
+## 2. Feature or Mechanism Description
+Explain the feature, mechanism, and design approach using project code and configuration. Prefer feature lists, tables, and scenarios for fast understanding.
+
+## 3. Core Flow
+If the topic involves startup flow, call chain, data flow, lifecycle, or user workflow, explain it step by step. Use one Mermaid diagram only when it improves clarity.
+
+## 4. Key Code and File Notes
+List relevant paths and explain each file's role. Suggested format: | File | Role | Notes |
+
+## 5. Configuration Notes
+If configuration is involved, use a table for option, meaning, default, required, and usage scenario.
+
+## 6. Usage Examples
+If the materials include commands, code examples, config examples, or common operation paths, include concise examples. Do not invent commands or APIs.
+
+## 7. FAQ and Notes
+Explain common usage, deployment, development, or extension issues.
+
+## 8. To Be Confirmed
+List information that cannot be confirmed from the current materials and should be supplemented for formal documentation.
+
+## Writing Requirements
+- Write in English.
+- Keep the structure easy to scan with short paragraphs, lists, and tables.
+- Show framework, architecture, tech stack, and key modules when relevant without turning the page into line-by-line source commentary.
+- Cite file paths when discussing source logic. Avoid large code blocks; only include necessary 1-3 line snippets.
+- Cross references may use \`[Page Title](slug)\`. Related pages: ${relatedPages.length ? relatedPages.join(', ') : 'none'}.
+- Mark uncertain information as "To be confirmed"; do not guess.`
+  }
 
   if (language === 'zh') {
     return `你是一位专业的技术文档撰写者和软件架构师。
@@ -901,48 +1187,11 @@ export async function * generateOutline ({ rootPath, language, aiSettings, signa
   const filesToRead = allFiles.slice(0, maxFilesToRead)
   const fileContents = await readFiles(rootPath, filesToRead, linesPerFile)
 
-  // Step 3: Analyze files in batches (or all at once for deep mode)
+  // Step 3: Analyze files in batches
   yield { type: 'progress', message: language === 'zh' ? '正在分析代码...' : 'Analyzing code...', current: 0, total: 0 }
 
   // Split files into batches for analysis based on token budget
-  const fileEntries = Object.entries(fileContents).filter(([_, data]) => !data.error)
-  const batches = []
-
-  if (config.batchEnabled) {
-    // Fast mode: split into batches
-    let currentBatch = {}
-    let currentTokens = 0
-
-    for (const [filePath, data] of fileEntries) {
-      const fileTokens = estimateTokens(data.content || '')
-
-      if (currentTokens + fileTokens > batchTokenBudget && Object.keys(currentBatch).length > 0) {
-        batches.push({ ...currentBatch })
-        currentBatch = {}
-        currentTokens = 0
-      }
-
-      currentBatch[filePath] = data
-      currentTokens += fileTokens
-
-      if (Object.keys(currentBatch).length >= MAX_FILES_PER_BATCH) {
-        batches.push({ ...currentBatch })
-        currentBatch = {}
-        currentTokens = 0
-      }
-    }
-
-    if (Object.keys(currentBatch).length > 0) {
-      batches.push(currentBatch)
-    }
-  } else {
-    // Deep mode: no batching, analyze all files at once
-    const allFilesBatch = {}
-    for (const [filePath, data] of fileEntries) {
-      allFilesBatch[filePath] = data
-    }
-    batches.push(allFilesBatch)
-  }
+  const batches = buildFileBatches(fileContents, batchTokenBudget)
 
   // Analyze each batch
   const batchAnalyses = []
@@ -957,10 +1206,11 @@ export async function * generateOutline ({ rootPath, language, aiSettings, signa
       total: batches.length
     }
 
-    const batchPrompt = getBatchAnalysisPrompt(batches[i], language, mode)
-    const batchMessages = [{ role: 'user', content: batchPrompt }]
-
-    const analysis = await callLLMFull(batchMessages, aiSettings, signal)
+    const analysis = await analyzeBatchWithFallback(batches[i], files => {
+      const batchPrompt = getBatchAnalysisPrompt(files, language, mode)
+      const batchMessages = [{ role: 'user', content: batchPrompt }]
+      return callLLMFull(batchMessages, aiSettings, signal)
+    })
     batchAnalyses.push(analysis)
   }
 
@@ -1018,7 +1268,7 @@ export async function * generateOutline ({ rootPath, language, aiSettings, signa
   yield {
     type: 'outline',
     structure,
-    context: { rootPath, language, aiSettings, fileTreeData, fileContents, allFiles, structure, mode, config }
+    context: { rootPath, language, aiSettings, fileTreeData, fileContents, allFiles, structure, mode, config, tokensPerBatch: batchTokenBudget }
   }
 }
 
@@ -1030,8 +1280,9 @@ export async function * generateOutline ({ rootPath, language, aiSettings, signa
  * @param {AbortSignal} signal - Abort signal
  */
 export async function * generateContent (context, signal) {
-  const { rootPath, language, aiSettings, fileContents, allFiles, structure, mode = WIKI_MODE.FAST, config: contextConfig } = context
+  const { rootPath, language, aiSettings, fileContents, allFiles, structure, mode = WIKI_MODE.FAST, config: contextConfig, tokensPerBatch } = context
   const config = contextConfig || MODE_CONFIG[mode] || MODE_CONFIG[WIKI_MODE.FAST]
+  const batchTokenBudget = normalizeTokenBudget(tokensPerBatch || config.tokensPerBatch)
 
   // Step 6: Expand relevant files for each page
   const totalPages = structure.pages.length
@@ -1112,8 +1363,11 @@ export async function * generateContent (context, signal) {
       }
     }
 
+    const boundedFilesContent = selectFilesWithinTokenBudget(relevantFilesContent, batchTokenBudget)
+    const boundedFilePaths = boundedFilesContent.map(file => file.path)
+
     // Generate page content with expanded files
-    const pagePrompt = getPageContentPrompt(page.title, page.expandedFiles, language, page.relatedPages, mode, config)
+    const pagePrompt = getPageContentPrompt(page.title, boundedFilePaths, language, page.relatedPages, mode, config)
 
     // Build messages with file contents as context
     const pageMessages = [
@@ -1122,7 +1376,7 @@ export async function * generateContent (context, signal) {
 
     // Add file contents as system context
     let fileContext = ''
-    for (const file of relevantFilesContent) {
+    for (const file of boundedFilesContent) {
       fileContext += `\n\n### ${file.path}\n\`\`\`\n${file.content}\n\`\`\``
     }
 

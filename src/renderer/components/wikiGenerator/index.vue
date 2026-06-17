@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="wiki-modal-overlay" @click.self="handleOverlayClick">
+  <div v-if="visible && !minimized" class="wiki-modal-overlay" @click.self="handleOverlayClick">
     <div class="wiki-modal" :class="{ 'wiki-modal--generating': isBusy }">
       <!-- Header -->
       <div class="wiki-modal__header">
@@ -9,11 +9,18 @@
           </svg>
           <h3>{{ $t('wiki.generateTitle') }}</h3>
         </div>
-        <button class="wiki-modal__close" @click="handleClose" :disabled="isBusy">
-          <svg viewBox="0 0 24 24" width="16" height="16">
-            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
-        </button>
+        <div class="wiki-modal__window-actions">
+          <button class="wiki-modal__action" @click.stop.prevent="minimizeGenerator" :title="$t('wiki.minimize')">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M5 12h14v2H5z"/>
+            </svg>
+          </button>
+          <button class="wiki-modal__close" @click="handleClose" :disabled="isBusy">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Steps indicator -->
@@ -87,32 +94,14 @@
               <div class="config-form__select-wrapper">
                 <select v-model="selectedMode" class="config-form__select">
                   <option value="fast">{{ $t('wiki.modeFast') }}</option>
-                  <option value="deep">{{ $t('wiki.modeDeep') }}</option>
                 </select>
                 <svg class="config-form__select-arrow" viewBox="0 0 24 24" width="14" height="14">
                   <path fill="currentColor" d="M7 10l5 5 5-5z"/>
                 </svg>
               </div>
-              <p class="config-form__hint">{{ selectedMode === 'fast' ? $t('wiki.modeFastHint') : $t('wiki.modeDeepHint') }}</p>
+              <p class="config-form__hint">{{ $t('wiki.modeFastHint') }}</p>
             </div>
 
-            <div class="config-form__item">
-              <label class="config-form__label">
-                <svg viewBox="0 0 24 24" width="14" height="14">
-                  <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                {{ $t('wiki.protocol') }}
-              </label>
-              <div class="config-form__select-wrapper">
-                <select v-model="selectedProtocol" class="config-form__select">
-                  <option value="openai">OpenAI 兼容</option>
-                  <option value="anthropic">Anthropic</option>
-                </select>
-                <svg class="config-form__select-arrow" viewBox="0 0 24 24" width="14" height="14">
-                  <path fill="currentColor" d="M7 10l5 5 5-5z"/>
-                </svg>
-              </div>
-            </div>
           </div>
 
           <div class="config-form">
@@ -322,6 +311,35 @@
       </div>
     </div>
   </div>
+  <div
+    v-else-if="visible && minimized"
+    class="wiki-task-card"
+    :class="{ 'wiki-task-card--busy': isBusy, 'wiki-task-card--complete': currentStep === 5 }"
+    @click="restoreGenerator"
+  >
+    <div class="wiki-task-card__main">
+      <div class="wiki-task-card__icon">
+        <svg v-if="isBusy" viewBox="0 0 50 50" class="wiki-task-card__spinner">
+          <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+        </svg>
+        <svg v-else viewBox="0 0 24 24" width="18" height="18">
+          <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
+      <div class="wiki-task-card__content">
+        <div class="wiki-task-card__title">{{ taskTitle }}</div>
+        <div class="wiki-task-card__message">{{ progressMessage || taskSubtitle }}</div>
+      </div>
+      <div class="wiki-task-card__percent">{{ progressPercent }}%</div>
+    </div>
+    <div class="wiki-task-card__track">
+      <div class="wiki-task-card__bar" :style="{ width: progressPercent + '%' }"></div>
+    </div>
+    <div class="wiki-task-card__actions" @click.stop>
+      <button class="wiki-task-card__button" @click="restoreGenerator">{{ $t('wiki.restore') }}</button>
+      <button v-if="isBusy" class="wiki-task-card__button wiki-task-card__button--danger" @click="handleCancel">{{ $t('wiki.cancel') }}</button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -329,16 +347,15 @@ import { ipcRenderer } from 'electron'
 import { mapState } from 'vuex'
 import bus from '@/bus'
 import { generateOutline, generateContent } from '@/services/wikiGenerator'
-import { detectProtocol } from '@/services/llmClient'
 
 export default {
   name: 'WikiGenerator',
   data () {
     return {
       visible: false,
+      minimized: false,
       currentStep: 1, // 1=config, 2=generating outline, 3=outline preview, 4=generating content, 5=complete
       selectedLanguage: 'zh',
-      selectedProtocol: 'openai',
       selectedMode: 'fast', // 'fast' or 'deep'
       tokenBudget: 150000,
       error: null,
@@ -376,6 +393,18 @@ export default {
       if (this.progress.total === 0) return 0
       return Math.round((this.progress.current / this.progress.total) * 100)
     },
+    taskTitle () {
+      if (this.currentStep === 2) return this.$t('wiki.taskGeneratingOutline')
+      if (this.currentStep === 3) return this.$t('wiki.taskOutlineReady')
+      if (this.currentStep === 4) return this.$t('wiki.taskGeneratingPages')
+      if (this.currentStep === 5) return this.$t('wiki.taskComplete')
+      return this.$t('wiki.generateTitle')
+    },
+    taskSubtitle () {
+      if (this.currentStep === 3) return this.$t('wiki.taskNeedsReview')
+      if (this.currentStep === 5) return this.$t('wiki.pagesGenerated', { count: this.generatedPages.length })
+      return this.$t('wiki.preparing')
+    },
     outlinePageCount () {
       return this.outlineStructure?.pages?.length || 0
     },
@@ -405,6 +434,7 @@ export default {
     },
     show () {
       this.visible = true
+      this.minimized = false
       this.currentStep = 1
       this.error = null
       this.progressMessage = ''
@@ -412,12 +442,17 @@ export default {
       this.generatedPages = []
       this.outlineStructure = null
       this.outlineContext = null
-      // Auto-detect protocol from baseUrl, or use saved preference
-      this.selectedProtocol = this.aiSettings?.protocol || detectProtocol(this.aiSettings?.baseUrl)
     },
     handleClose () {
       if (this.isBusy) return
       this.visible = false
+      this.minimized = false
+    },
+    minimizeGenerator () {
+      this.minimized = true
+    },
+    restoreGenerator () {
+      this.minimized = false
     },
     formatTokens (tokens) {
       if (tokens >= 1000) {
@@ -432,6 +467,7 @@ export default {
     },
     openAiSettings () {
       this.visible = false
+      this.minimized = false
       bus.$emit('view:toggle-ai-panel')
     },
     openWikiSidebar () {
@@ -453,15 +489,10 @@ export default {
       this.abortController = new AbortController()
 
       try {
-        const settings = {
-          ...this.aiSettings,
-          protocol: this.selectedProtocol
-        }
-
         const generator = generateOutline({
           rootPath: this.projectPath,
           language: this.selectedLanguage,
-          aiSettings: settings,
+          aiSettings: this.aiSettings,
           signal: this.abortController.signal,
           mode: this.selectedMode,
           tokensPerBatch: this.tokenBudget
@@ -477,6 +508,7 @@ export default {
               this.outlineStructure = event.structure
               this.outlineContext = event.context
               this.currentStep = 3
+              this.minimized = false
               break
           }
         }
@@ -524,6 +556,7 @@ export default {
               break
             case 'done':
               this.currentStep = 5
+              this.minimized = false
               this.$store.dispatch('wiki/CHECK_WIKI', { rootPath: this.projectPath, force: true })
               break
           }
@@ -614,6 +647,13 @@ export default {
   color: var(--floatFontColor, #333333);
 }
 
+.wiki-modal__window-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wiki-modal__action,
 .wiki-modal__close {
   background: none;
   border: none;
@@ -624,6 +664,7 @@ export default {
   transition: all 0.2s ease;
 }
 
+.wiki-modal__action:hover,
 .wiki-modal__close:hover:not(:disabled) {
   background: var(--itemBgColor, #f0f0f0);
   color: var(--floatFontColor, #333);
@@ -632,6 +673,151 @@ export default {
 .wiki-modal__close:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* Minimized task card */
+.wiki-task-card {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  width: 320px;
+  max-width: calc(100vw - 40px);
+  padding: 12px;
+  border: 1px solid var(--floatBorderColor, #dfe3e8);
+  border-radius: 8px;
+  background: var(--floatBgColor, #ffffff);
+  color: var(--floatFontColor, #333333);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  cursor: pointer;
+  animation: slideInTask 0.2s ease;
+}
+
+@keyframes slideInTask {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.wiki-task-card:hover {
+  border-color: var(--themeColor, #4285f4);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.24);
+}
+
+.wiki-task-card--complete .wiki-task-card__icon {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ecc71;
+}
+
+.wiki-task-card__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.wiki-task-card__icon {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(66, 133, 244, 0.12);
+  color: var(--themeColor, #4285f4);
+}
+
+.wiki-task-card__spinner {
+  width: 20px;
+  height: 20px;
+  animation: rotate 1.4s linear infinite;
+}
+
+.wiki-task-card__spinner circle {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+.wiki-task-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.wiki-task-card__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.wiki-task-card__message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--iconColor, #777777);
+}
+
+.wiki-task-card__percent {
+  flex: none;
+  min-width: 38px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--iconColor, #777777);
+}
+
+.wiki-task-card__track {
+  height: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--borderColor, #e0e0e0);
+}
+
+.wiki-task-card__bar {
+  height: 100%;
+  min-width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--themeColor, #4285f4), #34a853);
+  transition: width 0.25s ease;
+}
+
+.wiki-task-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.wiki-task-card__button {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--floatBorderColor, #dfe3e8);
+  border-radius: 6px;
+  background: var(--floatBgColor, #ffffff);
+  color: var(--floatFontColor, #333333);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wiki-task-card__button:hover {
+  border-color: var(--themeColor, #4285f4);
+  background: var(--themeColor, #4285f4);
+  color: #ffffff;
+}
+
+.wiki-task-card__button--danger:hover {
+  border-color: #e74c3c;
+  background: #e74c3c;
 }
 
 /* Steps */

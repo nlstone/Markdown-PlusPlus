@@ -123,7 +123,12 @@
     </div>
 
     <!-- 设置弹窗 -->
-    <div v-if="showSettings" class="settings-modal" @click.self="showSettings = false">
+    <div
+      v-if="showSettings"
+      class="settings-modal"
+      @mousedown="handleSettingsModalMouseDown"
+      @click="handleSettingsModalClick"
+    >
       <div class="settings-content">
         <h3>AI 设置</h3>
         <div class="form-item">
@@ -174,6 +179,7 @@ export default {
       messages: [],
       streamingBuffer: '', // Buffer for streaming content
       lastUpdateTime: 0, // Track last update time for throttling
+      settingsModalMouseDownOnBackdrop: false,
       localSettings: {
         baseUrl: '',
         apiKey: '',
@@ -259,6 +265,18 @@ export default {
 
     togglePanel () {
       this.$store.dispatch('TOGGLE_AI_PANEL')
+    },
+
+    handleSettingsModalMouseDown (event) {
+      this.settingsModalMouseDownOnBackdrop = event.target === event.currentTarget
+    },
+
+    handleSettingsModalClick (event) {
+      const clickedBackdrop = event.target === event.currentTarget
+      if (clickedBackdrop && this.settingsModalMouseDownOnBackdrop) {
+        this.showSettings = false
+      }
+      this.settingsModalMouseDownOnBackdrop = false
     },
 
     scrollToBottom () {
