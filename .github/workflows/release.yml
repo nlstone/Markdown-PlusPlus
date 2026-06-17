@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Read package version
         id: package
@@ -33,6 +35,48 @@ jobs:
           $package = Get-Content package.json -Raw | ConvertFrom-Json
           "version=$($package.version)" >> $env:GITHUB_OUTPUT
           "tag=v$($package.version)" >> $env:GITHUB_OUTPUT
+
+      - name: Generate release notes
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.package.outputs.tag }}"
+          $previousTag = git tag --list "v*" --sort=-version:refname |
+            Where-Object { $_ -ne $tag } |
+            Select-Object -First 1
+
+          $notesFile = "build\RELEASE_NOTES.md"
+          New-Item -ItemType Directory -Force build | Out-Null
+
+          $notesArgs = @(
+            "api",
+            "repos/$env:GITHUB_REPOSITORY/releases/generate-notes",
+            "--method", "POST",
+            "-f", "tag_name=$tag",
+            "-f", "target_commitish=$env:GITHUB_SHA"
+          )
+          if ($previousTag) {
+            $notesArgs += @("-f", "previous_tag_name=$previousTag")
+          }
+
+          $generated = & gh @notesArgs | ConvertFrom-Json
+          $body = @()
+          $body += $generated.body
+          $body += ""
+          $body += "## Downloads"
+          $body += ""
+          $body += "- `markdownpp-setup.exe` - Windows installer"
+          $body += "- `markdownpp-portable.exe` - Windows portable build"
+          $body += "- `markdownpp-x64-win.zip` - Windows zip archive"
+          $body += "- `SHA256SUMS.txt` - SHA256 checksums"
+          $body += ""
+          $body += "## Version"
+          $body += ""
+          $body += "- Package version: `${{ steps.package.outputs.version }}`"
+          if ($previousTag) {
+            $body += "- Changes since: `$previousTag`"
+          }
+          $body | Set-Content -Encoding utf8 $notesFile
+          Get-Content $notesFile
 
       - name: Install Node.js
         uses: actions/setup-node@v6
@@ -113,12 +157,18 @@ jobs:
 
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -eq 0) {
+            gh release edit $tag `
+              --repo $env:GITHUB_REPOSITORY `
+              --target $env:GITHUB_SHA `
+              --title $title `
+              --notes-file "build\RELEASE_NOTES.md" `
+              --latest
             gh release upload $tag @assets --repo $env:GITHUB_REPOSITORY --clobber
           } else {
             gh release create $tag @assets `
               --repo $env:GITHUB_REPOSITORY `
               --target $env:GITHUB_SHA `
               --title $title `
-              --generate-notes `
+              --notes-file "build\RELEASE_NOTES.md" `
               --latest
           }
